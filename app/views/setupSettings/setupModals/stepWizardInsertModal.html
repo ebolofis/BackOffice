@@ -1,0 +1,55 @@
+﻿<style>
+    /* modal and step animations */
+    .wave.ng-enter, .wave.ng-leave {
+        -webkit-transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+        transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+    }
+
+    .wave.ng-enter {
+        position: absolute;
+        left: -100%;
+    }
+
+    .wave.ng-enter-active {
+        left: 0;
+    }
+
+    .wave.ng-leave {
+        position: absolute;
+        left: 0;
+    }
+
+    .wave.ng-leave-active {
+        left: 100%;
+    }
+</style>
+<!--http://angularscript.com/fully-customizable-fuelux-wizard-angular-directive/-->
+<div class="modal-header">
+    <button type="button" class="close" ng-click="modal.dismiss('No bueno!')" aria-hidden="true">&times;</button>
+    <h3>Insert new PosInfo Register</h3>
+    <div class="btn-group" ng-repeat="mobj in modal.stepWizardModelArray">
+        <button class="btn" ng-class="{'btn-primary':modal.isCurrentStep(mobj.modelStep)}" ng-click="modal.setCurrentStep(mobj.modelStep)" novalidate>{{mobj.modelStepName}}</button>
+    </div>
+</div>
+<div class="modal-body">
+
+    <div class="slide-frame" ng-repeat="mobj in modal.stepWizardModelArray">
+        <div ng-if="modal.getCurrentStep() == mobj.modelStepName && mobj.entriesArray == undefined" class="wave">
+            <form name="mobj.modelFormName" sf-schema="mobj.schema" sf-form="mobj.form" sf-model="mobj.entity"></form>
+        </div>
+        <div ng-if="modal.getCurrentStep() == mobj.modelStepName && mobj.entriesArray !== undefined" class="wave">
+            <div ng-repeat="list in mobj.entriesArray">
+                <div  style="display: inline-flex; width: 100%;">
+                    <span class="notice" ng-class="list.selected ? 'notice-success' : ''" style="width:50%" ng-click="list.selected = !list.selected">{{list.InvoiceType.Description}}</span>
+                    <div style="width:50%">
+                        <select style="max-width: 60%;" class="form-control" ng-model="list.TransactionType" ng-options="item.value as item.name for item in mobj.form[0].titleMap"></select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <a class="btn btn-default" ng-click="modal.handlePrevious()" ng-show="!modal.isFirstStep()">Back</a>
+    <a class="btn btn-primary" ng-click="modal.handleNext()">{{modal.getNextLabel()}}</a>
+</div>

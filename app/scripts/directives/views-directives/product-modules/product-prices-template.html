@@ -1,0 +1,66 @@
+﻿<div layout="column" layout-align="center stretch" flex="grow">
+    <div layout="row" layout-align="start space-between" class="md-margin">
+        <div flex="30" layout="row" layout-align="start center" style="font-variant:small-caps;">
+            Multi apply vars
+        </div>
+        <div flex="30" layout="row" layout-align="start center" style="margin-left:10px; text-align: right;">
+            <strong>Tax all:</strong>
+            <md-input-container flex class="fix-input-display">
+                <md-select name="pplists" aria-label="Prices pricelists tax" ng-model="multiTax">
+                    <md-option>---</md-option>
+                    <md-option ng-repeat="ch in lookups.Tax" value="{{ch.Id}}">{{ch.Description}}</md-option>
+                </md-select>
+            </md-input-container>
+            <md-button class="md-mini md-icon-button" ng-click="applyMultiTax(multiTax)" ng-disabled="(multiTax == undefined || multiTax == 'null')">
+                <md-tooltip md-direction="top">Apply selected Tax to all product Prices</md-tooltip>
+                <md-icon md-svg-icon="action:done"></md-icon>
+            </md-button>
+        </div>
+        <div flex="30" layout="row" layout-align="start center" style="margin-left:10px; text-align: right;">
+            <strong>Vat all:</strong>
+            <md-input-container flex class="fix-input-display" style="">
+                <md-select name="pplists" aria-label="Prices pricelists vat" ng-model="multiVat">
+                    <md-option ng-repeat="ch in lookups.Vat" value="{{ch.Id}}">{{ch.Description}}</md-option>
+                </md-select>
+            </md-input-container>
+            <md-button class="md-mini md-icon-button" ng-click="applyMultiVat(multiVat)" ng-disabled="(multiVat == undefined || multiVat == 'null')">
+                <md-tooltip md-direction="top">Apply selected Vat to all product Prices</md-tooltip>
+                <md-icon md-svg-icon="action:done"></md-icon>
+            </md-button>
+        </div>
+        <span flex></span>
+    </div>
+    <md-divider></md-divider>
+    <md-subheader class="md-no-sticky">
+        <div layout="row" layou-align="start center">
+            <div flex="25">Pricelist</div>
+            <div flex="25">Tax</div>
+            <div flex="25">Vat</div>
+            <div flex="25">Price</div>
+        </div>
+    </md-subheader>
+    <md-divider></md-divider>
+    <div style="overflow:auto;" flex="grow" ng-if="data['ProductPrices'].length > 0" class="hitbo-virtual-repeat">
+        <md-virtual-repeat-container id="vertical-container">
+            <div md-virtual-repeat="pp in data['ProductPrices']" ng-click="$event.preventDefault()" class="repeated-item" flex>
+                <div class="md-list-item-text" layout="row" layout-align="start center" flex="grow" ng-class="{'new-row' : pp.EntityStatus == 0 , 'edited-row' : pp.EntityStatus == 1 ,'deleted-row' : pp.EntityStatus == 2 }">
+                    <strong flex="25" class="fix-input-display" style="font-variant:small-caps;">{{lookupObjects.Pricelist[pp.PricelistId]['Description']}}</strong>
+                    <md-input-container flex="25" class="fix-input-display">
+                        <md-select name="tax" aria-label="Prices Tax" ng-model="pp.TaxId" ng-change="markEditedDetail(pp)">
+                            <md-option value="null"></md-option>
+                            <md-option ng-repeat="ch in lookups.Tax" value="{{ch.Id}}">{{ch.Description}}</md-option>
+                        </md-select>
+                    </md-input-container>
+                    <md-input-container flex="25" class="fix-input-display">
+                        <md-select name="vat" aria-label="Prices Vat" ng-model="pp.VatId" ng-change="markEditedDetail(pp)">
+                            <md-option ng-repeat="ch in lookups.Vat" value="{{ch.Id}}">{{ch.Percentage}}</md-option>
+                        </md-select>
+                    </md-input-container>
+                    <md-input-container flex="25" class="fix-input-display"><input name="Price" aria-label="Price" ng-model="pp.Price" type="number" string-to-number min="0" ng-change="productPriceChange(pp , pp.Price)"></md-input-container>
+                </div>
+            </div>
+        </md-virtual-repeat-container>
+    </div>
+    <div flex></div>
+    <md-divider></md-divider>
+</div>

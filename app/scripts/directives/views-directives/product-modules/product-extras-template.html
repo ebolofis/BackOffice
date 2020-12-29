@@ -1,0 +1,188 @@
+﻿<div layout="column" layout-align="center stretch" flex="grow" ng-include src="viewTemplate"></div>
+<!-- Ingredients actions manage -->
+<script id="ingredient-extras-menu" type="text/ng-template">
+    <md-menu md-position-mode="target-right target" style="padding:0;">
+        <md-button aria-label="UserSettings" class="md-icon-button" ng-click="checkToggleCollapsed();$mdOpenMenu($event)">
+            <md-tooltip md-direction="top">Ingredient options</md-tooltip>
+            <md-icon md-menu-origin md-svg-icon="navigation:apps"></md-icon>
+        </md-button>
+        <md-menu-content width="4" style="max-height:none;">
+            <md-content layout="column" layout-align="start stretch" flex="grow" class="md-padding">
+                <md-list>
+                    <md-list-item class="md-whiteframe-4dp bo-hover-negative" layout="column" layout-align="center start" ng-click="manageingrs('display')">
+                        <span class="bo-head-sc">View Extras</span>
+                        <md-tooltip md-direction="left">Extras display list</md-tooltip>
+                    </md-list-item>
+                    <md-list-item class="md-whiteframe-4dp bo-hover-negative" layout="column" layout-align="center start" ng-click="manageingrs()">
+                        <span class="bo-head-sc">Edit Extras</span>
+                        <md-tooltip md-direction="left">Edit extras display list</md-tooltip>
+                    </md-list-item>
+                    <md-list-item class="md-whiteframe-4dp bo-hover-negative" ng-show="inrgManageType == undefined || inrgManageType=='display'" ng-click="sortDisplay()">
+                        <span class="bo-head-sc">Sort Displayed</span>
+                        <md-tooltip md-direction="left">Apply sort edit based on view order</md-tooltip>
+                    </md-list-item>
+                </md-list>
+                <h4 style="font-variant:small-caps; text-align:center;">Ingredient Insert Options</h4>
+                <md-divider></md-divider>
+                <md-list>
+                    <md-list-item class="md-whiteframe-4dp bo-hover-negative" layout="column" layout-align="center start" ng-click="manageingrs('insert')">
+                        <span class="bo-head-sc">Only Category Ingredients</span>
+                        <md-tooltip md-direction="left">This action will <strong style="color:red;">remove</strong> any ingredients assigned and apply only category ingredients selected.</md-tooltip>
+                    </md-list-item>
+                    <md-list-item class="md-whiteframe-4dp bo-hover-negative" layout="column" layout-align="center start" ng-click="manageingrs('append')">
+                        <span class="bo-head-sc">Missing Category Ingredients</span>
+                        <md-tooltip md-direction="left">This action will try to append selected category ingredients. Any ingredients that allready exist + category ingredients selected avoiding dublicates.</md-tooltip>
+                    </md-list-item>
+                    <md-list-item class="md-whiteframe-4dp bo-hover-negative" layout="column" layout-align="center start" ng-click="manageingrs('manual')">
+                        <span class="bo-head-sc">Associations Selection</span>
+                        <md-tooltip md-direction="left">This action will provide associated by category ingredients and will allows you to select which ingredients you would like to keep.</md-tooltip>
+                    </md-list-item>
+                    <md-list-item class="md-whiteframe-4dp bo-hover-negative" layout="column" layout-align="center start" ng-click="manageingrs('product')">
+                        <span class="bo-head-sc">Clone from Product</span>
+                        <md-tooltip md-direction="left">This allows you to keep or manage current ingredients providing a list of extras by product selection.</md-tooltip>
+                    </md-list-item>
+                    <md-list-item class="md-whiteframe-4dp bo-hover-negative" layout="column" layout-align="center start" ng-click="manageingrs('all')">
+                        <span class="bo-head-sc">All ingredients</span>
+                        <md-tooltip md-direction="left">A list of all ingredients associated and not for custom choice.</md-tooltip>
+                    </md-list-item>
+                </md-list>
+                <md-divider></md-divider>
+            </md-content>
+        </md-menu-content>
+    </md-menu>
+</script>
+
+
+<!-- Main drop down list functionality -->
+<!-- Basic Template of normal use on extras entities -->
+<script id="main-list" type="text/ng-template">
+    <md-subheader class="md-no-sticky subhead-nopad">
+        <div layout="row" layou-align="start center" style="padding: 0px 16px;">
+            <div flex="20" class="h-ext-list">Unit</div>
+            <div flex="25" class="h-ext-list">Ingredient</div>
+            <div flex="10" class="h-ext-list">Required</div>
+            <div flex="10" class="h-ext-list">Min Q.</div>
+            <div flex="10" class="h-ext-list">Max Q.</div>
+            <div flex="10" class="h-ext-list">Sort</div>
+            <div flex="15" class="h-c-ext-list" ng-include src="'ingredient-extras-menu'"></div>
+        </div>
+    </md-subheader>
+    <div layout="row" layout-align="center center" ng-if="data['ProductExtras'].length == 0">
+        <md-toolbar class="md-warn md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="start center">
+            <md-icon class="md-margin" md-svg-icon="action:info"></md-icon>No Extras mapped on this product.
+        </md-toolbar>
+    </div>
+    <div style="overflow:auto;" flex="grow" ng-if="data['ProductExtras'].length > 0">
+        <md-list>
+            <md-list-item ng-repeat="pr in data['ProductExtras'] | orderBy: 'Sort' : false" ng-click="$event.preventDefault()">
+                <div class="md-list-item-text" layout="row" layout-align="start center" flex="grow" ng-class="{'new-row' : pr.EntityStatus == 0 , 'edited-row' : pr.EntityStatus == 1 ,'deleted-row' : pr.EntityStatus == 2 }">
+                    <md-input-container flex="20" class="fix-input-display">
+                        <md-select name="Unit" aria-label="Details Unit" ng-model="pr.UnitId" ng-change="markEditedDetail(pr)">
+                            <!--<md-option value="null">-unitDescEnum--</md-option>-->
+                            <md-option ng-repeat="ch in lookups.Units" value="{{ch.Id}}">{{ch.Description}}</md-option>
+                        </md-select>
+                    </md-input-container>
+                    <md-input-container flex="25" class="fix-input-display">
+                        <md-select name="IngredientId" aria-label="Details Ingredient" ng-model="pr.IngredientId" required ng-change="markEditedDetail(pr)">
+                            <md-option ng-repeat="(ch , val) in ingDescEnum" value="{{ch}}">{{val}}</md-option>
+                        </md-select>
+                    </md-input-container>
+                    <div layout="row" layout-align="center center" flex="10" class="fix-input-display">
+                        <span>
+                            <md-checkbox md-no-ink aria-label="IsRequired" ng-model="pr.IsRequired" class="md-primary" ng-change="markEditedDetail(pr)"></md-checkbox>
+                        </span>
+                    </div>
+                    <md-input-container flex="10" class="fix-input-display"><input name="MinQty" aria-label="MinQty" ng-model="pr.MinQty" type="number" min="0" step="1" ng-change="markEditedDetail(pr)"></md-input-container>
+                    <md-input-container flex="10" class="fix-input-display"><input name="MaxQty" aria-label="MaxQty" ng-model="pr.MaxQty" type="number" min="0" step="1" ng-change="markEditedDetail(pr)"></md-input-container>
+                    <md-input-container flex="10" class="fix-input-display"><input name="Sort" aria-label="Sort" ng-model="pr.Sort" type="number" min="0" step="1" ng-change="markEditedDetail(pr)"></md-input-container>
+                    <div flex></div>
+                    <div flex="15" layout="row" layout-align="center center">
+                        <md-button class="md-fab md-mini md-warn" style="margin: 0 auto;" ng-if="pr.EntityStatus != 2" ng-click="removeDetail('ProductExtras',pr, $index)">
+                            <md-tooltip md-direction="top">Remove selected recipe</md-tooltip>
+                            <md-icon md-svg-icon="action:delete"></md-icon>
+                        </md-button>
+                        <md-button class="md-fab md-mini" style="margin: 0 auto;" ng-if="pr.EntityStatus == 2" ng-click="refreshRow('ProductExtras',pr)">
+                            <md-tooltip md-direction="top">Restore Entity from delete state</md-tooltip>
+                            <md-icon md-svg-icon="action:settings_backup_restore"></md-icon>
+                        </md-button>
+                    </div>
+                </div>
+            </md-list-item>
+        </md-list>
+    </div>
+    <div flex></div>
+    <md-divider></md-divider>
+    <div layout="row" layout-align="space-between center">
+        <md-button class="md-raised md-primary" ng-click="addDetail('ProductExtras')">
+            <md-tooltip md-direction="top">Add new extra</md-tooltip>
+            Add Extra
+        </md-button>
+        <strong>Results:&nbsp;#{{data['ProductExtras'].length}}</strong>
+    </div>
+</script>
+
+<script id="main-list-display" type="text/ng-template">
+    <md-subheader class="md-no-sticky subhead-nopad">
+        <div layout="row" layou-align="start center" style="padding: 0px 16px;">
+            <div flex="20" class="h-ext-list">Unit</div>
+            <div flex="25" class="h-ext-list">Ingredient</div>
+            <div flex="10" class="h-ext-list">Required</div>
+            <div flex="10" class="h-ext-list">Min Q.</div>
+            <div flex="10" class="h-ext-list">Max Q.</div>
+            <div flex="10" class="h-ext-list">Sort</div>
+            <div flex="15" class="h-c-ext-list" ng-include src="'ingredient-extras-menu'"></div>
+        </div>
+    </md-subheader>
+    <div layout="row" layout-align="center center" ng-if="data['ProductExtras'].length == 0">
+        <md-toolbar class="md-warn md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="start center">
+            <md-icon class="md-margin" md-svg-icon="action:info"></md-icon>No Extras mapped on this product.
+        </md-toolbar>
+    </div>
+    <div class="bo-draggable-list" style="overflow:auto;" flex="grow" ng-if="data['ProductExtras'].length > 0">
+        <ul dnd-list="data.ProductExtras">
+            <li aria-label="pre-a" ng-repeat="pr in data['ProductExtras']" dnd-draggable="pr" dnd-moved="data.ProductExtras.splice($index, 1);" dnd-dragend="sortDisplay()">
+                <div layout="row" layout-align="start center" flex="grow" ng-class="{'new-row' : pr.EntityStatus == 0 , 'edited-row' : pr.EntityStatus == 1 ,'deleted-row' : pr.EntityStatus == 2 }" style="padding:3px 10px">
+                    <span flex="20">{{unitDescEnum[pr.UnitId]}} </span>
+                    <span flex="25">{{ingDescEnum[pr.IngredientId]}} </span>
+                    <span flex="10">
+                        <md-icon ng-if="pr.IsRequired != true" md-menu-origin md-svg-icon="navigation:close"></md-icon>
+                        <md-icon ng-if="pr.IsRequired == true" md-menu-origin md-svg-icon="navigation:check"></md-icon>
+                    </span>
+                    <span flex="10">{{pr.MinQty}} </span>
+                    <span flex="10">{{pr.MaxQty}} </span>
+                    <span flex="10">{{pr.Sort}} </span>
+                    <div flex></div>
+                    <div flex="15" layout="row" layout-align="center center">
+                        <md-button class="md-fab md-mini md-warn" style="margin: 0 auto;" ng-if="pr.EntityStatus != 2" ng-click="removeDetail('ProductExtras',pr, $index)">
+                            <md-tooltip md-direction="top">Remove selected recipe</md-tooltip>
+                            <md-icon md-svg-icon="action:delete"></md-icon>
+                        </md-button>
+                        <md-button class="md-fab md-mini" style="margin: 0 auto;" ng-if="pr.EntityStatus == 2" ng-click="refreshRow('ProductExtras',pr)">
+                            <md-tooltip md-direction="top">Restore Entity from delete state</md-tooltip>
+                            <md-icon md-svg-icon="action:settings_backup_restore"></md-icon>
+                        </md-button>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div flex></div>
+    <md-divider></md-divider>
+    <div layout="row" layout-align="space-between center">
+        <md-button class="md-raised md-primary" ng-click="addDetail('ProductExtras')">
+            <md-tooltip md-direction="top">Add new extra</md-tooltip>
+            Add Extra
+        </md-button>
+
+        <strong>Results:&nbsp;#{{data['ProductExtras'].length}}</strong>
+    </div>
+</script>
+<style>
+    .custom-menu-drop {
+        margin: 5px 0;
+        padding: 5px;
+        min-height: 80px;
+    }
+
+
+</style>

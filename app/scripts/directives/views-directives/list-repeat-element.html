@@ -1,0 +1,30 @@
+﻿<h4 ng-if="displayHeader" style="text-align: center; font-variant: small-caps;">{{header}}</h4>
+<md-toolbar md-scroll-shrink>
+    <div class="md-toolbar-tools" layout="column" layout-align="center stretch">
+        <div layout="row" layout-align="space-between center">
+            <div class="input-group">
+                <input type="text" class="form-control" style="height: inherit; float:left;" placeholder="{{searchPlaceholder}}" ng-model="search[displayField]">
+                <span class="input-group-btn" style="">
+                    <a class="btn" style="color: rgb(204, 204, 204); text-decoration: none; position: absolute; right: 0px; top: 0px; z-index:50; " ng-click="search[displayField] = ''"><i class="fa fa-times"></i></a>
+                </span>
+            </div>
+            <div layout="row" layout-align="end center">
+                <md-button class="md-icon-button" ng-click="toggleSelection();" aria-label="toggle all selections in list">
+                    <md-tooltip md-direction="top">toggle selection</md-tooltip>
+                    <md-icon ng-if="selectAll == true" md-svg-icon="toggle:check_box"></md-icon>
+                    <md-icon ng-if="selectAll == false" md-svg-icon="toggle:check_box_outline_blank"></md-icon>
+                </md-button>
+                <md-button class="md-icon-button md-primary md-hue-1" ng-class="actionDisable ? 'disabled' : ''" ng-if="!hideABbutton" ng-click="actionFun();" aria-label="dynamic action functionality of dropdown list">
+                    <i class="{{actionIcon}}"></i>
+                </md-button>
+            </div>
+        </div>
+    </div>
+</md-toolbar>
+<div ng-class="(containerClass  !== 'undefined') ? containerClass : 'container-panel-content'" layout="column" layout-align="start stretch" style="overflow:auto;">
+    <div flex="grow">
+        <div class="{{loopItemClass}}" ng-class="ml.selected ? loopItemSelectedClass : ''" ng-repeat="ml in mainlist| filter:search | filter:extraFilter" ng-click="(ml.selected = !ml.selected)">
+            <span class="col-md-12 col-xs-12">{{ml[displayField]}}</span>
+        </div>
+    </div>
+</div>

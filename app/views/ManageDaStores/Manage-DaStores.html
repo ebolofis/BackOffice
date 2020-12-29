@@ -1,0 +1,151 @@
+﻿
+<div ng-controller="HandleStoresMainCTRL as HandleStoresMain" ng-init="HandleStoresMain.initView()" layout-fill layout="column" layout-align="start stretch">
+
+    <div flex="10">
+        <md-subheader class="wrappers-view-header md-whiteframe-7dp md-primary">Manage Da Stores</md-subheader>
+      
+    </div>
+    <div flex="5" layout="row">
+        <div flex="90"></div>
+
+        <md-button class=" md-fab md-mini md-raised" ng-disabled="processingUser" ng-click='UpdateStoreTables($event ,"UpdateStoreTables",row,"edit")'><i class="fa fa-send fa-fw"></i>  <md-tooltip md-direction="top" style="width:100px;"></md-tooltip></md-button>
+        <md-progress-circular ng-if=" HandleStoresMain.spinner"  md-mode="indeterminate"></md-progress-circular>
+       
+        <div flex="10" layout-align="center">
+            <md-button aria-label="addDataRow" id="addData" class="md-raised" style="line-height: 32px; min-height: 32px; background-color:lightblue;" align="right" ng-disabled="savingProcess" ng-click="addStore($event ,'HandleDaStores',row,'add')">Add&nbsp;<i class="fa fa-plus-circle fa-fw"></i> </md-button>
+        </div>
+        <hr />
+    </div>
+    <div flex="5" layout="row" layout-align="start" style="font-variant:small-caps;">
+        <strong  style="font-size:10px;  margin-right:-2px;" flex="5">Code</strong>
+        <strong  style="font-size:10px;  margin-right:-2px;" flex="5">Title</strong>
+        <strong  style="font-size:10px;  margin-right:-2px;" flex="5">Notes</strong>
+        <strong  style="font-size:10px;  margin-right:12px;" flex="5">DelivTime</strong>
+        <strong  style="font-size:10px;  margin-right:-2px;" flex="5">TOTime</strong>
+        <strong  style="font-size:10px;  margin-right:-2px;" flex="5">Desc</strong>
+        <strong  style="font-size:10px;  margin-right:-2px;" flex="5">Doy</strong>
+        <strong  style="font-size:10px;  margin-right:-2px;" flex="5">VatNo</strong>
+        <strong  style="font-size:10px;  margin-right:-2px;" flex="5">Email</strong>
+        <strong  style="font-size:10px;  margin-right:-2px;" flex="5">Phone1</strong>
+        <strong  style="font-size:10px;  margin-right:-2px;"  flex="5">Fax</strong>
+        <strong  style="font-size:10px;  margin-right:-2px;" flex="5">AddrssId</strong>
+        <strong  style="font-size:10px;  margin-left:15px;" flex="5">Api</strong>
+        <strong  style="font-size:10px;  margin-right:-2px;" flex="5">PosId</strong>
+        <strong  style="font-size:10px;  margin-right:-2px;" flex="5">StaffId</strong>
+        <strong  style="font-size:10px;  margin-right:-2px;" flex="5">Usrnme</strong>
+        <strong  style="font-size:10px;  margin-right:-2px;" flex="5">Passwrd</strong>
+        <!--<strong  style="font-size:12px;" flex="5">Status</strong>-->
+    </div>
+    <md-divider></md-divider>
+    <div flex="80" layout="column" style="overflow-y: auto;">
+        <div ng-include src="'header-list'" ng-if=" HandleStoresMain.stores.length > 0"></div>
+    </div>
+</div>
+
+<script id="header-list" type="text/ng-template">
+    <md-list flex="grow">
+        <md-list-item class="md-whiteframe-4dp" ng-repeat="row in HandleStoresMain.stores |filter: searchText" style="margin-bottom:10px; background-color:white;">
+            <div class="md-list-item-text" layout="column" layout-align="start stretch" flex="grow">
+                <div layout="row" layout-align="start center">
+                    <span class="cell-style" flex="5">{{row.Code}}<md-tooltip md-direction="top">{{row.Code}}</md-tooltip></span>
+                    <span class="cell-style" flex="5">{{row.Title}}<md-tooltip md-direction="top">{{row.Title}}</md-tooltip></span>
+                    <span class="cell-style" flex="5">{{row.Notes}}<md-tooltip md-direction="top">{{row.Notes}}</md-tooltip></span>
+                    <span class="cell-style" flex="5">{{row.DeliveryTime}}<md-tooltip md-direction="top">{{row.DeliveryTime}}</md-tooltip></span>
+                    <span class="cell-style" flex="5" ng-click="viewHeaderDetails(row)" style="cursor:pointer;">{{row.TakeOutTime}}<md-tooltip md-direction="top">{{row.TakeOutTime}}</md-tooltip></span>
+                    <span class="cell-style" flex="5">{{row.Description}}<md-tooltip md-direction="top">{{row.Description}}</md-tooltip></span>
+                    <!--<span class="cell-style" flex="4">{{row.Description2}}<md-tooltip md-direction="top">{{row.Description2}}</md-tooltip></span>-->
+                    <span class="cell-style" flex="5">{{row.Doy}}<md-tooltip md-direction="top">{{row.Doy}}</md-tooltip></span>
+                    <span class="cell-style" flex="5">{{row.VatNo}}<md-tooltip md-direction="top">{{row.VatNo}}</md-tooltip></span>
+                    <span class="cell-style" flex="5">{{row.Email}}<md-tooltip md-direction="top">{{row.Email}}</md-tooltip></span>
+                    <span class="cell-style" flex="5">{{row.Phone1}}<md-tooltip md-direction="top">{{row.Phone1}}</md-tooltip></span>
+                    <!--<span class="cell-style" flex="4">{{row.Phone2}}<md-tooltip md-direction="top">{{row.Phone2}}</md-tooltip></span>-->
+                    <span class="cell-style" flex="5">{{row.Fax}}<md-tooltip md-direction="top">{{row.Fax}}</md-tooltip></span>
+                    <span class="cell-style" flex="5">{{row.AddressId}}<md-tooltip md-direction="top">{{row.AddressId}}</md-tooltip></span>
+                    <!--<span class="cell-style" flex="4">{{row.Image}}<md-tooltip md-direction="top">{{row.Image}}</md-tooltip></span>
+    <span class="cell-style" flex="4">{{row.Thumbnail}}<md-tooltip md-direction="top">{{row.Thumbnail}}</md-tooltip></span>-->
+                    <span class="cell-style" flex="5">{{row.WebApi}}<md-tooltip md-direction="top">{{row.WebApi}}</md-tooltip></span>
+                    <span class="cell-style" flex="5">{{row.PosId}}<md-tooltip md-direction="top">{{row.PosId}}</md-tooltip></span>
+                    <!--<span class="cell-style" flex="4">{{row.StoreId}}<md-tooltip md-direction="top">{{row.StoreId}}</md-tooltip></span>-->
+                    <span class="cell-style" flex="5">{{row.Username}}<md-tooltip md-direction="top">{{row.Username}}</md-tooltip></span>
+                    <span class="cell-style" flex="5">{{row.Password}}<md-tooltip md-direction="top">{{row.Password}}</md-tooltip></span>
+                    <span class="cell-style" flex="5">{{row.StoreStatus}}<md-tooltip md-direction="top">{{row.StoreStatus}}</md-tooltip></span>
+                    <!--<span class="cell-style" flex="4">{{row.RGB}}<md-tooltip md-direction="top">{{row.RGB}}</md-tooltip></span>-->
+                    <!--<span class="cell-style" flex="4">{{row.CronScheduler}}<md-tooltip md-direction="top">{{row.CronScheduler}}</md-tooltip></span>-->
+                    <span flex="6" align="center">
+                        <md-button class="md-fab md-mini md-primary  md-raised" ng-click="editStore($event ,'HandleDaStores',row,'edit') " aria-label="EditPosInfo"><i class="fa fa-pencil fa-fw"></i>  <md-tooltip md-direction="top">Edit Selected Store</md-tooltip></md-button>
+                    </span>
+                    <span flex="6" align="center">
+                        <md-button class=" md-fab md-mini" ng-disabled="processingUser" ng-click='DeleteStore(row)'><i class="fa fa-trash fa-fw"></i>  <md-tooltip md-direction="top">Delete Selected Store</md-tooltip></md-button>
+                    </span>
+                </div>
+            </div>
+    </md-list>
+</script>
+<style>
+    .cell-style {
+        overflow: hidden;
+        padding: 4px;
+        text-overflow: ellipsis;
+    }
+
+    .selected-whiteframe {
+        box-shadow: 0px 5px 5px -3px rgba(63, 81, 181, 0.2), 0px 8px 10px 1px rgba(63, 81, 181, 0.14), 0px 3px 14px 2px rgba(63, 81, 181, 0.12);
+        border-left: 4px solid #3f51b5;
+    }
+</style>
+<style>
+    .btn {
+        background-color: #4165f4; /*navy blue*/
+        border: none;
+        color: white;
+        padding: 12px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 22px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 90%;
+    }
+
+    .editbtn {
+        background-color: #4165f4; /*navy blue*/
+        border: none;
+        color: white;
+        padding: 12px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 22px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 90%;
+    }
+
+    .RedCross {
+        background-color: #ff0000; /*red*/
+        border: none;
+        color: white;
+        padding: 6px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 10px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 90%;
+    }
+
+    .cell-style {
+        overflow: hidden;
+        padding: 4px;
+        text-overflow: ellipsis;
+    }
+
+    .selected-whiteframe {
+        box-shadow: 0px 5px 5px -3px rgba(63, 81, 181, 0.2), 0px 8px 10px 1px rgba(63, 81, 181, 0.14), 0px 3px 14px 2px rgba(63, 81, 181, 0.12);
+        border-left: 4px solid #3f51b5;
+    }
+</style>
+
+

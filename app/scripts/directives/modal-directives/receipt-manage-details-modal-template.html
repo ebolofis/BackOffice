@@ -1,0 +1,100 @@
+﻿<md-dialog ng-class="{'fullscreen-dialog' : fullscreenModal}" aria-label="EditPosInfo" ng-cloak style="min-width:50vw; min-height: 80vh;">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2 style="text-align:center;">{{receipt.Abbreviation}} : {{receipt.ReceiptNo}}</h2>
+            <span flex></span>
+            <toggle-fs-modal tvar="fullscreenModal"></toggle-fs-modal>
+            <md-button class="md-icon-button" aria-label="CloseModal" ng-click="cancel()">
+                <md-icon md-svg-icon="navigation:close"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-dialog-content layout="row" layout-align="start stretch" flex="grow">
+        <div layout="column" layout-align="center stretch" class="md-padding" flex="grow">
+            <div layout="column" layout-align="start stretch" flex="20" style="overflow:auto;">
+                <div><strong class="property-ref">Date:</strong><span>{{dayconf(receipt.Day)}}</span></div>
+                <div layout="row" layout-align="space-between center">
+                    <div flex="50" layout="row" layout-align="start center"><strong class="property-ref">Staff:&nbsp;&nbsp;</strong><span>{{receipt.StaffName}}</span></div>
+                    <div flex="50" layout="row" layout-align="end center"><strong class="property-ref">POS:&nbsp;&nbsp;</strong><span>POS-{{receipt.PosInfoId}}</span></div>
+                </div>
+                <div flex></div>
+            </div>
+            <md-divider></md-divider>
+            <div layout="column" layout-align="start stretch" style="overflow:hidden;" flex="50">
+                <md-toolbar style="min-height:50px;">
+                    <h4 class="detail-header-info">Detail Items</h4>
+                </md-toolbar>
+                <div layout="column" layout-align="start stretch" flex="grow" style="overflow:auto;">
+                    <div>
+                        <md-list flex="grow">
+                            <md-list-item ng-repeat="detail in receipt.ReceiptDetails" layout="row" layout-align="space-between center" class="list-item" ng-class="(detail.IsExtra == false) ? '' : 'detail-isextra'">
+                                <div flex="60" layout="row" layout-align="start center">
+                                    <div ng-if="detail.Status==5"><md-icon md-svg-icon="content:block"></md-icon></div>
+                                    <div ng-if="detail.PaidStatus != 2" class="md-warn"><md-icon md-svg-icon="action:report_problem"></md-icon><md-tooltip md-direction="top">Item not Paid</md-tooltip></div>
+                                    <span layout-align="start center">{{detail.ItemDescr}}</span>
+                                </div>
+                                <div layout="row" layout-align="space-between center" flex="40">
+                                    <strong flex="30" style="text-align: right;">{{detail.ItemQty.toFixed(2)}}</strong>
+                                    <span flex="10" layout="row" layout-align="center center"><i class="fa fa-times fa-fw"></i></span>
+                                    <strong flex="30" style="text-align: right;">{{(detail.Price).toFixed(2)}} €</strong>
+                                    <strong flex="30" style="text-align: right;">{{(detail.ItemQty * detail.Price).toFixed(2)}} €</strong>
+                                </div>
+                            </md-list-item>
+                        </md-list>
+                    </div>
+                </div>
+            </div>
+            <div layout="column" layout-align="start stretch" flex="30">
+                <div layout="row" layout-align="space-between center"><strong class="property-ref">Discount:</strong><span>{{discountForDisplay()}} €</span></div>
+                <div layout="row" layout-align="space-between center"><strong class="property-ref">Total:</strong><span>{{receipt.Total.toFixed(2)}} €</span></div>
+                <md-divider></md-divider>
+                <div layout="row" layout-align="space-between center" style="margin:10px 0;" ng-if="receipt.RelatedReceipts.length > 0">
+                    <strong class="property-ref" flex="30">#Orders:</strong>
+                    <span flex="70" layout="column" layout-align="space-between start"><span ng-repeat="rr in receipt.RelatedReceipts">{{rr.Abbreviation}} {{rr.Counter}}</span></span>
+                </div>
+                <div layout="row" layout-align="space-between start" style="overflow:hidden;">
+                    <strong class="property-ref" flex="30" style="padding:8px 0;">Payments:</strong>
+                    <div flex="70" layout="column" layout-align="start stretch" style="overflow:auto;">
+                        <md-list flex="grow">
+                            <md-list-item ng-repeat="paym in receipt.ReceiptPayments" layout="row" layout-align="space-between center" class="list-item">
+                                <span flex="25">{{paym.AccountDescription}}</span>
+                                <span flex="25" style="text-align: right;">{{paym.Amount }} €</span>
+                                <span flex="25" style="text-align: right;">Room:</span>
+                                <span flex="25" style="text-align: right;">{{paym.Room || '---'}}</span>
+                            </md-list-item>
+                        </md-list>
+                    </div>
+                </div>
+                <md-divider></md-divider>
+            </div>
+        </div>
+
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+        <md-button class="md-raised" ng-click="cancel()" aria-label="CancelAction">Close</md-button>
+        <md-button class="md-raised md-warn" ng-click="confirm()" aria-label="CancelReceiptAction">Cancel Receipt</md-button>
+    </md-dialog-actions>
+</md-dialog>
+<style>
+    .list-item {
+        min-height: 30px;
+        border-bottom: 1px solid dashed;
+    }
+
+    .detail-isextra {
+        background-color: rgba(255, 152, 0, 0.34);
+        margin-left: 5%;
+    }
+
+    .property-ref {
+        font-variant: small-caps;
+    }
+
+    .detail-header-info {
+        font-variant: small-caps;
+        color: white;
+        text-align: center;
+        padding: 5px;
+        margin-bottom: 0;
+    }
+</style>

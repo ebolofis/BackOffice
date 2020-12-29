@@ -1,0 +1,219 @@
+﻿<md-content layout-fill layout="row" ng-init="$ctrl.initView(true)" layout-align="start stretch">
+    <!-- Main component -->
+    <md-content layout="column" layout-align="start stretch" flex style="overflow:hidden;">
+        <div class="md-padding" layout="row" layout-align="center space-between" style="padding-bottom:0;">
+            <div flex="50" layout="row" layout-align="start center">
+                <label flex="30" ng-if="$ctrl.selectedDate != null">Manage Date : {{$ctrl.selectedDate  | date:'MMM d, yyyy'}}</label>
+                <label flex="30" ng-if="$ctrl.selectedDate == null">--- No Date Selected---</label>
+                <md-button class="md-raised md-primary" ng-click="$ctrl.editOnModal()">Manage</md-button>
+                <md-button class="md-raised md-warn" ng-click="$ctrl.deleteOld()">Delete Old</md-button>
+            </div>
+
+            <div flex="50" layout="row" layout-align="end center">
+                <md-button ng-click="$ctrl.setDirection('vertical')">Agenda</md-button>
+                <md-button ng-click="$ctrl.setDirection('horizontal')">Calendar</md-button>
+                <!--action:view_list  action:view_module-->
+                <md-menu md-position-mode="target-right target" ng-if="$ctrl.devAccess">
+                    <md-button aria-label="Dev Actions" class="md-icon-button md-primary" ng-click="$mdOpenMenu($event)">
+                        <md-tooltip md-direction="top">Develop - Debug</md-tooltip>
+                        <md-icon md-menu-origin md-svg-icon="device:developer_mode"></md-icon>
+                    </md-button>
+                    <md-menu-content width="4" style="max-height:none;">
+                        <md-content layout="column" layout-align="start stretch" flex="grow" class="md-padding">
+                            <h4 style="font-variant:small-caps; text-align:center;">Use Debug Actions</h4>
+                            <md-button class="md-raised" ng-click="$ctrl.logGroups()">Log Groups</md-button>
+                        </md-content>
+                    </md-menu-content>
+                </md-menu>
+            </div>
+        </div>
+        <!-- On Error -->
+        <div layout="row" layout-align="center center" ng-if="$ctrl.hasError == true && $ctrl.restbusy != true">
+            <md-toolbar class="md-warn md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="space-between center">
+                <span><md-icon class="md-margin" md-svg-icon="action:info"></md-icon> Loading restaurants failed due to a server error. Please try reload data.</span>
+                <md-button class="md-fab md-primary md-mini" aria-label="refresh all restaurats" ng-click="$ctrl.initView()">
+                    <md-icon md-svg-icon="navigation:refresh"></md-icon>
+                </md-button>
+            </md-toolbar>
+        </div>
+        <!-- on empty -->
+        <div layout="row" layout-align="center center" ng-if="$ctrl.hasError != true && $ctrl.restaurants.length == 0 && $ctrl.restbusy != true">
+            <md-toolbar class="md-warn md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="space-between center">
+                <span><md-icon class="md-margin" md-svg-icon="action:info"></md-icon> No restaurants found. Try create new</span>
+                <md-button class="md-fab md-primary md-mini" aria-label="refresh all restaurats" ng-click="$ctrl.navigate('dashboard.tableResRestaurants')">
+                    <md-icon md-svg-icon="navigation:arrow_forward"></md-icon>
+                </md-button>
+            </md-toolbar>
+        </div>
+        <!-- Loading template -->
+        <div layout="column" layout-align="center center" style="overflow:auto;" ng-if="$ctrl.restbusy == true" flex="grow">
+            <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+            <span>Loading...</span>
+        </div>
+        <!-- Main restaurant content with capacities grouped by rest.Id -->
+        <md-content class="md-padding" layout="row" layout-align="start start" flex style="overflow-x:hidden; overflow-y:auto;" layout-wrap
+                    ng-if="$ctrl.hasError != true &&  $ctrl.restbusy != true &&  $ctrl.restaurants.length > 0 ">
+            <calendar-md flex layout layout-fill
+                         calendar-direction="$ctrl.direction"
+                         on-prev-month="$ctrl.prevMonth"
+                         on-next-month="$ctrl.nextMonth"
+                         on-day-click="$ctrl.dayClick"
+                         title-format="'MMMM y'"
+                         ng-model='$ctrl.selectedDate'
+                         week-starts-on="$ctrl.firstDayOfWeek"
+                         tooltips="$ctrl.tooltips"
+                         day-format="$ctrl.dayFormat"
+                         day-label-format="'EEE'"
+                         day-label-tooltip-format="'EEEE'"
+                         day-tooltip-format="'fullDate'"
+                         day-content="$ctrl.setDayContent"
+                         disable-future-selection="false">
+            </calendar-md>
+        </md-content>
+    </md-content>
+</md-content>
+
+
+
+
+<script id="excluded-resstr-modal" type="text/ng-template">
+    <md-dialog ng-class="{'fullscreen-dialog' : fullscreenModal}" aria-label="EditPosInfo" ng-cloak style="min-width: 80vw; min-height:70vh;">
+        <form name="capExcludeForm" flex="grow">
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <h2>Edit Excluded Restrictions</h2>
+                    <span flex></span>
+                    <toggle-fs-modal tvar="fullscreenModal"></toggle-fs-modal>
+                    <md-button class="md-icon-button" aria-label="CloseModal" ng-click="mera.cancel()">
+                        <md-icon md-svg-icon="navigation:close"></md-icon>
+                    </md-button>
+                </div>
+            </md-toolbar>
+            <md-dialog-content layout="row" layout-align="start stretch" flex>
+                <div class="md-dialog-content" layout="column" layout-align="start stretch" flex>
+                    <div layout="row" layout-align="start stretch" flex="grow" ng-if="mera.restbusy != true && mera.mode == 'edit' && mera.hasError !=true">
+                        <div flex="50" layout="column" layout-align="start stretch" style="overflow:hidden;">
+                            <h4>Excluded Form</h4>
+                            <md-divider></md-divider>
+                            <div layout="row" layout-align="space-between center">
+                                <md-datepicker ng-model="mera.data.Date" md-placeholder="Date"></md-datepicker>
+                                <md-button aria-label="clone to watch date" ng-click="mera.onChangeViewDate(mera.data.Date)">View Day</md-button>
+                            </div>
+                            <div layout="row" layout-align="space-between center" style="margin-top:30px;">
+                                <md-input-container class="md-block" required flex>
+                                    <label>Restaurant</label>
+                                    <md-select name="RestId" ng-model="mera.data.RestId" required>
+                                        <md-option ng-repeat="(key , obj) in mera.lookups.enumRestaurants" value="{{key}}">{{obj[mera.lookups.dispRName]}}</md-option>
+                                    </md-select>
+                                    <div ng-messages="capExcludeForm.RestId.$error">
+                                        <div ng-message="required">Restaurant is required.</div>
+                                    </div>
+                                </md-input-container>
+                            </div>
+                            <div layout="row" layout-align="space-between center" style="margin-top:30px;">
+                                <md-input-container class="md-block" required flex>
+                                    <label>Restriction Assoc</label>
+                                    <md-select name="RestrictionsAssoc" ng-model="mera.data.RestRestrictAssocId" required ng-disabled="mera.data.RestId == null">
+                                        <md-option ng-repeat="(key , val) in mera.lookups.restrictionsAssoc[mera.data.RestId]" value="{{val.Id}}">
+                                            {{mera.lookups.enumRestrictions[val.RestrictId]}}:{{val.N}}
+                                        </md-option>
+                                    </md-select>
+                                    <div ng-messages="capExcludeForm.RestrictionsAssoc.$error">
+                                        <div ng-message="required">Restrict Assoc is required.</div>
+                                    </div>
+                                </md-input-container>
+                            </div>
+
+                            <h4 ng-if="mera.processExt != null">Managing Exclution</h4>
+                            <div class="notice" layout="row" layout-align="space-between center" style="min-height:50px;" ng-if="mera.processExt != null">
+                                <div flex="80" layout="column" layout-align="start stretch">
+                                    <span flex>{{mera.lookups.enumRestaurants[mera.processExt.RestId][mera.lookups.dispRName]}}</span>
+                                    <!--<span flex>{{mera.processExt.Date | date:'MMM d, yyyy'}}</span>-->
+                                    <span flex>{{mera.displayRestriction(mera.processExt)}}</span>
+                                </div>
+                                <div flex="20" layout="row" layout-align="end center">
+                                    <md-button class="md-icon-button md-warn" ng-click="mera.clearSelection()" aria-label="delete selection exc">
+                                        <md-icon md-svg-icon="navigation:close"></md-icon>
+                                    </md-button>
+                                </div>
+                            </div>
+                        </div>
+                        <div flex="50" layout="column" layout-align="start stretch" style="overflow:hidden;">
+                            <h4>Date for Exclutions</h4>
+                            <md-divider></md-divider>
+                            <div layout="row" layout-align="space-between center" ng-if="mera.viewDay != null">
+                                <md-datepicker ng-model="mera.viewDay" md-placeholder="Date" ng-change="mera.onChangeViewDate(mera.viewDay)"></md-datepicker>
+                                <md-button aria-label="clone to form date" ng-click="mera.data.Date = mera.viewDay">Clone</md-button>
+                            </div>
+                            <div layout="column" layout-align="start stretch" flex ng-if="mera.exclutionsArray.length > 0" style="overflow-y:auto">
+                                <div class="notice" layout="row" ng-class="{'notice-info' : mera.processExt.Id == exc.Id}" layout-align="space-between center" ng-repeat="exc in mera.exclutionsArray" style="min-height:50px;">
+                                    <div flex="80" layout="column" layout-align="start stretch">
+                                        <span flex>{{mera.lookups.enumRestaurants[exc.RestId][mera.lookups.dispRName]}}</span>
+                                        <!--<span flex>{{exc.Date | date:'MMM d, yyyy'}}</span>-->
+                                        <span flex>{{mera.displayRestriction(exc)}}</span>
+                                    </div>
+                                    <div flex="20" layout="row" layout-align="end center">
+                                        <md-button class="md-icon-button md-primary" style="margin:0;" ng-click="mera.edit(exc)" aria-label="edit selection exc">
+                                            <md-icon md-svg-icon="editor:mode_edit"></md-icon>
+                                        </md-button>
+                                        <md-button class="md-icon-button md-warn" style="margin:0;" ng-click="mera.delete(exc)" aria-label="delete selection exc">
+                                            <md-icon md-svg-icon="action:delete"></md-icon>
+                                        </md-button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div layout="row" layout-align="center center" ng-if="mera.exclutionsArray.length == 0" flex>
+                                <md-toolbar class="md-warn md-whiteframe-8dp" flex="80" layout="row" layout-align="space-between center">
+                                    <span><md-icon class="md-margin" md-svg-icon="action:info"></md-icon> No Exclutions for Selected Date</span>
+                                </md-toolbar>
+                            </div>
+                        </div>
+                    </div>
+                    <div layout="row" layout-align="start stretch" flex="grow" ng-if="mera.restbusy != true && mera.hasError !=true && mera.mode == 'remove'">
+                        <div layout="column" layout-align="center stretch" flex="grow">
+                            <h4 ng-if="mera.processExt != null">Delete selected Exclution ? </h4>
+                            <div class="notice" layout="row" layout-align="space-between center" style="min-height:50px;" ng-if="mera.processExt != null">
+                                <div flex="90" layout="column" layout-align="start stretch">
+                                    <span flex layout="row" layout-align="space-between center">
+                                        {{mera.lookups.enumRestaurants[mera.processExt.RestId][mera.lookups.dispRName]}}
+                                    </span>
+                                    <span flex>{{mera.displayRestriction(mera.processExt)}}</span>
+                                    <span> {{mera.processExt.Date | date:'MMM d, yyyy'}} </span>
+                                </div>
+                                <div flex="10" layout="row" layout-align="end center">
+                                    <md-button class="md-icon-button md-warn" ng-click="mera.clearSelection(); mera.switchmode('edit');" aria-label="selection exc">
+                                        <md-icon md-svg-icon="navigation:close"></md-icon>
+                                    </md-button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div layout="row" layout-align="start stretch" flex="grow" ng-if="mera.restbusy == true && mera.hasError !=true">
+                        <div layout="column" layout-align="center center" style="overflow:auto;" flex="grow">
+                            <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+                            <span>Loading...</span>
+                        </div>
+                    </div>
+                    <div layout="column" layout-align="center stretch" flex="grow" ng-if="mera.hasError ==true">
+                        <md-toolbar class="md-warn md-whiteframe-8dp md-margin" layout="row" layout-align="space-between center">
+                            <div>
+                                <md-icon class="md-margin" md-svg-icon="action:info"></md-icon>
+                                <span>Error detected. To avoid data corruption close modal and manage again.</span>
+                            </div>
+                            <md-button class="md-fab md-primary" aria-label="refresh all restaurats" ng-click="mera.cancel('cancel')">
+                                <md-icon md-svg-icon="navigation:close"></md-icon>
+                            </md-button>
+                        </md-toolbar>
+                    </div>
+                </div>
+            </md-dialog-content>
+            <md-dialog-actions layout="row" ng-if="mera.restbusy != true && mera.hasError !=true">
+                <md-button ng-click="mera.cancel('cancel')" aria-label="close modal">Close</md-button>
+                <md-button ng-click="mera.add()" ng-if="mera.mode == 'edit'" ng-disabled="capExcludeForm.$invalid" aria-label="add action modal">Add</md-button>
+                <md-button ng-click="mera.update()" ng-if="mera.mode == 'edit'" ng-disabled="capExcludeForm.$invalid || mera.processExt == null" aria-label="update action modal">Update</md-button>
+                <md-button ng-click="mera.switchmode('edit')" aria-label="backEdit" ng-if="mera.mode == 'remove'">Back</md-button>
+                <md-button ng-click="mera.deleteConf()" aria-label="CancelAction" ng-if="mera.mode == 'remove'">Delete</md-button>
+            </md-dialog-actions>
+        </form>
+    </md-dialog>
+</script>

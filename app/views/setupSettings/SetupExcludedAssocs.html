@@ -1,0 +1,192 @@
+﻿<div layout="column" layout-align="start stretch" ng-cloak ng-controller="ExcludedMappingCtrl" ng-init="initView()">
+    <md-subheader class="wrappers-view-header md-whiteframe-7dp md-primary">Excluded {{entityIdentifier}}</md-subheader>
+    <div layout="row" layout-align="end center">
+        <md-button class="md-raised md-primary" ng-disabled="savingProcess" ng-click="savePosInfoAssocs()">Save&nbsp; <i class="fa fa-save fa-fw"></i></md-button>
+    </div>
+    <div layout="row" layout-align="start stretch">
+        <div layout="column" layout-align="start stretch" style="max-height:inherit; min-height: inherit;" flex="40">
+            <div class="container-panel-header">
+                <div class="bo-htd">Pos Info</div>
+                <div class="container-panel-header-toolbar">
+                    <div class="input-group">
+                        <input type="text" class="form-control" style="height: inherit;" placeholder="Search POS Info..." ng-model="searchPosInfo.Description">
+                        <span class="input-group-btn">
+                            <a class="btn" style="color: rgb(204, 204, 204); text-decoration: none; position: absolute; right: 0px; top: 0px; z-index: 50;" ng-click="searchPosInfo.Description = ''"><i class="fa fa-times"></i></a>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="container-panel-content">
+                <div ng-repeat="cpos in posInfo | filter:searchPosInfo">
+                    <div class="notice" ng-class="(selectedPosInfo.Id == cpos.Id) ? 'notice-info' : ((cpos.IsEdited == true) ? 'notice-warning' : '')" ng-click="clickSelectPosInfo(cpos)">
+                        <strong ng-style="(selectedPosInfo.Id == cpos.Id) ?  {'color':'#45ABCD'} : ((cpos.IsEdited == true) ? {'color':'#FEAF20'} : '')">{{cpos.Description}}</strong><br />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div layout="column" layout-align="center center" flex="60" ng-show="selectedPosInfo === null">
+            <div class="alert alert-info"><i class="fa fa-xs fa-info-circle"></i>&nbsp;Please select a Pos Info to manage excluded.</div>
+        </div>
+        <div ng-show="selectedPosInfo !== null " style="max-height:inherit; min-height: inherit;" flex="60">
+            <div class="bo-htd">Pos: "{{selectedPosInfo.Description}}" management</div>
+            <ul class="nav nav-tabs list">
+                <li ng-class="(tabSelected == ctab.tabId) ? 'active' :  ''" ng-repeat="ctab in currentLoadedContainer.TabArray" ng-click="tabChange(ctab.tabId)"><a data-toggle="tab">{{ctab.tabDesc}}</a></li>
+            </ul>
+            <div class="alert alert-info" ng-show="tabSelected === null" style="margin-top:4%;">
+                <i class="fa fa-xs fa-info-circle"></i>&nbsp;Please select a Tab Entity from Excluded
+            </div>
+            <div class="tab-content" ng-show="tabSelected !== null">
+                <div class="tab-pane" ng-class="(tabSelected == key) ? 'active' : ''" ng-repeat="(key, value) in currentLoadedContainer.FilterList">
+                    <div layout="row" layout-align="start stretch">
+                        <div layout="column" layout-align="start stretch" flex="50">
+                            <h4 style="text-align:center;">Excluded</h4>
+                            <div class="list-repeat-element container-panel-content" layout="column" layout-align="start stretch"
+                                 display-field="'Description'" mainlist="value"
+                                 loop-item-class="'notice content-overflow-ellipsis noticeCustom'"
+                                 loop-item-selected-class="'notice-info'"
+                                 search-placeholder="'Search excluded...'"
+                                 action-fun="removeEntity()" action-desc="" action-icon="'fa fa-xs fa-minus'">
+                            </div>
+                        </div>
+                        <div layout="column" layout-align="start stretch" flex="50">
+                            <h4 style="text-align:center;">Available</h4>
+                            <div class="list-repeat-element container-panel-content" layout="column" layout-align="start stretch"
+                                 display-field="'Description'" mainlist="transferList"
+                                 loop-item-class="'notice content-overflow-ellipsis noticeCustom'"
+                                 loop-item-selected-class="'notice-info'"
+                                 search-placeholder="'Search able...'"
+                                 action-fun="includeEntity()" action-desc="" action-icon="'fa fa-xs fa-plus'">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .infoBadge {
+        font-size: 12px;
+        width: 33%;
+        padding: 0 2%;
+    }
+
+    .badgeStyle {
+        float: right;
+        vertical-align: middle;
+    }
+
+    .element-blue-header {
+        background: rgb(63, 81, 181);
+        color: white;
+        font-weight: bolder;
+        font-size: 15px;
+        text-align: center;
+        padding: 12px;
+    }
+
+    .tabs-below > .nav-tabs,
+    .tabs-right > .nav-tabs,
+    .tabs-left > .nav-tabs {
+        border-bottom: 0;
+    }
+
+    .tab-content > .tab-pane,
+    .pill-content > .pill-pane {
+        display: none;
+    }
+
+    .tab-content > .active,
+    .pill-content > .active {
+        display: block;
+    }
+
+    .tabs-below > .nav-tabs {
+        border-top: 1px solid #ddd;
+    }
+
+        .tabs-below > .nav-tabs > li {
+            margin-top: -1px;
+            margin-bottom: 0;
+        }
+
+            .tabs-below > .nav-tabs > li > a {
+                -webkit-border-radius: 0 0 4px 4px;
+                -moz-border-radius: 0 0 4px 4px;
+                border-radius: 0 0 4px 4px;
+            }
+
+                .tabs-below > .nav-tabs > li > a:hover,
+                .tabs-below > .nav-tabs > li > a:focus {
+                    border-top-color: #ddd;
+                    border-bottom-color: transparent;
+                }
+
+        .tabs-below > .nav-tabs > .active > a,
+        .tabs-below > .nav-tabs > .active > a:hover,
+        .tabs-below > .nav-tabs > .active > a:focus {
+            border-color: transparent #ddd #ddd #ddd;
+        }
+
+    .tabs-left > .nav-tabs > li,
+    .tabs-right > .nav-tabs > li {
+        float: none;
+    }
+
+        .tabs-left > .nav-tabs > li > a,
+        .tabs-right > .nav-tabs > li > a {
+            min-width: 74px;
+            margin-right: 0;
+            margin-bottom: 3px;
+        }
+
+    .tabs-left > .nav-tabs {
+        float: left;
+        margin-right: 19px;
+        border-right: 1px solid #ddd;
+    }
+
+        .tabs-left > .nav-tabs > li > a {
+            margin-right: -1px;
+            -webkit-border-radius: 4px 0 0 4px;
+            -moz-border-radius: 4px 0 0 4px;
+            border-radius: 4px 0 0 4px;
+        }
+
+            .tabs-left > .nav-tabs > li > a:hover,
+            .tabs-left > .nav-tabs > li > a:focus {
+                border-color: #eeeeee #dddddd #eeeeee #eeeeee;
+            }
+
+        .tabs-left > .nav-tabs .active > a,
+        .tabs-left > .nav-tabs .active > a:hover,
+        .tabs-left > .nav-tabs .active > a:focus {
+            border-color: #ddd transparent #ddd #ddd;
+            *border-right-color: #ffffff;
+        }
+
+    .tabs-right > .nav-tabs {
+        float: right;
+        margin-left: 19px;
+        border-left: 1px solid #ddd;
+    }
+
+        .tabs-right > .nav-tabs > li > a {
+            margin-left: -1px;
+            -webkit-border-radius: 0 4px 4px 0;
+            -moz-border-radius: 0 4px 4px 0;
+            border-radius: 0 4px 4px 0;
+        }
+
+            .tabs-right > .nav-tabs > li > a:hover,
+            .tabs-right > .nav-tabs > li > a:focus {
+                border-color: #eeeeee #eeeeee #eeeeee #dddddd;
+            }
+
+        .tabs-right > .nav-tabs .active > a,
+        .tabs-right > .nav-tabs .active > a:hover,
+        .tabs-right > .nav-tabs .active > a:focus {
+            border-color: #ddd #ddd #ddd transparent;
+            *border-left-color: #ffffff;
+        }
+</style>

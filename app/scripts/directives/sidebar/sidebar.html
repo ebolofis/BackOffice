@@ -1,0 +1,78 @@
+﻿<md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="left">
+    <div layout="column" layout-fill style="overflow:hidden;">
+        <md-toolbar class="md-theme-indigo">
+            <h1 class="md-toolbar-tools">Menu</h1>
+        </md-toolbar>
+        <md-content ng-controller="LeftCtrl" layout="row" layout-align="start stretch" flex>
+            <div layout="column" layout-align="start stretch" flex>
+                <!--<div layout="row" layout-align="start center">
+                    <md-input-container class="md-block" flex>
+                        <label>Seach Menu</label>
+                        <input ng-model="searchStateString">
+                    </md-input-container>
+                    <md-icon md-svg-icon="action:close" class="md-icon-rotate-ontoggle"></md-icon>
+                </div>-->
+                <md-list class="bo-mainmenu-optionlist" md-theme="menu-theme">
+                    <md-list-item ng-repeat="mop in menuOptions | menuStateFilter:searchStateString" aria-label="label-{{mop.StateRef}}">
+                        <div layout="column" layout-align="start stretch" flex>
+                            <md-button class="bo-mainmenu-sub-header" aria-label="" 
+                                       ng-class="{'md-primary' : collapseVar != mop.CollapseValue,'md-accent' : collapseVar == mop.CollapseValue }" 
+                                       ng-if="mop.StateRef != null" layout="row" layout-align="start center" flex 
+                                       ng-click="check(mop.CollapseValue); (mop.StateRef != null ) ? navigate(mop.StateRef) : void(); ">
+                                <i class="{{mop.Icon}}"></i>
+                                <span>{{mop.OptionName}}</span>
+                            </md-button>
+                            <md-button class="bo-mainmenu-sub-header" 
+                                       ng-class="{'md-primary' : collapseVar != mop.CollapseValue,'md-accent' : collapseVar == mop.CollapseValue }" 
+                                       ng-if="mop.StateRef == null" layout="row" layout-align="start center" flex 
+                                       ng-click="check(mop.CollapseValue); (mop.StateRef != null ) ? navigate() : void()">
+                                <i class="{{mop.Icon}}"></i>
+                                <span>{{mop.OptionName}}</span>
+                                <span flex></span>
+                                <md-icon md-svg-icon="hardware:keyboard_arrow_up" class="md-icon-rotate-ontoggle" ng-class="{'toggled' : collapseVar != mop.CollapseValue }"></md-icon>
+                            </md-button>
+                            <!-- First Level Menu -->
+                            <md-list class="bo-mainmenu-optionlist" ng-if="mop.Options!= undefined && mop.Options.length > 0 && collapseVar == mop.CollapseValue" >
+                                <md-list-item ng-repeat="op in mop.Options">
+                                    <div layout="column" layout-align="start stretch" flex>
+                                        <a ng-class="{'md-primary' : multiCollapseVar != op.CollapseValue2, 'md-accent' :  multiCollapseVar== op.CollapseValue2 }"
+                                           ng-if="op.StateRef == null" flex 
+                                           ng-click="(op.Options.length > 0 ) ? multiCheck(op.CollapseValue2) : void()" 
+                                           layout="row" layout-align="start center">
+                                            <span>{{op.Name}}</span>
+                                            <span flex></span>
+                                            <md-icon ng-if="op.Options!= undefined && op.Options.length > 0 " md-svg-icon="hardware:keyboard_arrow_up" class="md-icon-rotate-ontoggle" ng-class="{'toggled' : multiCollapseVar != op.CollapseValue2 }"></md-icon>
+                                        </a>
+                                        <a ng-class="{'md-primary' : multiCollapseVar != op.CollapseValue2, 'md-accent' :  multiCollapseVar == op.CollapseValue2 }"
+                                           ng-if="op.StateRef != null" flex 
+                                           ng-click="navigate(op.StateRef); (op.Options.length > 0 ) ? multiCheck(op.CollapseValue2) : void()" 
+                                           layout="row" layout-align="start center">
+                                            <span>{{op.Name}}</span>
+                                            <span flex></span>
+                                            <md-icon ng-if="op.Options!= undefined && op.Options.length > 0" md-svg-icon="hardware:keyboard_arrow_up" class="md-icon-rotate-ontoggle" ng-class="{'toggled' : multiCollapseVar != op.CollapseValue2 }"></md-icon>
+                                        </a>
+                                        <!-- Second Level Menu -->
+                                        <md-list class="bo-mainmenu-optionlist" 
+                                                 ng-if="op.Options!= undefined && op.Options.length > 0 && multiCollapseVar== op.CollapseValue2"
+                                                 ng-class="{ 'active': multiCollapseVar== op.CollapseValue2, 'sideBarCollapseList' : sideCollapse }">
+                                            <md-list-item ng-repeat="op2 in op.Options">
+                                                <a ng-if="op2.StateRef" flex ng-click="navigate(op2.StateRef)">{{op2.Name}}</a>
+                                            </md-list-item>
+                                        </md-list>
+                                    </div>
+                                </md-list-item>
+                            </md-list>
+                        </div>
+                        <md-divider></md-divider>
+                    </md-list-item>
+                </md-list>
+            </div>
+        </md-content>
+        <div layout="row" layout-align="end center" style="padding:5px; cursor:pointer;">
+            <span>
+                Version:{{projectVersion}}
+                <md-tooltip md-direction="top">Full version: {{fullVersion}}</md-tooltip>
+            </span>
+        </div>
+    </div>
+</md-sidenav>

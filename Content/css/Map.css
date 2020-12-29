@@ -1,0 +1,159 @@
+﻿.map-functionality-container {
+    display: flex;
+    flex-direction: row;
+    height: 600px;
+}
+
+.map-container {
+    flex-basis: 70%;
+}
+
+.functionality-container {
+    flex-basis: 30%;
+}
+
+.actions-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.insert-address-action {
+    flex-basis: 10%;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+}
+
+.insert-address-input {
+    width: 90%;
+}
+
+.place-address-marker-action {
+    flex-basis: 15%;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+}
+
+.place-address-marker-button {
+    width: 60%;
+    height: 60%;
+    border-radius: 15px;
+    background-color: #10ad06;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.delete-marker-action {
+    flex-basis: 15%;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+}
+
+.delete-marker-button {
+    width: 60%;
+    height: 60%;
+    border-radius: 15px;
+    background-color: #ad8906;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.delete-markers-action {
+    flex-basis: 15%;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+}
+
+.delete-markers-button {
+    width: 60%;
+    height: 60%;
+    border-radius: 15px;
+    background-color: #ad8906;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.create-polygon-action {
+    flex-basis: 15%;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+}
+
+.create-polygon-button {
+    width: 60%;
+    height: 60%;
+    border-radius: 15px;
+    background-color: #06a5ad;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.delete-polygons-action {
+    flex-basis: 15%;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+}
+
+.delete-polygons-button {
+    width: 60%;
+    height: 60%;
+    border-radius: 15px;
+    background-color: #ad8906;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.delete-polygon-action {
+    flex-basis: 15%;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+}
+
+.delete-polygon-button {
+    width: 60%;
+    height: 60%;
+    border-radius: 15px;
+    background-color: #ad8906;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.remaining-actions {
+    flex-basis: 0%;
+}
+
+#map {
+    height: 100%;
+}

@@ -1,0 +1,111 @@
+﻿
+    <div ng-controller="TimezonesMainCTRL as TimezonesMain" ng-init="TimezonesMain.initView()" layout-fill layout="column" layout-align="start stretch">
+
+        <md-subheader class="wrappers-view-header md-whiteframe-7dp md-primary">Manage Timezones</span></md-subheader>
+        <div layout="row" layout-align="end center">
+            <md-button class="md-raised md-primary" aria-label="save modified changes" ng-disabled="savingProcess" ng-click="addTimezone($event ,'Timezones',row,'add') ">Add&nbsp; <i class="fa fa-plus-square"></i> </md-button>
+            <!--<md-button class="md-raised md-primary" aria-label="save modified changes" ng-disabled="savingProcess" ng-click="savePosInfoAssocs()">Save&nbsp; <i class="fa fa-save fa-fw"></i> </md-button>
+            <md-button class="md-raised md-primary" aria-label="save modified changes" ng-disabled="savingProcess" ng-click="savePosInfoAssocs()">Delete&nbsp; <i class="fa fa-trash-o"></i> </md-button>-->
+            <!--<md-button class="md-raised md-primary" aria-label="save modified changes" ng-disabled="savingProcess" ng-click="clearEditList()">Refresh&nbsp; <i class="fa fa-refresh"></i> </md-button>-->
+        </div>
+        <md-divider></md-divider>
+        <div layout="row" layout-align="start center" class="md-padding" style="font-variant:small-caps;background-color:rgb(61,81,181);">
+            <strong flex="12.5" style="color:white; " ng-model="TimezonesMain.sort" ng-click="TimezonesMain.sort='Description'">Description</strong>
+            <strong flex="12.5" style="color:white;" ng-click="TimezonesMain.sort='HotelId'">Hotel</strong>
+            <strong flex="12.5" style="color:white;" ng-click="TimezonesMain.sort='Code'">Code</strong>
+            <strong flex="12.5" style="color:white;" ng-click="TimezonesMain.sort='TimeFrom'">Time From</strong>
+            <strong flex="12.5" style="color:white;" ng-click="TimezonesMain.sort='TimeTo'">Time To</strong>
+            <strong flex="12.5" style="color:white;" align="center"></strong>
+            <strong flex="12.5" style="color:white;" align="center">Edit</strong>
+            <strong flex="12.5" style="color:white;" align="center">Delete</strong>
+
+        </div>
+        <md-divider></md-divider>
+        <div ng-include src="'header-list'" ng-if=" TimezonesMain.timezones.length > 0"></div>
+    </div>
+
+    <script id="header-list" type="text/ng-template">
+        <md-list flex="grow">
+            <md-list-item class="md-whiteframe-4dp" ng-repeat="row in TimezonesMain.timezones |orderBy:TimezonesMain.sort |filter: searchText" style="margin-bottom:10px; background-color:white;">
+                <div class="md-list-item-text" layout="column"  flex="grow">
+                    <div layout="row" layout-align="start center">
+                        <span class="cell-style" flex="12.5"  style="cursor:pointer;color:rgb(255, 140, 0);font-weight:bold;opacity:0.6; ">{{row.Description}}<md-tooltip md-direction="top">{{row.Description}}</md-tooltip></span>
+                        <span style="color:rgb(61,81,181);font-weight:bold;opacity:0.8;" ng-repeat="ch in TimezonesMain.lookups" ng-if="ch.Key ==row.HotelId" class="cell-style" flex="12.5">
+                            {{ch.Value }}<md-tooltip md-direction="top">{{ch.Value }}</md-tooltip>
+                        </span>
+                        <span class="cell-style" align="center" style="color:rgb(128,0,128);font-weight:bold;text-align:start;opacity:0.8;" flex="12.5">  &nbsp;&nbsp;&nbsp;&nbsp; {{row.Code}}<md-tooltip style="text-align:right;" md-direction="top">   {{   row.Code}}</md-tooltip></span>
+                        <span class="cell-style" style="color:rgb(76, 175, 80);font-weight:bold;opacity:0.6;" flex="12.5">{{row.TimeFrom |date:' HH:mm:ss  ': 'UTC'}}<md-tooltip md-direction="top">{{row.TimeFrom}}</md-tooltip></span>
+                        <span class="cell-style" style="color:red;font-weight:bold; opacity:0.6;" flex="12.5">{{row.TimeTo |date:' HH:mm:ss ': 'UTC'}}<md-tooltip md-direction="top">{{row.TimeTo}}</md-tooltip></span>
+                        <span flex="12.5" align="center">
+
+                        </span>
+                        <span flex="12.5" align="center">
+                            <md-button class="md-fab md-mini md-primary  md-raised" ng-click="editTimezone($event ,'Timezones',row,'edit') " aria-label="EditPosInfo"><i class="fa fa-pencil fa-fw"></i>  <md-tooltip md-direction="top">Edit selected Header</md-tooltip></md-button>
+                        </span>
+                        <span flex="12.5" align="center">
+                            <md-button class=" md-fab md-mini" ng-disabled="processingUser" ng-click="TimezonesMain.removeEntry($event ,'Timezone',row)"><i class="fa fa-trash fa-fw"></i>  <md-tooltip md-direction="top">Delete selected Timezone</md-tooltip></md-button>
+                        </span>
+
+                    </div>
+                </div>
+        </md-list>
+    </script>
+
+    <style>
+        .infoBadge {
+            font-size: 12px;
+            width: 33%;
+            padding: 0 2%;
+        }
+
+        .badgeStyle {
+            float: right;
+            vertical-align: middle;
+        }
+
+        .element-blue-header {
+            background: rgb(63, 81, 181);
+            color: white;
+            font-weight: bolder;
+            font-size: 15px;
+            text-align: center;
+            padding: 12px;
+        }
+    </style>
+
+    <style>
+        md-backdrop.md-opaque.md-default-theme, .md-dialog-container {
+            position: fixed;
+        }
+
+        .list {
+            list-style: none outside none;
+            margin: 10px 0 30px;
+        }
+
+        .deliconhover {
+            float: right;
+            border: 3px solid #2e6da4;
+            border-radius: 141px;
+            background: #BBE8FF;
+        }
+
+        .cssFade-animation {
+            max-height: inherit !important;
+            opacity: 1;
+        }
+
+            .cssFade-animation.ng-hide-add.ng-hide-add-active,
+            .cssFade-animation.ng-hide-remove.ng-hide-remove-active {
+                -webkit-transition: 0.5s linear all;
+                -moz-transition: 0.5s linear all;
+                -ms-transition: 0.5s linear all;
+                -o-transition: 0.5s linear all;
+                transition: 0.5s linear all;
+            }
+
+            .cssFade-animation.ng-hide {
+                max-height: 0 !important;
+                opacity: 0;
+            }
+    </style>

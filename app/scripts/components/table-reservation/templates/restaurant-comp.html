@@ -1,0 +1,116 @@
+﻿<div ng-controller="RestaurantCompCTRL as RestMain" ng-init="RestMain.initView()" layout-fill layout="row" layout-align="start stretch">
+    <!-- Main component -->
+    <md-content layout="column" layout-align="start stretch" flex="50" style="overflow:hidden;">
+        <!-- Toolbar  -->
+        <div layout="row" layout-align="space-between center" style="margin:10px 10px 0 10px;">
+            <div flex="60" layout="row" layout-align="start center">
+                <md-input-container flex="50">
+                    <label>Search Restaurant</label>
+                    <input name="Search Restaurant Filter Str" ng-model="RestMain.searchStr">
+                </md-input-container>
+                <md-button class="md-fab md-mini md-accent" aria-label="Clear search str restaurant" ng-click="RestMain.searchStr = ''">
+                    <md-icon md-svg-icon="navigation:close"></md-icon>
+                </md-button>
+            </div>
+            <div flex="40" layout="row" layout-align="end center">
+                <md-input-container flex>
+                    <label>View Language</label>
+                    <md-select name="ShortViewOp" ng-model="RestMain.svops" ng-change="RestMain.shortViewOpSelected = RestMain.shortViewOptions[RestMain.svops];">
+                        <md-option ng-repeat="(key, val) in RestMain.shortViewOptions" value="{{key}}">{{key}}</md-option>
+                    </md-select>
+                </md-input-container>
+                <md-button class="md-primary md-raised" aria-label="Add new restaurant" ng-click="RestMain.Upsert('add',null)">New</md-button>
+            </div>
+            <!--<md-button class="md-primary md-raised" ng-click="RestMain.initView()">Reload</md-button>-->
+        </div>
+        <div layout="column" layout-align="center center" style="overflow:auto;" ng-if="RestMain.restbusy == true" flex="grow">
+            <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+            <span>Loading...</span>
+        </div>
+        <!-- Drop down list with all restaurants and error or empty msgs with actions -->
+        <div layout="column" layout-align="start stretch" style="overflow:auto;" ng-if="RestMain.restbusy == false" flex="grow">
+            <!-- on error -->
+            <div layout="row" layout-align="center center" ng-if="RestMain.hasError == true">
+                <md-toolbar class="md-warn md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="start center">
+                    <md-icon class="md-margin" md-svg-icon="action:info"></md-icon>
+                    <span>Loading restaurants failed due to a server error. Please try reload data.</span>
+                    <md-button class="md-fab md-primary" aria-label="refresh all restaurats" ng-click="RestMain.initView()">
+                        <md-icon md-svg-icon="navigation:close"></md-icon>
+                    </md-button>
+                </md-toolbar>
+            </div>
+            <!-- on empty -->
+            <div layout="row" layout-align="center center" ng-if="RestMain.restaurants.length == 0">
+                <md-toolbar class="md-warn md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="start center">
+                    <md-icon class="md-margin" md-svg-icon="action:info"></md-icon>
+                    <span>No restaurants found.</span>
+                </md-toolbar>
+            </div>
+            <!-- results list short cards -->
+            <md-list class="md-3-line md-long-text md-whiteframe-3dp" ng-if="RestMain.restaurants.length > 0">
+                <md-list-item class="md-3-line md-long-text md-whiteframe-3dp notice" style="margin:0.5em;" ng-repeat="res in RestMain.restaurants" ng-click="RestMain.selectCurrent(res)" ng-class="{'notice-info' : res.Id == RestMain.selectedRestaurant.Id}">
+                    <img class="md-avatar" err-src="Images/noImagePreview.png" src="{{res.Image}}" />
+                    <div class="md-list-item-text">
+                        <h3>{{res[RestMain.shortViewOpSelected.Name]}}</h3><p>{{res[RestMain.shortViewOpSelected.Description]}}</p>
+                    </div>
+                </md-list-item>
+            </md-list>
+        </div>
+    </md-content>
+    <md-content layout="column" layout-align="start stretch" flex="50" style="overflow:hidden;">
+        <!-- Selected Data area Card  -->
+        <div layout="column" layout-align="start stretch" style="overflow:auto;" ng-if="RestMain.restbusy == false" flex="grow">
+            <form name="viewSelectedRestaurantForm" layout-fill ng-if="RestMain.selectedRestaurant != null">
+                <md-card class="md-whiteframe-8dp" flex="grow">
+                    <md-card-actions layout="row" layout-align="space-between center">
+                        <span style="font-variant:small-caps;">
+                            Edit Current Restaurant
+                        </span>
+                        <div>
+                            <md-button ng-disabled="RestMain.savingRestaurant" ng-click="RestMain.Upsert('delete',RestMain.selectedRestaurant)" class="md-icon-button md-warn" aria-label="Delete restaurant">
+                                <md-tooltip md-direction="top">Delete selected Restaurant</md-tooltip>
+                                <md-icon md-svg-icon="action:delete"></md-icon>
+                            </md-button>
+                            <md-button ng-disabled="RestMain.savingRestaurant" ng-click="RestMain.Upsert('edit',RestMain.selectedRestaurant)" class="md-icon-button md-primary" aria-label="Edit restaurant">
+                                <md-tooltip md-direction="top">Edit selected Restaurant</md-tooltip>
+                                <md-icon md-svg-icon="editor:mode_edit"></md-icon>
+                            </md-button>
+                        </div>
+                    </md-card-actions>
+                    <div class="card-img-preview" style="background-image: url({{RestMain.selectedRestaurant.Image}});" ng-if="RestMain.selectedRestaurant.Image != null"></div>
+                    <div class="card-img-preview" style="background-image: url('Images/noImagePreview.png');" ng-if="RestMain.selectedRestaurant.Image == null"></div>
+                    <!--<div class="card-img-preview">
+                        <img ng-src="{{RestMain.selectedRestaurant.Image || 'Images/noImagePreview.png'}}" err-src="Images/noImagePreview.png" class="md-card-image" alt="Restaurant Image">
+                    </div>-->
+                    <md-card-content>
+                        <span class="md-subhead">GR:{{RestMain.selectedRestaurant.NameGR}}</span><br />
+                        <small>{{RestMain.selectedRestaurant.DescriptionGR}}</small><br /><br />
+                        <md-divider></md-divider>
+                        <br />
+                        <span class="md-subhead">En:{{RestMain.selectedRestaurant.NameEn}}</span><br />
+                        <small>{{RestMain.selectedRestaurant.DescriptionEn}}</small><br /><br />
+                        <md-divider></md-divider>
+                        <br />
+                        <span class="md-subhead">Ru:{{RestMain.selectedRestaurant.NameRu}}</span><br />
+                        <small>{{RestMain.selectedRestaurant.DescriptionRu}}</small><br /><br />
+                        <md-divider></md-divider>
+                        <br />
+                        <span class="md-subhead">Fr:{{RestMain.selectedRestaurant.NameFr}}</span><br />
+                        <small>{{RestMain.selectedRestaurant.DescriptionFr}}</small><br />
+                        <md-divider></md-divider>
+                        <br />
+                        <span class="md-subhead">De:{{RestMain.selectedRestaurant.NameDe}}</span><br />
+                        <small>{{RestMain.selectedRestaurant.DescriptionDe}}</small><br /><br />
+                    </md-card-content>
+
+                </md-card>
+            </form>
+            <!-- On Empty selected -->
+            <div layout="row" layout-align="center center" ng-if="RestMain.selectedRestaurant == null" flex="grow">
+                <md-toolbar class="md-accent md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="start center">
+                    <md-icon class="md-margin" md-svg-icon="action:info"></md-icon>No Restaurant selected.
+                </md-toolbar>
+            </div>
+        </div>
+    </md-content>
+</div>

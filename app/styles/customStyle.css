@@ -1,0 +1,417 @@
+﻿.bo-head-sc {
+    font-variant: small-caps;
+}
+
+.bo-head-sc-center {
+    font-variant: small-caps;
+    text-align: center;
+}
+
+.bo-hover-negative:hover {
+    background-color: black;
+    color: white;
+}
+/*Custom style on draggable module */
+.bo-draggable-list ul[dnd-list] {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+    .bo-draggable-list ul[dnd-list] .dndDraggingSource {
+        display: none;
+    }
+
+    .bo-draggable-list ul[dnd-list] .dndPlaceholder {
+        display: block;
+        background-color: #ddd;
+        min-height: 42px;
+        margin-bottom: 3px;
+    }
+
+    .bo-draggable-list ul[dnd-list] li {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin-bottom: 3px;
+    }
+
+        .bo-draggable-list ul[dnd-list] li:hover {
+            background-color: rgba(158,158,158,0.2);
+        }
+
+.searchbox {
+    position: relative;
+    min-width: 50px;
+    width: 0%;
+    height: 50px;
+    float: right;
+    overflow: hidden;
+    -webkit-transition: width 0.3s;
+    -moz-transition: width 0.3s;
+    -ms-transition: width 0.3s;
+    -o-transition: width 0.3s;
+    transition: width 0.3s;
+}
+
+.searchbox-input {
+    top: 0;
+    right: 0;
+    border: 0;
+    outline: 0;
+    background: #dcddd8;
+    width: 100%;
+    height: 50px;
+    margin: 0;
+    padding: 0px 55px 0px 20px;
+    font-size: 20px;
+    color: red;
+}
+
+    .searchbox-input::-webkit-input-placeholder {
+        color: #d74b4b;
+    }
+
+    .searchbox-input:-moz-placeholder {
+        color: #d74b4b;
+    }
+
+    .searchbox-input::-moz-placeholder {
+        color: #d74b4b;
+    }
+
+    .searchbox-input:-ms-input-placeholder {
+        color: #d74b4b;
+    }
+
+.searchbox-icon,
+.searchbox-submit {
+    width: 50px;
+    height: 50px;
+    display: block;
+    position: absolute;
+    top: 0;
+    font-family: verdana;
+    font-size: 22px;
+    right: 0;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    outline: 0;
+    line-height: 50px;
+    text-align: center;
+    cursor: pointer;
+    color: #dcddd8;
+    background: #172b3c;
+}
+
+.searchbox-open {
+    width: 100%;
+}
+
+ul.nav > li > a {
+    color: #3F51B5 !important;
+}
+
+.customFormSelect {
+    /*color:red;*/
+    cursor: pointer;
+}
+/* Step wizard modal and step animations  */
+.wave.ng-enter, .wave.ng-leave {
+    -webkit-transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+    transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+}
+
+.wave.ng-enter {
+    position: absolute;
+    left: -100%;
+}
+
+.wave.ng-enter-active {
+    left: 0;
+}
+
+.wave.ng-leave {
+    position: absolute;
+    left: 0;
+}
+
+.wave.ng-leave-active {
+    left: 100%;
+}
+/*Steps on Step Wizard  http://angularscript.com/fully-customizable-fuelux-wizard-angular-directive/*/
+.fuelux .wizard {
+    background-color: #f9f9f9;
+    border: 1px solid #d4d4d4;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    *zoom: 1;
+    -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+    -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+}
+
+    .fuelux .wizard:before,
+    .fuelux .wizard:after {
+        display: table;
+        line-height: 0;
+        content: "";
+    }
+
+    .fuelux .wizard:after {
+        clear: both;
+    }
+
+    .fuelux .wizard ul {
+        padding: 0;
+        margin: 0;
+        list-style: none outside none;
+    }
+
+        .fuelux .wizard ul li {
+            position: relative;
+            float: left;
+            height: 46px;
+            padding: 0 5px 0 20px;
+            margin: 0;
+            font-size: 16px;
+            line-height: 46px !important;
+            color: #999999;
+            cursor: default;
+            background: #ededed;
+        }
+
+            .fuelux .wizard ul li .chevron {
+                position: absolute;
+                top: 0;
+                right: -14px;
+                display: block;
+                border: 24px solid transparent;
+                border-right: 0;
+                border-left: 14px solid #d4d4d4;
+            }
+
+                .fuelux .wizard ul li .chevron:before {
+                    position: absolute;
+                    top: -24px;
+                    right: 1px;
+                    display: block;
+                    border: 24px solid transparent;
+                    border-right: 0;
+                    border-left: 14px solid #ededed;
+                    content: "";
+                }
+
+            .fuelux .wizard ul li.complete {
+                color: #468847;
+                background: #f3f4f5;
+            }
+
+                .fuelux .wizard ul li.complete:hover {
+                    cursor: pointer;
+                    background: #e7eff8;
+                }
+
+                    .fuelux .wizard ul li.complete:hover .chevron:before {
+                        border-left: 14px solid #e7eff8;
+                    }
+
+                .fuelux .wizard ul li.complete .chevron:before {
+                    border-left: 14px solid #f3f4f5;
+                }
+
+            .fuelux .wizard ul li.active {
+                color: #3a87ad;
+                background: #f1f6fc;
+            }
+
+                .fuelux .wizard ul li.active .chevron:before {
+                    border-left: 14px solid #f1f6fc;
+                }
+
+            .fuelux .wizard ul li .badge {
+                margin-right: 8px;
+            }
+
+            .fuelux .wizard ul li:nth-child(1) {
+                z-index: 10;
+                padding-left: 20px;
+                border-radius: 4px 0 0 4px;
+            }
+
+            .fuelux .wizard ul li:nth-child(2) {
+                z-index: 9;
+            }
+
+            .fuelux .wizard ul li:nth-child(3) {
+                z-index: 8;
+            }
+
+            .fuelux .wizard ul li:nth-child(4) {
+                z-index: 7;
+            }
+
+            .fuelux .wizard ul li:nth-child(5) {
+                z-index: 6;
+            }
+
+            .fuelux .wizard ul li:nth-child(6) {
+                z-index: 5;
+            }
+
+            .fuelux .wizard ul li:nth-child(7) {
+                z-index: 4;
+            }
+
+            .fuelux .wizard ul li:nth-child(8) {
+                z-index: 3;
+            }
+
+            .fuelux .wizard ul li:nth-child(9) {
+                z-index: 2;
+            }
+
+            .fuelux .wizard ul li:nth-child(10) {
+                z-index: 1;
+            }
+
+    .fuelux .wizard .actions {
+        float: right;
+        padding-right: 15px;
+        line-height: 44px;
+        vertical-align: middle;
+    }
+
+        .fuelux .wizard .actions a {
+            margin-right: 8px;
+            font-size: 12px;
+            line-height: 45px;
+        }
+
+        .fuelux .wizard .actions .btn-prev i {
+            margin-right: 5px;
+        }
+
+        .fuelux .wizard .actions .btn-next i {
+            margin-left: 5px;
+        }
+
+.fuelux .step-content {
+    padding: 5px 0px 0px 0px !important;
+    height: auto !important;
+    overflow: auto;
+    overflow-x: hidden;
+    position: relative !important;
+    background-color: transparent !important;
+}
+
+    .fuelux .step-content .step-pane {
+        display: none;
+        padding: 0px 20px;
+    }
+
+.fuelux .bottom-prev-next {
+    padding: 5px 20px;
+}
+
+    .fuelux .bottom-prev-next button {
+        margin-left: 2px;
+    }
+
+.fuelux .step-content .active {
+    display: block;
+}
+
+    .fuelux .step-content .active .btn-group .active {
+        display: inline-block;
+    }
+
+.badge-info {
+    background-color: #3A87AD;
+}
+
+.badge-success {
+    background-color: #468847;
+}
+
+.app-modal-window .modal-dialog {
+    width: 70vw;
+    height: 65vh;
+    min-height: 65vh;
+    max-height: 65vh;
+}
+
+
+.overflow-text-on-component {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fade {
+    transition: 1s linear all;
+    -webkit-transition: 1s linear all;
+}
+
+.custom_elemet_fade.ng-enter {
+    opacity: 0;
+}
+
+    .custom_elemet_fade.ng-enter.ng-enter-active {
+        opacity: 1;
+    }
+
+.custom_elemet_fade.ng-leave {
+    opacity: 1;
+}
+
+    .custom_elemet_fade.ng-leave.ng-leave-active {
+        opacity: 0;
+    }
+
+/*modals classes*/
+.app-manage-pls-modal-window .modal-dialog {
+    width: 900px;
+}
+
+
+
+.sideCollapsedBar {
+    width: 50px;
+}
+
+li.sideBarCollapseList :hover, li.sideBarCollapseList > ul, li.sideBarCollapseList > ul > li {
+    width: 250px;
+    background-color: #eee;
+}
+
+.sideBarCollapseList :hover > span.custom-sr-only,
+.sideBarCollapseList :hover > ul {
+    position: relative;
+    width: 250px;
+    height: auto;
+    padding: 10px 15px;
+    margin: 0px;
+    overflow: visible;
+}
+
+.sideBarCollapseList :hover > i.fa-fw {
+    width: 1.28571429em;
+    text-align: center;
+}
+
+.custom-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+tr:hover td {
+    background: #add8e6 !important;
+}

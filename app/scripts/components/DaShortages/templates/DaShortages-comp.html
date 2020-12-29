@@ -1,0 +1,143 @@
+﻿<!DOCTYPE html>
+<html ng-app="app">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div ng-controller="DaShortagesCTRL as StoreMain" ng-init="StoreMain.initView()" layout-fill layout="column" layout-align="start stretch">
+        <div flex="50" layout="row">
+            <div flex="50">
+                <md-content>
+                    <md-tabs md-dynamic-height md-border-bottom>
+                        <md-tab label="Store">
+                            <md-content class="md-padding" layout="row" style="margin-bottom:-2%">
+                                <md-card>
+                                    <md-card-title>
+                                        <md-card-title-text layout-gt-sm="row">
+                                            <div flex-xs flex-gt-xs="60" layout-gt-sm="column">
+                                                <span class="md-headline">{{StoreMain.store.Title}}</span>
+                                            </div>
+                                        </md-card-title-text>
+                                    </md-card-title>
+                                    <md-divider></md-divider>
+                                    <md-card-content>
+                                        <div layout-gt-sm="row">
+                                            <md-input-container class="md-block" style="font-size:18px;" flex-gt-sm>
+                                                <label style="color: black !important;">Store Status</label>
+                                                <input ng-model="StoreMain.store.StoreStatusDescr" disabled style="color: black !important;">
+                                            </md-input-container>
+                                            <md-input-container class="md-block" style="font-size:18px;" flex-gt-sm>
+                                                <label style="color: black !important;">Delivery Time</label>
+                                                <input ng-model="StoreMain.store.DeliveryTime" disabled style="color: black !important;">
+                                            </md-input-container>
+                                            <md-input-container class="md-block" style="font-size:18px;" flex-gt-sm>
+                                                <label style="color: black !important;">Take Out Time</label>
+                                                <input ng-model="StoreMain.store.TakeOutTime" disabled style="color: black !important;">
+                                            </md-input-container>
+                                        </div>
+                                        <p class="md-block" style="font-size:16px;">Store Notes: </p>
+                                    </md-card-content>
+                                    <div layout-gt-sm="row">
+                                        <textarea rows="4" style="width:95%; resize: none; margin-left:3%; text-align:left" readonly>
+                                            {{StoreMain.store.Notes}}
+                                        </textarea>
+                                    </div>
+                                    <md-card-actions layout="row" layout-align="end center">
+                                        <md-button class="md-fab md-mini md-primary  md-raised" ng-click="editStore($event ,'Store',StoreMain.store , 'edit')" aria-label="EditPosInfo"><i class="fa fa-pencil fa-fw"></i></md-button>
+                                    </md-card-actions>
+                                </md-card>
+                            </md-content>
+                        </md-tab>
+                    </md-tabs>
+                </md-content>
+            </div>
+            <div flex="50" style="margin-left:15px; overflow:auto;">
+                <div layout-gt-sm="row">
+                    <div flex="75">
+                        <div flex-xs flex-gt-xs="60" layout-gt-sm="column">
+                            <span style="font-size:18px; font-weight:100; line-height:48px; color:darkred">Shortages</span>
+                        </div>
+                    </div>
+                    <div flex="25">
+                        <md-button id="addShortage" aria-label="adddyngridentry" class="md-raised" style="line-height: 32px; min-height: 32px; align-content:flex-end" ng-click="addShortages($event ,'Shortage',StoreMain.shortages , 'add')">Add&nbsp;<i class="fa fa-plus-circle fa-fw"></i> </md-button>
+                    </div>
+                </div>
+                <md-divider></md-divider>
+                <table st-table="displayedCollection" st-safe-src="rowCollection" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th st-sort="Id">Id</th>
+                            <th st-sort="ProductId">Product</th>
+                            <th st-sort="StoreId">Store</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="row in StoreMain.shortages">
+                            <td>{{row.Id}}</td>
+                            <td>{{row.ProductDescr}}</td>
+                            <td>{{row.StoreDescr}}</td>
+                            <td>
+                                <button type="button" ng-click="open(row)" class="btn btn-sm btn-danger" id="myselector">
+                                    <i class="glyphicon glyphicon-remove-circle">
+                                    </i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div flex="50" layout="row">
+            <div flex="50" style="margin-left:15px; overflow:auto;">
+                <div layout-gt-sm="row">
+                    <div flex-xs flex-gt-xs="60" layout-gt-sm="column">
+                        <span style="font-size:18px; font-weight:100; line-height:48px; color:forestgreen">Polygons</span>
+                    </div>
+                </div>
+                <md-divider></md-divider>
+                <table st-table="displayedCollection" st-safe-src="rowCollection" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th st-sort="Id">Id</th>
+                            <th st-sort="Name">Name</th>
+                            <th st-sort="IsActive">IsActive</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="row in StoreMain.polygons" style="cursor:pointer;" ng-click="ChoosePolygon(row)">
+                            <td>{{row.Id}}</td>
+                            <td>{{row.Name}}</td>
+                            <td><input type="checkbox" ng-checked="{{row.IsActive}}" disabled="disabled"></td>
+                            <td>
+                                <button type="button" ng-click="editPolygons($event ,'Polygons',row , 'edit')" class="btn btn-sm btn-success">
+                                    <i class="glyphicon glyphicon-edit">
+                                    </i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div flex="50">
+                <div>
+                    <div id="map" style="height:420px;" ng-click="test()"></div>
+                </div>
+            </div>
+        </div>
+
+        <!--Confirmation Modal For Delete Shortage-->
+        <modal title="Cancel Shortage" visible="showModal" style="position: absolute; top: 20%;">
+            <form role="form"></form>
+            <div class="modal-body">
+                Are you sure you want to delete this item?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
+                <button type="button" class="btn btn-primary" ng-click="DeleteShortage(shortRow)">Delete</button>
+            </div>
+        </modal>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,56 @@
+﻿<div ng-controller="ManageExternalProductsManagerCtrl" ng-init="init()" style="overflow:hidden;" layout="column" layout-align="start stretch" flex="grow" ng-cloak layout-fill>
+    <div layout="row" layout-align="space-between center">
+        <div layout="row" layout-align="start center">
+            <span>Special Entities Mapped Found:</span>
+            <md-button class="md-icon-button md-button md-ink-ripple" aria-label="add external mapped product" ng-click="addEntry('add',null)" ng-disabled="busyloading == true">
+                <md-tooltip md-direction="top">Add new entry of external products map</md-tooltip>
+                <md-icon md-svg-icon="content:add"></md-icon>
+            </md-button>
+        </div>
+        <md-button class="md-raised md-primary md-ink-ripple" aria-label="SaveChanges" style="line-height: 32px; min-height: 32px;" ng-disabled="busyloading == true" ng-click="saveChanges()">
+            <span class="ng-scope">Save&nbsp;</span><i class="fa fa-save fa-fw ng-scope"></i> <div class="md-ripple-container"></div>
+        </md-button>
+    </div>
+    <md-content layout="row" layout-align="start stretch" flex style="overflow:hidden;">
+        <div layout="column" layout-align="center center" style="overflow:auto;" ng-if="busyloading == true" flex="grow">
+            <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+            <span>Loading...</span>
+        </div>
+        <div ng-if="busyloading == false" layout="column" layout-align="start stretch" flex="grow">
+            <div style="overflow:auto;" flex="grow">
+                <div layout="row" layout-align="center center" ng-if="externalProducts == -1">
+                    <md-toolbar class="md-warn md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="start center">
+                        <md-icon class="md-margin" md-svg-icon="action:info"></md-icon>Loading lockers failed due to a server error. Please try reload the page.
+                    </md-toolbar>
+                </div>
+                <div layout="row" layout-align="center center" ng-if="externalProducts.length == 0">
+                    <md-toolbar class="md-warn md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="start center">
+                        <md-icon class="md-margin" md-svg-icon="action:info"></md-icon>No registers found for external product mappings.
+                    </md-toolbar>
+                </div>
+                <div ng-if="externalProducts.length > 0">
+                    <div class="md-whiteframe-3dp md-primary" layout-margin="1%;" layout="row" layout-align="start center" aria-label="list-item-exp" ng-repeat="exp in externalProducts">
+                        <div layout="row" layout-align="start center" style="margin:0;" flex ng-class="exp.isDirty == true ? 'notice notice-warning' : ''">
+                            <dynamic-autocomplete ng-model="exp.ProductId" sel-ent="exp.Product" entity-handling="exp" auto-funs="autoCompleteObjFun" search-list="" flex="40" style="margin-right:1%;"></dynamic-autocomplete>
+                            <md-select ng-model="exp.ProductEnumType" ng-change="checkDirty(exp)" placeholder="External Enumerator" class="md-no-underline" required md-no-asterisk="false" flex="45" style="margin: 0 1%;">
+                                <md-option ng-repeat="lu in lookups.ProductEnumType" value="{{lu.Key}}">{{lu.Value}}</md-option>
+                            </md-select>
+                        </div>
+                        <md-button ng-disabled="busyloading" aria-label="delete extprod[i]" ng-click="removeEntry(exp)" class="md-fab md-mini md-secondary">
+                            <md-tooltip md-direction="top">Delete current external map</md-tooltip><md-icon md-svg-icon="action:delete"></md-icon>
+                        </md-button>
+                    </div>
+                </div>
+            </div>
+            <div flex></div>
+            <md-divider></md-divider>
+        </div>
+    </md-content>
+    <small>*In this sector you can represent your entity types that needs handle on WebPos via receipt and transactions policy by mapping entity type with a product Entity</small>
+    <hr />
+</div>
+<style>
+    .notice {
+        padding: 0px;
+    }
+</style>

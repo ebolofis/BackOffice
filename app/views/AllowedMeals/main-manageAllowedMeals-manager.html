@@ -1,0 +1,162 @@
+﻿
+<div layout="column" layout-align="start stretch" ng-cloak ng-controller="AllowedMealsMainCTRL as AllowedMealsMain" ng-init="AllowedMealsMain.initView()" >
+    <md-subheader class="wrappers-view-header md-whiteframe-7dp md-primary" layout="row" layout-align="center center" flex="150" >
+        <div layout="row" flex="grow" style="height:30px;" class="myBox">
+            <div layout="column" flex="100"style="overflow:hidden;" >
+                <h5 layout-align="center center" flex="80"><span style="max-height:initial;color:rgb(249, 87, 0);opacity:0.6;" class=" fa fa-spoon "> </span> <span style="max-height:initial;color:rgb(249, 87, 0);opacity:0.6;" class=" fa fa-coffee  ">  </span> Manage Macros <span style="max-height:initial;color:rgb(0, 164, 204);" class="fa fa-hotel "> </span></h5>
+           </div>
+        <div layout="column" style="text-align:center;" flex="20" ng-if="AllowedMealsMain.restbusy == true">
+            <md-progress-circular md-diameter="30"> <span layout-align="center center">Loading...</span></md-progress-circular>
+        </div>
+        </div>
+    </md-subheader>
+    <div layout="row" layout-align="end center" style="height:30px;">
+        <md-button class="md-raised md-primary" aria-label="save modified changes" ng-disabled=" AllowedMealsMain.selectedHotel.length==0 " ng-click="addMacro($event ,'AllowedMeals',row,'add') ">Add&nbsp; <i class="fa fa-plus-circle"></i> </md-button>
+        <md-button class="md-raised md-primary" aria-label="save modified changes" ng-disabled="savingProcess" ng-click="clearEditList()">Refresh&nbsp; <i class="fa fa-refresh"></i> </md-button>
+    </div>
+    <div class="alert alert-info" style="color:rgb(255, 140, 0); background-color:white;font-weight:bold; height:35px;opacity:0.9;">
+    <i class="fa fa-xs fa-info-circle" style="height:20px;margin-bottom:10px; padding-bottom:10px;"></i>&nbsp; Please select  a Hotel </div>
+    <md-divider>
+        <div flex="50" layout="row" layout-align="start">
+            <div class="md-block" flex="40" layout="row">
+                <h3 flex="50" style="font-style: oblique;"> Hotel   &nbsp;  <span style="color:rgb(255, 140, 0);" class=" fa fa-building-o"></span><span style="color:rgb(255, 140, 0);" class="fa fa-hospital-o"></span> </h3>
+            </div>
+            <div layout="row" flex="65">
+                <md-select flex="grow" style="color:rgb(255, 140, 0);font-weight: bold;text-align:center; opacity:0.8; " name="HotelId" ng-model="AllowedMealsMain.selectedHotel" ng-change="AllowedMealsMain.GetProtelLists()">
+                    <md-option  style="color:rgb(255, 140, 0);font-weight: bold;text-align:center; opacity:0.8;" ng-repeat="ch in AllowedMealsMain.Mpehotel" value="{{ch.Key}}+{{ch.Id}}">{{ch.Value}}</md-option>
+                </md-select>
+            </div>
+            <div class="md-block" flex="50" layout="column" ng-if="AllowedMealsMain.selectedHotel.length>0">
+                <label style="text-align:center;">Search Box <span  class="fa fa-search"> </span></label>
+                <div style="margin-left:10px;height:50px;" class="input-group">
+                    <span style="margin-right:20px;position:relative;" class="add-clear-span">
+                        <input class="form-control" type="text" style="border-radius: 150px; width: 300px;" placeholder="Search by at least 3 characters ..." ng-model="AllowedMealsMain.searchText" ng-change="AllowedMealsMain.search(); ">
+                    </span>
+                    <span class="input-group-btn">
+                        <a class="btn" style="color: rgb(204, 204, 204); text-decoration: none; position: absolute; right: 0px; top: 0px; z-index: 50;" ng-click="AllowedMealsMain.clearSearchText()"><i class="fa fa-times"></i></a>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div layout="row" layout-align="start center" class="md-padding " style="font-variant:small-caps;background-color:rgb(61,81,181);">
+            <strong flex="30" style="cursor:pointer;color:white;text-align:center;" ng-model="AllowedMealsMain.sort" ng-click="AllowedMealsMain.sort='Description'">Description</strong>
+            <strong flex="20" style="cursor:pointer;color:white;text-align:center;" ng-click="AllowedMealsMain.sort='ActiveFrom'  ">Active From</strong>
+            <strong flex="20" style="cursor:pointer;color:white;text-align:center;" ng-click="AllowedMealsMain.sort='ActiveTo'">Active To</strong>
+            <strong flex="10" style="cursor:pointer;color:white;" ng-click="AllowedMealsMain.sort='Priority'">Priority</strong>
+               <strong flex="10" style="cursor:pointer;color:white;" align="start">Update Macro</strong>
+            <strong flex="10" style="cursor:pointer;color:white;" align="start">Delete Macro</strong>
+        </div>
+        <md-divider></md-divider>
+        <div ng-include src="'header-list'" ng-if="AllowedMealsMain.macros.length > 0 && AllowedMealsMain.selectedHotel.length>0"></div>
+</div>
+<script id="header-list" type="text/ng-template">
+    <md-list flex="grow">
+        <md-list-item aria-label="Macros" class="md-whiteframe-4dp" ng-repeat="row in AllowedMealsMain.macros|orderBy:AllowedMealsMain.sort : reverse=1 |filter:AllowedMealsMain.searchText " style="margin-bottom:10px; background-color:white; height:20px;">
+            <div class="md-list-item-text" layout="column" layout-align="start stretch" flex="grow">
+                <div layout="row" layout-align="start center">
+                    <span class="cell-style" flex="30"  style="color:rgb(249, 87, 0);font-weight:bold; opacity:0.7;text-align:center;">{{row.Description}}<md-tooltip md-direction="top">{{row.Description}}</md-tooltip></span>
+                    <span class="cell-style" flex="20" style="color:rgb(76, 175, 80);font-weight:bold;text-align:center;">{{row.ActiveFrom | date}}<md-tooltip md-direction="top">{{row.ActiveFrom}}</md-tooltip></span>
+                    <span class="cell-style" flex="20" style="color:red;font-weight:bold; opacity:0.7;text-align:center;">{{row.ActiveTo | date}}<md-tooltip md-direction="top">{{row.ActiveTo }}</md-tooltip></span>
+                    <span class="cell-style" flex="10" style="color:rgb(148,0,211);font-weight:bold; opacity:0.7;">{{row.Priority }}<md-tooltip md-direction="top">{{row.Priority }}</md-tooltip></span>
+                    <span flex="10" >
+                        <md-button class="md-fab md-mini md-primary  md-raised" style="margin-left:20px;" ng-click="editMacro($event ,'AllowedMeals',row,'edit') " aria-label="EditPosInfo"><i class="fa fa-pencil fa-fw"></i>  <md-tooltip md-direction="top">Edit selected Macro</md-tooltip></md-button>
+                    </span>
+                    <span flex="10" l>
+                        <md-button aria-label="deleteMacro" class=" md-fab md-mini"  style="background-color:rgb(128,0,128);margin-left:20px;opacity:0.8;" ng-click="AllowedMealsMain.removeEntry($event ,'Allowed Meals',row)"><i class="fa fa-trash fa-fw"></i>  </md-button>
+                    </span>
+                </div>
+            </div>
+    </md-list>
+</script>
+
+<style>
+    .infoBadge {
+        font-size: 12px;
+        width: 33%;
+        padding: 0 2%;
+    }
+    .myBox {
+        width: 100%;
+        /*padding: 0 2%;*/
+        font-weight: bold;
+        /*background-color: rgb(224, 255, 255);*/
+        border: rgb(220,220,220) solid 2px;
+        opacity: 1;
+        height: 150px;
+        border-style: ridge groove solid;
+        background-color: rgb(237, 242, 245);
+        border-inline-start-color: rgb(0, 164, 204);
+        border-inline-end-color: rgb(0, 164, 204);
+        border-top-color: rgb(0, 164, 204);
+        border-bottom-color: lightblue;
+        border-radius: 8px;
+        padding-left: 4px;
+        margin-top: 4px;
+        margin-right: 4px;
+        margin-bottom: 4px;
+        margin-left: 4px;
+    }
+
+    . fa-signal-flipped {
+        transform: scaleX(-1);
+        -moz-transform: scaleX(-1);
+        -webkit-transform: scaleX(-1);
+        -ms-transform: scaleX(-1);
+    }
+    .required {
+        color: red;
+    }
+    .badgeStyle {
+        float: right;
+        vertical-align: middle;
+    }
+    md-list-item-text:hover {
+        background-color: yellow;
+    }
+
+    .element-blue-header {
+        background: rgb(63, 81, 181);
+        color: white;
+        font-weight: bolder;
+        font-size: 15px;
+        text-align: center;
+        padding: 12px;
+    }
+</style>
+
+<style>
+    md-backdrop.md-opaque.md-default-theme, .md-dialog-container {
+        position: fixed;
+    }
+
+    .list {
+        list-style: none outside none;
+        margin: 10px 0 30px;
+    }
+
+    .deliconhover {
+        float: right;
+        border: 3px solid #2e6da4;
+        border-radius: 141px;
+        background: #BBE8FF;
+    }
+
+    .cssFade-animation {
+        max-height: inherit !important;
+        opacity: 1;
+    }
+
+        .cssFade-animation.ng-hide-add.ng-hide-add-active,
+        .cssFade-animation.ng-hide-remove.ng-hide-remove-active {
+            -webkit-transition: 0.5s linear all;
+            -moz-transition: 0.5s linear all;
+            -ms-transition: 0.5s linear all;
+            -o-transition: 0.5s linear all;
+            transition: 0.5s linear all;
+        }
+
+        .cssFade-animation.ng-hide {
+            max-height: 0 !important;
+            opacity: 0;
+        }
+</style>

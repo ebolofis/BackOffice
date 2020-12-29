@@ -1,0 +1,151 @@
+﻿<style>
+    .message {
+        background: #FAFAFA;
+        border: 1px solid #CCCCCC;
+        color: #000;
+        width: 100%;
+        min-width: 300px;
+        opacity: 1;
+        transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        transition-duration: 200ms;
+        overflow: hidden;
+        box-sizing: border-box;
+        position: absolute;
+        right: 0%;
+        z-index: 10;
+    }
+
+    .textRight {
+        text-align: right;
+    }
+
+    .zeroPadR {
+        padding-right: 12px !important;
+    }
+
+    .message h1 {
+        color: #000;
+        font-size: 24px;
+    }
+
+    .grid {
+        width: 100%;
+        height: 70vh;
+        min-height: 50vh;
+    }
+</style>
+<div ng-controller="ProductsServiceController" ng-init="initGrid()">
+    <div layout="column" layout-align="start stretch">
+        <md-subheader class="wrappers-view-header md-whiteframe-7dp md-primary">Products</md-subheader>
+        <!--<p>
+            'ableChangeRow: <span ng-class="(ableChangeRow == true) ? 'badge' : 'badge-info'">{{ableChangeRow}}</span>
+            'isGridRowDirty: <span ng-class="(isGridRowDirty == true) ? 'badge' : 'badge-info'">{{isGridRowDirty}}</span>
+            'dirtyOverview: <span ng-class="(dirtyOverview == true) ? 'badge' : 'badge-info'">{{dirtyOverview}}</span>
+            'dirtyRecipes: <span ng-class="(dirtyRecipes == true) ? 'badge' : 'badge-info'">{{dirtyRecipes}}</span>
+            'dirtyExtras: <span ng-class="(dirtyExtras == true) ? 'badge' : 'badge-info'">{{dirtyExtras}}</span>
+            'dirtyBarcodes: <span ng-class="(dirtyBarcodes == true) ? 'badge' : 'badge-info'">{{dirtyBarcodes}}</span>
+            'dirtyPrices: <span ng-class="(dirtyPrices == true) ? 'badge' : 'badge-info'">{{dirtyPrices}}</span>
+        </p>-->
+        <div layout="row" layout-align="start none">
+            <div layout="column" layout-align="center stretch" flex="40">
+                <div style="display: inline-flex; width: 100%;">
+                    <div layout="row" layout-align="start center" flex="40">
+                        <div class="input-group">
+                            <span style="position:relative;" class="add-clear-span">
+                                <input class="form-control" type="text" style="border-radius: 150px;" placeholder="Search Barcode" ng-model="searchBarcodeInput" ng-keypress="enterKeyBarcodeEvent($event)">
+                            </span>
+                            <span class="input-group-btn"><a class="btn" style="color: rgb(204, 204, 204); text-decoration: none; position: absolute; right: 0px; top: 0px; z-index: 50;" ng-click="searchBarcodeInput = ''"><i class="fa fa-times"></i></a></span>
+                        </div>
+                    </div>
+                    <div style="margin-bottom:1%; display:flex; margin-left:auto; max-width: 60%;">
+                        <div style="position:relative;">
+                            <md-button class="md-fab md-mini md-primary" id="addData" ng-disabled="ableChangeRow == false" ng-click="addProduct()"><md-tooltip md-direction="top">Insert new product</md-tooltip><i class="fa fa-plus fa-fw"></i></md-button>
+                            <md-button class="md-fab md-mini md-warn" id="removeFirstRow" ng-disabled="haveSelectedRow == false" ng-click="removeProduct()"><md-tooltip md-direction="top">Remove selected product</md-tooltip><i class="fa fa-trash-o fa-fw"></i></md-button>
+
+                            <md-button class="md-fab md-mini md-default" aria-label="collapseFilterSearch" ng-disabled="searchingProcess == true" ng-click="toggleSearch();$event.stopPropagation();"><md-tooltip md-direction="top">Advance product search</md-tooltip><i class="fa fa-search fa-fw"></i></md-button>
+                            <div id="collapseFilterSearch" uib-collapse="filterCatCollapsed == false" class="collapseWindow message">
+                                <md-toolbar><div class="md-toolbar-tools"><h4>Advance Search</h4><span flex></span><i class="fa fa-xs fa-info-circle " style="float:right; cursor:pointer; color: white;"></i></div></md-toolbar>
+                                <form name="searchProductForm">
+                                    <div layout="column" class="md-padding">
+                                        <md-input-container class="md-block" flex>
+                                            <label>Product Category</label>
+                                            <md-select ng-model="selectedFilters.fpcat">
+                                                <md-optgroup label="Product Categories"><md-option ng-value="item" ng-repeat="item in productCategoryLookupResults">{{item.Description}}</md-option></md-optgroup>
+                                            </md-select>
+                                        </md-input-container>
+                                        <md-input-container class="md-block" flex><label>Code</label><input ng-model="selectedFilters.fcode"></md-input-container>
+                                        <md-input-container class="md-block" flex><label>Description</label><input ng-model="selectedFilters.fdesc"></md-input-container>
+                                    </div>
+                                </form>
+                                <div layout="row" layout-align="end center">
+                                    <md-button class="md-raised" ng-click="clearCatFilters()">Clear&nbsp;<i class="fa fa-times fa-fw"></i></md-button>
+                                    <md-button class="md-raised md-primary" ng-disabled="searchingProcess" ng-click="categoryfiltersChanged(selectedFilters)">Go&nbsp;<i class="fa fa-search fa-fw"></i> </md-button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div layout="column" layout-align="start stretch" flex="60">
+                <span class="pull-right " style="text-align:right;">
+                    <!--<button class="hvr-fade hvr-warning" style="text-decoration:none; height: inherit;"  ng-click="print()">Print&nbsp;<i class="fa fa-trash-o fa-fw"></i></button>-->
+                    <md-button class="md-raised" ng-show="selectedRowProducts.isDirty == true" ng-disabled="savingProcess" ng-click="discardGridChanges()">Discard&nbsp;<i class="fa fa-trash-o fa-fw"></i> </md-button>
+                    <md-button class="md-raised md-primary" ng-disabled="savingProcess || ableChangeRow == true" ng-click="saveGridChanges()">Save&nbsp;<i class="fa fa-save fa-fw"></i> </md-button>
+                </span>
+            </div>
+        </div>
+
+        <div layout="row" layout-align="start none">
+            <!-- grid Of products 40% -->
+            <div layout="column" layout-align="center stretch" flex="40">
+                <div class="grid" ui-grid="productGrid" data-ng-init="initProdGrid()" external-scopes="editRows" ui-grid-auto-resize ui-grid-edit ui-grid-validate ui-grid-row-edit ui-grid-pagination ui-grid-exporter ui-grid-selection ui-grid-resize-columns ui-grid-paging style="overflow:visible;"></div>
+            </div>
+            <!-- Tabs of details 60% -->
+            <div layout="column" layout-align="start stretch" flex="60" style="padding-left:10px;">
+                <md-tabs md-dynamic-height md-border-bottom>
+                    <md-tab label="Overview" ng-click="showDivSelection='overview'">
+                        <md-content class="md-padding" layout="column" layout-align="start stretch">
+                            <div class="alert alert-info" ng-show="haveSelectedRow == false" style="margin-top:4%;"><i class="fa fa-xs fa-info-circle"></i>&nbsp;Please select a row Entity from Products grid to display Overview Form</div>
+                            <form ng-show="haveSelectedRow == true" name="overviewRowEntryForm" sf-schema="overviewSchema" sf-form="overviewForm" sf-model="overviewEntity" sf-change="overviewChanged()" ng-submit="save(createRowEntryForm)"></form>
+                        </md-content>
+                    </md-tab>
+                    <md-tab label="Recipes" ng-click="showDivSelection='recipe'">
+                        <md-content class="md-padding" layout="column" layout-align="start stretch">
+                            <div class="alert alert-info" ng-show="haveSelectedRow == false" style="margin-top:4%;"><i class="fa fa-xs fa-info-circle"></i>&nbsp;Please select a row Entity from Products grid to display Recipe</div>
+                            <div ng-show="haveSelectedRow == true">
+                                <div class="grid" ui-grid="recipesGrid" data-ng-init="initRecipeGrid()" external-scopes="editRows" ui-grid-auto-resize ui-grid-edit ui-grid-validate ui-grid-cellNav ui-grid-row-edit ui-grid-exporter ui-grid-selection ui-grid-resize-columns style="width: 100%; height: auto; overflow:visible;"></div>
+                            </div>
+                        </md-content>
+                    </md-tab>
+                    <md-tab label="Extras" ng-click="showDivSelection='extras'">
+                        <md-content class="md-padding" layout="column" layout-align="start stretch">
+                            <div class="alert alert-info" ng-show="haveSelectedRow == false" style="margin-top:4%;"><i class="fa fa-xs fa-info-circle"></i>&nbsp; Please select a row Entity from Products grid to display Extras</div>
+                            <div ng-show="haveSelectedRow == true">
+                                <div class="grid" ui-grid="extrasGrid" data-ng-init="initExtrasGrid()" external-scopes="editRows" ui-grid-auto-resize ui-grid-edit ui-grid-validate ui-grid-cellNav ui-grid-row-edit ui-grid-exporter ui-grid-selection ui-grid-resize-columns style="width: 100%; height: auto; overflow:visible;"></div>
+                            </div>
+                        </md-content>
+                    </md-tab>
+                    <md-tab label="Barcodes" ng-click="showDivSelection='barcodes'">
+                        <md-content class="md-padding" layout="column" layout-align="start stretch">
+                            <div class="alert alert-info" ng-show="haveSelectedRow == false" style="margin-top:4%;"><i class="fa fa-xs fa-info-circle"></i>&nbsp; Please select a row Entity from Products grid to display Barcodes</div>
+                            <div ng-show="haveSelectedRow == true">
+                                <div class="grid" ui-grid="barcodesGrid" data-ng-init="initBarcodesGrid()" external-scopes="editRows" ui-grid-auto-resize ui-grid-edit ui-grid-validate ui-grid-cellNav ui-grid-row-edit ui-grid-exporter ui-grid-selection ui-grid-resize-columns style="width: 100%; height: auto; overflow:visible;"></div>
+                            </div>
+                        </md-content>
+                    </md-tab>
+                    <md-tab label="Pricelists" ng-click="showDivSelection='pricelists'">
+                        <md-content class="md-padding" layout="column" layout-align="start stretch">
+                            <div class="alert alert-info" ng-if="haveSelectedRow == false" style="margin-top:4%;"><i class="fa fa-xs fa-info-circle"></i>&nbsp; Please select a row Entity from Products grid to display Pricelists</div>
+                            <div ng-if="haveSelectedRow == true">
+                                <div>
+                                    <product-prices-tab-row vat-enum="vatsEnum" tax-enum="taxsEnum" dp="dirtyPrices" data="selectedRowProducts.entity" loop="selectedRowProducts.entity.ProductPricesModelDetails" plenum="pricelistsEnum" pricelists-loaded="pricelists"></product-prices-tab-row>
+                                </div>
+                            </div>
+                        </md-content>
+                    </md-tab>
+                </md-tabs>
+            </div>
+
+        </div>
+    </div>
+</div>

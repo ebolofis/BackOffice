@@ -1,0 +1,89 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+        .btn {
+            background-color: darkred;
+            border: none;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 50%;
+        }
+        input[type="checkbox"] {
+            width: 30px; /*Desired width*/
+            height: 30px; /*Desired height*/
+        }
+    </style>
+</head>
+<body>
+    <div ng-controller="PolygonsCompCTRL as PolMain" ng-init="PolMain.initView()" layout-fill layout="row" layout-align="start stretch">
+        <div flex="40" style="overflow:auto;">
+            <div class="input-group" layout="row" style="align-items:center; justify-content: space-between;">
+                <span style="position:relative;" class="add-clear-span">
+                    <input class="form-control" type="number" style="border-radius: 150px; width: 200px;" placeholder="latitude" ng-model="latText" ng-change="latText">
+                </span>
+                <span class="input-group-btn">
+                    <a class="btn" style="color: rgb(204, 204, 204); text-decoration: none; position: absolute; right: 10px; top: -17px; z-index: 50;" ng-click="latText = ''"><i class="fa fa-times"></i></a>
+                </span>
+
+                <span style="position:relative; margin-left:20px;" class="add-clear-span">
+                    <input class="form-control" type="number" style="border-radius: 150px; width: 200px;" placeholder="longitude" ng-model="longText" ng-change="longText">
+                </span>
+                <span class="input-group-btn">
+                    <a class="btn" style="color: rgb(204, 204, 204); text-decoration: none; position: absolute; right: 10px; top: -17px; z-index: 50;" ng-click="longText = ''"><i class="fa fa-times"></i></a>
+                </span>
+
+                <span style="margin-left:20px;">
+                    <md-button class="md-fab md-mini" ng-click="placeGivenMarker(latText,longText)" id="myselector"><i class="fa fa-search fa-fw"></i></md-button>
+                </span>
+            </div>
+            <div class="input-group" layout="row" style="margin-top:10px;">
+                <span style="position:relative;" class="add-clear-span">
+                    <input class="form-control" type="text" style="border-radius: 150px; width: 300px;" placeholder="Search ..." ng-model="searchText" ng-change="searchText">
+                </span>
+                <span class="input-group-btn">
+                    <a class="btn" style="color: rgb(204, 204, 204); text-decoration: none; position: absolute; right: 0px; top: 0px; z-index: 50;" ng-click="searchText = ''"><i class="fa fa-times"></i></a>
+                </span>
+                <md-button layout-align="end"class="md-raised md-primary" aria-label="save modified changes" style="margin-top:0px;border-radius:12px;background-color:brown;"  ng-click="GenerateShapes()">Generate Shapes&nbsp; <i class="fa fa-question-circle"></i> </md-button>
+                
+            </div>
+            <div layout="row" layout-align="start center" class="md-padding" style="font-variant:small-caps;">
+                <strong flex="30">Όνομα Πολυγώνου</strong>
+                <strong flex="25">Κατάστημα</strong>
+                <strong flex="15">Χρώμα</strong>
+                <strong flex="15">Ενεργό</strong>
+                <strong flex="15"></strong>
+            </div>
+            <md-divider></md-divider>
+            <md-list style="overflow:auto; height: 78%;">
+                <md-list-item class="md-whiteframe-4dp" ng-repeat="row in PolMain.polygons | filter: searchText" style="margin-bottom:10px; background-color:white;" ng-class="{'selectedPolygon': row.Id == selectedRow}">
+                    <div class="md-list-item-text" layout="column" layout-align="start stretch" flex="grow">
+                        <div layout="row" layout-align="start center" style="padding-left:2%;">
+                            <span class="cell-style" flex="30">{{row.Name}}<md-tooltip md-direction="top">{{row.Name}}</md-tooltip></span>
+                            <span class="cell-style" flex="25">{{row.StoreDescr}}<md-tooltip md-direction="top">{{row.StoreDescr}}</md-tooltip></span>
+                            <span class="cell-style" flex="15">
+                                <input type="color" value="{{row.PolygonsColor}}" disabled="disabled">
+                            </span>
+                            <span class="cell-style" flex="15">
+                                <input type="checkbox" ng-checked="{{row.IsActive == true}}" disabled="disabled">
+                            </span>
+                            <span flex="15" align="center">
+                                <md-button class="md-fab md-mini" ng-click="ChoosePolygon(row)" id="myselector"><i class="fa fa-search fa-fw"></i></md-button>
+                            </span>
+                        </div>
+                    </div>
+            </md-list>
+        </div>
+        <div flex="60" style="margin-left:15px">
+            <div>
+                <div id="map" style="height:800px;" ng-click="test()"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

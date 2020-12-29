@@ -1,0 +1,188 @@
+﻿<div ng-controller="RestrictionAssocCompCTRL as RestrictAssoc" ng-init="RestrictAssoc.initView()" layout-fill layout="row" layout-align="start stretch">
+
+    <!-- Main component -->
+    <md-content layout="column" layout-align="start stretch" flex style="overflow:hidden;">
+        <!-- Toolbar  -->
+        <div layout="row" layout-align="space-between center" style="margin:10px 10px 0 10px;">
+            <div flex="60" layout="row" layout-align="start center">
+                <md-input-container flex="50">
+                    <label>Search Restaurant</label>
+                    <input name="Search Restaurant Filter Str" ng-model="RestrictAssoc.searchStr">
+                </md-input-container>
+                <md-button class="md-fab md-mini md-accent" aria-label="Clear search str restaurant" ng-click="RestrictAssoc.searchStr = ''">
+                    <md-icon md-svg-icon="navigation:close"></md-icon>
+                </md-button>
+            </div>
+            <md-input-container flex="20">
+                <label>View Language</label>
+                <md-select name="ShortViewOp" ng-model="RestrictAssoc.svops" ng-change="RestrictAssoc.shortViewOpSelected = RestrictAssoc.shortViewOptions[RestrictAssoc.svops];">
+                    <md-option ng-repeat="(key, val) in RestrictAssoc.shortViewOptions" value="{{key}}">{{key}}</md-option>
+                </md-select>
+            </md-input-container>
+        </div>
+        <!-- Loading template -->
+        <div layout="column" layout-align="center center" style="overflow:auto;" ng-if="RestrictAssoc.restbusy == true" flex="grow">
+            <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+            <span>Loading...</span>
+        </div>
+        <!-- Drop down list with all restaurants and error or empty msgs with actions -->
+        <!--<div layout="column" layout-align="start stretch" style="overflow:auto;" ng-if="RestrictAssoc.restbusy == false" flex="grow">-->
+        <!-- on error -->
+        <div layout="row" layout-align="center center" ng-if="RestrictAssoc.hasError == true && RestrictAssoc.restbusy != true">
+            <md-toolbar class="md-warn md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="space-between center">
+                <span><md-icon class="md-margin" md-svg-icon="action:info"></md-icon> Loading restaurants failed due to a server error. Please try reload data.</span>
+                <md-button class="md-fab md-primary md-mini" aria-label="refresh all restaurats" ng-click="RestrictAssoc.initView()">
+                    <md-icon md-svg-icon="navigation:refresh"></md-icon>
+                </md-button>
+            </md-toolbar>
+        </div>
+        <!-- on empty -->
+        <div layout="row" layout-align="center center" ng-if="RestrictAssoc.hasError != true && RestrictAssoc.restaurants.length == 0 && RestrictAssoc.restbusy != true">
+            <md-toolbar class="md-warn md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="space-between center">
+                <span><md-icon class="md-margin" md-svg-icon="action:info"></md-icon> No restaurants found. Try create new</span>
+                <md-button class="md-fab md-primary md-mini" aria-label="refresh all restaurats" ng-click="RestrictAssoc.navigate('dashboard.tableResRestaurants')">
+                    <md-icon md-svg-icon="navigation:arrow_forward"></md-icon>
+                </md-button>
+            </md-toolbar>
+        </div>
+        <div layout="row" layout-align="center center" ng-if="RestrictAssoc.hasError != true && RestrictAssoc.restrictions.length == 0 && RestrictAssoc.restbusy != true">
+            <md-toolbar class="md-warn md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="space-between center">
+                <span><md-icon class="md-margin" md-svg-icon="action:info"></md-icon> No restrictions found. Create Restrictions first to proceed</span>
+            </md-toolbar>
+        </div>
+        <!-- </div> -->
+        <md-content class="md-padding" layout="row" layout-align="start" flex style="overflow-x:hidden; overflow-y:auto;" layout-wrap
+                    ng-if="RestrictAssoc.hasError != true &&  RestrictAssoc.restbusy != true && RestrictAssoc.restrictions.length > 0 && RestrictAssoc.restaurants.length > 0 ">
+            <div class="fade-repeat" flex="grow"  ng-repeat="res in RestrictAssoc.restaurants |  filter: RestrictAssoc.nameFilter">
+                <md-card md-theme="" md-theme-watch>
+                    <md-card-header>
+                        <md-card-avatar>
+                            <img class="md-user-avatar" err-src="Images/noImagePreview.png" src="{{res.Image}}" style="height:100%;"/>
+                        </md-card-avatar>
+                        <md-card-header-text>
+                            <span class="md-title">{{res[RestrictAssoc.shortViewOpSelected.Name]}}</span>
+                            <span class="md-subhead">Restrictions</span>
+                        </md-card-header-text>
+                    </md-card-header>
+                    <!--<md-card md-theme="dark-palette" md-theme-watch flex>-->
+                    <!--<md-card-title>
+                        <md-card-title-text>
+                            <span class="md-headline">{{res[RestrictAssoc.shortViewOpSelected.Name]}}</span>
+                            <span class="md-subhead">{{res[RestrictAssoc.shortViewOpSelected.Description]}}</span>
+                        </md-card-title-text>
+                        <md-card-title-media>
+                            <div class="md-media-lg card-media">
+                                <img class="md-avatar" err-src="Images/noImagePreview.png" src="{{res.Image}}" />
+                            </div>
+                        </md-card-title-media>
+                    </md-card-title>-->
+                    <md-card-content>
+                        <md-list>
+                            <md-list-item ng-repeat="rst in RestrictAssoc.restrictions" ng-click="RestrictAssoc.editAssoc(res , rst)">
+                                <md-icon md-svg-icon="action:done" ng-if="RestrictAssoc.checkAssocExist(RestrictAssoc.assocsByResId[res.Id][rst.Id].N)"></md-icon>
+                                <md-icon md-svg-icon="content:clear" ng-if="!RestrictAssoc.checkAssocExist(RestrictAssoc.assocsByResId[res.Id][rst.Id].N)"></md-icon>
+                                <p>{{rst.Description}}</p>
+                                <strong class="md-secondary">{{RestrictAssoc.assocsByResId[res.Id][rst.Id].N}}</strong>
+                            </md-list-item>
+                        </md-list>
+                    </md-card-content>
+                </md-card>
+            </div>
+        </md-content>
+    </md-content>
+</div>
+
+<script id="edit-restrictions-assocs" type="text/ng-template">
+    <md-dialog ng-class="{'fullscreen-dialog' : fullscreenModal}" aria-label="EditPosInfo" ng-cloak style="min-width: 50vw;">
+        <form name="restrAssocForm">
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <h2>{{name}}</h2>
+                    <span flex></span>
+                    <toggle-fs-modal tvar="fullscreenModal"></toggle-fs-modal>
+                    <md-button class="md-icon-button" aria-label="CloseModal" ng-click="cancel()">
+                        <md-icon md-svg-icon="navigation:close"></md-icon>
+                    </md-button>
+                </div>
+            </md-toolbar>
+            <md-dialog-content>
+                <div class="md-dialog-content">
+                    <div layout="column" layout-align="start stretch" ng-if="mode == 'edit' && restbusy != true">
+                        <md-input-container class="md-block" flex=>
+                            <label>{{restrict.Description}}</label>
+                            <input name="assocN" ng-model="assoc.N" required type="number" min="0" step="1">
+                            <div ng-messages="restrAssocForm.assocN.$error" style="color:maroon" role="alert">
+                                <div ng-message="required">You need to specify a value in order to add a restriction</div>
+                                <div ng-message="min">Please fill a restriction with minimum value 0</div>
+                            </div>
+                        </md-input-container>
+                    </div>
+                    <div layout="column" layout-align="start stretch" ng-if="mode == 'remove' && restbusy != true">
+                        Restriction : <br />
+                        <strong>"{{restrict.Description}}"</strong>
+                        will be removed from current Restaurant. Are you sure?
+                    </div>
+                    <div layout="column" layout-align="center center" style="overflow:auto;" ng-if="restbusy == true" flex="grow">
+                        <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+                        <span>Loading...</span>
+                    </div>
+                </div>
+            </md-dialog-content>
+            <md-dialog-actions layout="row">
+                <!--<md-button ng-click="cancel('cancel')" aria-label="CancelAction">Cancel</md-button>-->
+
+                <md-button ng-click="clear()" aria-label="RemoveAction" ng-if="mode == 'edit'">Remove</md-button>
+                <md-button ng-click="confirm()" ng-disabled="restrAssocForm.$invalid" style="margin-right:20px;" aria-label="ConfAction" ng-if="mode == 'edit'">Save</md-button>
+
+                <md-button ng-click="switchmode('edit')" aria-label="backEdit" ng-if="mode == 'remove'">Back</md-button>
+                <md-button ng-click="delete()" ng-disabled="assoc.Id ==0 || assoc.Id == null" style="margin-right:20px;" aria-label="ConfAction" ng-if="mode == 'remove'">Yes</md-button>
+            </md-dialog-actions>
+        </form>
+    </md-dialog>
+</script>
+<!--
+<md-content layout="column" layout-align="start stretch" flex style="overflow:hidden;">
+    <md-content layout="column" layout-align="start stretch" flex style="overflow:hidden;">
+        <div layout="row" layout-align="space-between center" style="margin:10px 10px 0 10px;">
+            <md-input-container flex="20">
+                <label>View Language</label>
+
+            </md-input-container>
+            <md-button class="md-primary md-raised" aria-label="Add new restriction" ng-click="Restrict.Upsert('add',null)">New</md-button>
+        </div>
+        <div layout="column" layout-align="center center" style="overflow:auto;" ng-if="Restrict.restbusy == true" flex="grow">
+            <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+            <span>Loading...</span>
+        </div>
+        <div layout="column" layout-align="start stretch" style="overflow:auto;" ng-if="Restrict.restbusy == false" flex="grow">
+            <div layout="row" layout-align="center center" ng-if="Restrict.hasError == true">
+                <md-toolbar class="md-warn md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="start center">
+                    <md-icon class="md-margin" md-svg-icon="action:info"></md-icon>
+                    <span>Loading restrictions failed due to a server error. Please try reload data.</span>
+                    <md-button class="md-fab md-primary" aria-label="refresh all restrictions" ng-click="Restrict.initView()">
+                        <md-icon md-svg-icon="navigation:close"></md-icon>
+                    </md-button>
+                </md-toolbar>
+            </div>
+            <div layout="row" layout-align="center center" ng-if="Restrict.restrictions.length == 0">
+                <md-toolbar class="md-warn md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="start center">
+                    <md-icon class="md-margin" md-svg-icon="action:info"></md-icon>
+                    <span>No restrictions found.</span>
+                </md-toolbar>
+            </div>
+            <div layout="column" layout-align="start stretch" ng-if="Restrict.restrictions.length > 0">
+                <div layout="row" layout-align="center center" flex="grow" class="md-whiteframe-3dp md-padding" style="margin:0.5em;" ng-repeat="res in Restrict.restrictions">
+                    <div style="word-wrap: break-word;" flex>{{res.Description || '--- No Description found ---'}}</div>
+                    <md-button ng-disabled="Restrict.savingRestrict" ng-click="Restrict.Upsert('delete',res)" class="md-icon-button md-warn" aria-label="Delete restriction">
+                        <md-tooltip md-direction="top">Delete selected Restriction</md-tooltip>
+                        <md-icon md-svg-icon="action:delete"></md-icon>
+                    </md-button>
+                    <md-button ng-disabled="Restrict.savingRestrict" ng-click="Restrict.Upsert('edit',res)" class=" md-icon-button md-primary" aria-label="Edit restriction">
+                        <md-tooltip md-direction="top">Edit selected Restriction</md-tooltip>
+                        <md-icon md-svg-icon="editor:mode_edit"></md-icon>
+                    </md-button>
+                </div>
+            </div>
+        </div>
+    </md-content>
+</md-content>-->

@@ -1,0 +1,88 @@
+﻿<div class="row" ng-controller="DynamicDataTableCtrl" ng-init="initView()">
+    <div class="row" style="margin:0">
+        <md-subheader class="wrappers-view-header md-whiteframe-7dp md-primary">{{entityIdentifier}}</md-subheader>
+    </div>
+    <md-toolbar class="md-table-toolbar md-default">
+        <div class="md-toolbar-tools" ng-show="mdTableOptions.rowSelection && selectedLines.length == 0">
+            <span>Nutrition</span>
+            <div flex></div>
+            <md-button class="md-icon-button" aria-label="reload Data"ng-click="loadStuff()">
+                <md-icon md-svg-icon="navigation:refresh"></md-icon>
+            </md-button>
+        </div>
+        <div class="md-toolbar-tools" ng-show="mdTableOptions.rowSelection && selectedLines.length > 0">
+            <span>{{selectedLines.length}} {{selected.length > 1 ? 'items' : 'item'}} Selected Lines</span>
+        </div>
+    </md-toolbar>
+    <md-table-container>
+        <table md-table md-row-select="mdTableOptions.rowSelection" multiple="{{mdTableOptions.multiSelect}}" ng-model="selectedLines" md-progress="promise">
+            <thead ng-if="!mdTableOptions.decapitate" md-head md-order="query.order" md-on-reorder="logOrder">
+                <tr md-row>
+                    <th md-column md-order-by="Id"><span>Id</span></th>
+                    <th md-column md-order-by="Description"><span>Description</span></th>
+                    <th md-column md-order-by="Code"><span>Code</span></th>
+                    <th md-column md-order-by="Abbreviation"><span>Abbreviation</span></th>
+                    <th md-column md-order-by="Type"><span>Type</span></th>
+                    <th md-column md-order-by="IsDeleted"><span>IsDeleted</span></th>
+                    <th md-column><span>Log Data</span></th>
+                </tr>
+            </thead>
+            <tbody md-body>
+                <tr md-row md-select="data" md-on-select="logItem" md-auto-select="mdTableOptions.autoSelect" ng-repeat="data in loadedData | orderBy: query.order">
+                    <!--  <tr md-row md-select="dessert" md-on-select="logItem" md-auto-select="mdTableOptions.autoSelect" ng-disabled="dessert.calories.value > 400"ng-repeat="dessert in desserts.data | filter: filter.search | limitTo: query.limit : (query.page -1) * query.limit">-->
+                    <td md-cell ng-click="editComment($event, data , 'Id')" ng-class="{'md-placeholder': !data.Id}">
+                        {{data.Id || -1}}
+                    </td>
+                    <td md-cell ng-click="editComment($event, data , 'Description')" ng-class="{'md-placeholder': !data.Description}">
+                        {{data.Description || 'Add a Description'}}
+                    </td>
+                    <td md-cell ng-click="editComment($event, data  , 'Code')" ng-class="{'md-placeholder': !data.Code}">
+                        {{data.Code || 'Add a Code'}}
+                    </td>
+                    <td md-cell ng-click="editComment($event, data , 'Abbreviation')" ng-class="{'md-placeholder': !data.Abbreviation}">
+                        {{data.Abbreviation || 'Add a Abbreviation'}}
+                    </td>
+                    <td md-cell ng-include="dynamicCell">
+                        <!--<md-select ng-model="data.Type" placeholder="Other">
+                            <md-option ng-value="type.Key" ng-repeat="type in lookupEntities['Type']">{{type.Value}}</md-option>
+                        </md-select>-->
+                    </td>
+                    <td md-cell>
+                        <md-checkbox name="IsDeleted" aria-label="IsDeleted" ng-model="data.IsDeleted" class="md-primary" value="data.IsDeleted" ng-init="(data.IsDeleted != true) ? data.IsDeleted=false : data.IsDeleted= true"></md-checkbox>
+                    </td>
+                    <td md-cell>
+                        <md-button aria-label="displaydata" class="md-icon-button" ng-click="displayRow(data)">
+                            <md-icon md-svg-icon="action:search"></md-icon>
+                        </md-button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </md-table-container>
+    <md-table-pagination md-limit="pagOptions.limit"
+                         md-limit-options="pagOptions.limitOptions"
+                         md-page="pagOptions.page"
+                         md-total="pagOptions.totalItems"
+                         md-page-select="mdTableOptions.pageSelect"
+                         md-boundary-links="mdTableOptions.boundaryLinks"
+                         md-on-paginate="pagOptions.pagChangeFun">
+    </md-table-pagination>
+
+</div>
+<script type="text/ng-template" id="selectcell">
+    <form name="dynSGIForm">
+        <md-select name="Type" ng-model="data.Type" placeholder="Other" style="margin:0;" layout-fill required ng-init="null">
+            <md-option ng-value="type.Key" ng-repeat="type in lookupEntities['Type']">{{type.Value}}</md-option>
+        </md-select>
+        <div ng-messages="dynSGIForm.Type.$error" style="color:maroon;" role="alert">
+            <div ng-message="required">Invoice type needs a selection of type property to initiate.</div>
+        </div>
+    </form>
+
+    <!--<md-select class="md-table-select ng-pristine ng-valid ng-not-empty ng-touched" ng-model="data.Type" placeholder="Other" style="margin:0;" layout-fill required>
+        <md-option ng-value="type.Key" ng-repeat="type in lookupEntities['Type']">{{type.Value}}</md-option>
+    </md-select>
+    <div ng-messages="dynSGIForm.Type.$error">
+        <div ng-message="required">Invoice type needs a selection of type property to initiate.</div>
+    </div>-->
+</script>

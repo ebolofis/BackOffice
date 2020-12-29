@@ -1,0 +1,225 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+        p.accordion {
+            background-color: #eee;
+            color: #444;
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            text-align: left;
+            border: none;
+            outline: none;
+            transition: 0.4s;
+            margin-bottom: 10px;
+        }
+
+            /* Add a background color to the accordion if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+            p.accordion.active, p.accordion:hover {
+                background-color: #ddd;
+            }
+
+            /* Unicode character for "plus" sign (+) */
+            p.accordion:after {
+                content: '\2795';
+                font-size: 13px;
+                color: #777;
+                float: right;
+                margin-left: 5px;
+            }
+
+            /* Unicode character for "minus" sign (-) */
+            p.accordion.active:after {
+                content: "\2796";
+            }
+
+        /* Style the element that is used for the panel class */
+
+        div.panel {
+            padding: 0 18px;
+            background-color: white;
+            max-height: 0;
+            overflow: hidden;
+            transition: 0.4s ease-in-out;
+            opacity: 0;
+            margin-bottom: 10px;
+        }
+
+            div.panel.show {
+                opacity: 1;
+                max-height: 500px; /* Whatever you like, as long as its more than the height of the content (on all screen sizes) */
+            }
+
+        .button {
+            display: inline-block;
+            padding: 15px 25px;
+            font-size: 20px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            outline: none;
+            color: #fff;
+            background-color: lightcoral;
+            border: none;
+            border-radius: 20px;
+        }
+
+            .button:hover {
+                background-color: red;
+            }
+
+            .button:active {
+                background-color: red;
+                transform: translateY(4px);
+            }
+
+        .buttonCancel {
+            display: inline-block;
+            padding: 15px 25px;
+            font-size: 20px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            outline: none;
+            color: #fff;
+            background-color: lightblue;
+            border: none;
+            border-radius: 20px;
+        }
+
+            .buttonCancel:hover {
+                background-color: blue;
+            }
+
+            .buttonCancel:active {
+                background-color: blue;
+                transform: translateY(4px);
+            }
+
+        .btn {
+            background-color: darkred;
+            border: none;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 50%;
+        }
+
+        md-input-container {
+            display: inline-block;
+            position: relative;
+            padding: 0px;
+            margin: 4px 0;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <div ng-controller="MainConfigCompCTRL as MainConfig" ng-init="MainConfig.initView()" layout-fill layout="column" layout-align="start stretch">
+        <md-subheader class="wrappers-view-header md-whiteframe-7dp md-primary">Main Configuration</md-subheader>
+        <div flex="5" layout="row" style="margin-top:15px;">
+            <div flex="33">
+                <md-select placeholder="Configuration Files" ng-model="file" ng-change="MainConfig.changeJsonFileName(file)">
+                    <md-option ng-repeat="(key,value) in MainConfig.allConfiguration">{{key}}</md-option>
+                </md-select>
+            </div>
+            <div flex="33" style="margin-left:15px;">
+                <md-select placeholder="Api Versions" ng-model="AllVersions">
+                    <md-option ng-repeat="version in MainConfig.apiVersionsList">{{version}}</md-option>
+                </md-select>
+            </div>
+            <div flex="33" style="margin-left:15px; overflow:auto; align-self: center;">
+                <div layout="row" layout-align="end center">
+                    <md-button id="addData" aria-label="adddyngridentry" class="md-raised" style="line-height: 32px; min-height: 32px;" ng-disabled="savingProcess" ng-click="MainConfig.addNewPosJsonFile()">Add&nbsp;Pos&nbsp;<i class="fa fa-plus-circle fa-fw"></i> </md-button>
+                    <div ng-if="file != 'api' && file != 'da' && file != 'agent' && file.endsWith('Plugin') == false && file != null">
+                        <md-button class="md-raised" aria-label="rmdynamicgridentry" style="line-height: 32px; min-height: 32px;" ng-click="open(file)">Remove&nbsp;<i class="fa fa-trash fa-fw"></i> </md-button>
+                    </div>
+                    <md-button class="md-raised md-primary" aria-label="savedyngridchanges" style="line-height: 32px; min-height: 32px;" ng-disabled="savingProcess" ng-click="MainConfig.saveChanges()">Save&nbsp;<i class="fa fa-save fa-fw"></i></md-button>
+                </div>
+            </div>
+        </div>
+        <div flex="95" layout="column" style="overflow:auto; margin-top:10px;">
+            <h3 style="text-align:center">Configuration Schema Informations</h3>
+            <!-- Spinner -->
+            <div layout="column" layout-align="center center" style="overflow:auto;" ng-if="MainConfig.restbusy == true" flex="grow">
+                <md-progress-circular md-diameter="200"></md-progress-circular>
+                <span>Loading...</span>
+            </div>
+            <div ng-repeat="(key, value) in MainConfig.selectedDescriptorCategory">
+                <p class="accordion" ng-click="MainConfig.SelectedCategory(key)">{{key}}</p>
+                <div class=panel style="overflow:auto;">
+                    <div ng-repeat="details in MainConfig.selectedDescriptorDetails | filter: MainConfig.greaterThan(MainConfig.selectedDescriptorDetails, AllVersions)">
+                        <div layout="row">
+                            <md-content style="width: 100%">
+                                <md-content layout="row" style="width: 100%; overflow-y:hidden">
+                                    <md-card style="width: 100%">
+                                        <md-card-content style="padding:0px; height:26px;">
+                                            <div layout-gt-sm="row" style="height:26px;">
+                                                <md-input-container class="md-block" flex="20" style="font-size:14px;" flex-gt-sm>
+                                                    <span class="md-block" style="font-size:16px; color:darkblue">{{details.Key}}</span>
+                                                </md-input-container>
+                                                <div ng-if="details.Type == 'string'">
+                                                    <md-input-container class="md-block" flex="80" style="font-size:14px;" flex-gt-sm>
+                                                        <input class="md-block" style="font-size:14px; color:darkblue; width: 800%; margin-top: -10px;" type="text" ng-model="details.Value">
+                                                    </md-input-container>
+                                                </div>
+                                                <div ng-if="details.Type == 'bool'">
+                                                    <md-input-container class="md-block" flex="80" style="font-size:14px;" flex-gt-sm>
+                                                        <md-checkbox class="md-block" style="margin-top: -4px;" ng-model="details.Value"></md-checkbox>
+                                                    </md-input-container>
+                                                </div>
+                                                <div ng-if="details.Type == 'int'">
+                                                    <md-input-container class="md-block" flex="80" style="font-size:14px;" flex-gt-sm>
+                                                        <input class="md-block" style="font-size:18px; color:darkblue; width: 200%; margin-top: -10px;" type="number" step="1" ng-model="details.Value">
+                                                    </md-input-container>
+                                                </div>
+                                                <div ng-if="details.Type == 'decimal'">
+                                                    <md-input-container class="md-block" flex="80" style="font-size:14px;" flex-gt-sm>
+                                                        <input class="md-block" style="font-size:18px; color:darkblue; width: 200%; margin-top: -10px;" type="number" step="0.001" ng-model="details.Value">
+                                                    </md-input-container>
+                                                </div>
+                                            </div>
+                                        </md-card-content>
+                                        <md-divider></md-divider>
+                                        <md-card-content style="padding:0px;">
+                                            <div layout-gt-sm="row" style="width:100%">
+                                                <md-input-container class="md-block" flex="20" style="font-size:14px;" flex-gt-sm>
+                                                    <span class="md-block" style="color: black !important;">{{details.ApiVersion}}</span>
+                                                </md-input-container>
+                                                <md-input-container class="md-block" flex="80" style="font-size:12px;" flex-gt-sm>
+                                                    <span class="md-block" style="color: grey !important;" ng-bind-html="details.Description"></span>
+                                                </md-input-container>
+                                            </div>
+                                        </md-card-content>
+                                    </md-card>
+                                </md-content>
+                            </md-content>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--Confirmation Modal For Delete Shortage-->
+        <modal title="Διαγραφή Αρχείου" visible="showModal" style="position: absolute; top: 20%;">
+            <form role="form"></form>
+            <div class="modal-body">
+                Είστε σίγουρος πως θέλετε να διαγράψετε το συγκεκριμένο αρχείο?
+            </div>
+            <div class="modal-footer">
+                <button type="button" style="margin-right:20px;" class="buttonCancel" data-dismiss="modal" ng-click="cancel()">Ακύρωση</button>
+                <button type="button" class="button" ng-click="MainConfig.removePosJsonFile(shortRow)">Διαγραφή</button>
+            </div>
+        </modal>
+
+    </div>
+</body>
+</html>
+
+
+

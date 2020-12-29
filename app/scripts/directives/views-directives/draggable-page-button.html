@@ -1,0 +1,22 @@
+﻿<div  class="drag-item-wrapper" ng-click="selectButtonFun(pageButton)">
+    <h5 class="drag-item-action-header">
+        <i class="fa fa-arrows fa-fw" style="float:left;line-height: inherit;"></i>
+        <i class="fa fa-times fa-fw" style="float:right;line-height: inherit;" ng-click="deleteButtonFun(pageButton)"></i>
+    </h5>
+    <div class="drag-item-desc-content">
+        <span>{{pageButton.Description}}</span>
+        <div ng-if="pageButton.hasError" style="position:absolute; bottom:0; left:0; width:100%; color:{{pageButton.Color}};">
+            *
+            <small ng-if="pageButton.Type ==1">error no product</small>
+            <small ng-if="pageButton.Type ==2">error on sales type</small>
+            <small ng-if="pageButton.Type ==5">error on navigate</small>
+            <small ng-if="pageButton.Type ==6">error on nav or pricelist</small>
+            <small ng-if="pageButton.Type ==7">error on pricelist</small>
+            <small ng-if="pageButton.Type != 1 && pageButton.Type != 2 && pageButton.Type != 5 && pageButton.Type != 6 && pageButton.Type != 7">error unhandled</small>
+
+        </div>
+        <!--<br />-->
+        <!--<strong ng-if="pageButton.selected == true">selected</strong>-->
+       <!-- <strong ng-if="pageButton.selected == false">Not selected</strong>-->
+    </div>
+</div>

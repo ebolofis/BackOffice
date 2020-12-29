@@ -1,0 +1,29 @@
+﻿<div class="notice " ng-class="(data.isSelected) ? 'notice-info' : ((data.isEdited == true) ? 'notice-warning': '')" ng-click="actionFuns.clickOn(pckey , data)"  style="margin-bottom:0;" >
+    <div class="panel-notice-list-component" layout="row" layout-align="start center">
+        <div class="overflow-text-on-component content-overflow-ellipsis" flex>
+            <md-tooltip md-direction="top">{{lookups.ProductCategories[pckey]}}</md-tooltip>
+            <strong ng-style="(data.isSelected) ? {'color':'#45ABCD'} : ((data.isEdited == true) ? {'color':'#FEAF20'}: '')">{{lookups.ProductCategories[pckey]}}</strong><br />
+            <span>Ingredients: &nbsp;<span class="badge" ng-style="(data.isSelected) ? {'background-color':'#45ABCD'} : (data.length == 0) ? {'background-color':'#d9534f'} : ((data.isEdited == true) ? {'background-color':'#FEAF20'}: '')">{{data.length}}</span></span>
+        </div>
+        <md-button class="md-icon-button md-warn" ng-click="actionFuns.clickDelete(pckey,data,$event)" aria-label="del-cat-assoc"><md-icon md-svg-icon="action:delete"></md-icon></md-button>
+        <md-menu md-position-mode="target-right target" ng-if="options.disableMenu != true">
+            <md-button aria-label="available-categories-options-menu" class="md-icon-button" ng-click="actionFuns.clickOn(pckey , data);$mdOpenMenu($event)">
+                <md-tooltip md-direction="top">Options</md-tooltip>
+                <md-icon md-menu-origin md-svg-icon="navigation:more_vert"></md-icon>
+            </md-button>
+            <md-menu-content width="4" style="max-height:none;">
+                <md-content layout="column" layout-align="start stretch" flex="grow" class="md-padding">
+                    <h4 style="font-variant:small-caps; text-align:center;">Association Options</h4>
+                    <md-list>
+                        <md-list-item aria-label="append-ingrs" ng-click="actionFuns.categoryMenuOptions(pckey ,data,'assoc')"><span>Append Ingredients</span></md-list-item>
+                        <md-list-item aria-label="append-ingrs" ng-click="actionFuns.categoryMenuOptions(pckey ,data,'clone')"><span>Clone Ingredients</span></md-list-item>
+                        <md-list-item aria-label="append-ingrs" ng-click="actionFuns.categoryMenuOptions(pckey ,data,'sort')"><span>Sort Ingredients</span></md-list-item>
+                        <md-divider></md-divider>
+                        <md-list-item aria-label="append-ingrs" ng-click="actionFuns.categoryMenuOptions(pckey ,data,'restore')"><span>Restore to Loaded</span></md-list-item>
+                        <!--<md-list-item aria-label="append-ingrs" ng-click="log(data)">Log</md-list-item>-->
+                    </md-list>
+                </md-content>
+            </md-menu-content>
+        </md-menu>
+    </div>
+</div>

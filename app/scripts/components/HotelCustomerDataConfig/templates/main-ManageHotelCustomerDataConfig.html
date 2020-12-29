@@ -1,0 +1,98 @@
+﻿<div layout="column" flex="grow" layout-align="start stretch" ng-cloak ng-controller="HotelCustomerDataConfigCTRL as HotelCustomerDataConfigMain" ng-init="HotelCustomerDataConfigMain.initView()">
+
+    <md-header class="wrappers-view-header md-whiteframe-7dp md-primary" layout="row" layout-align="center center" flex="150" style="overflow:hidden;">
+
+        <div layout="row" flex="100" style="overflow:hidden;">
+            <div layout="column" flex="120">
+                <h5 layout-align="center center">  Manage Hotel Customer Data Config <span style="color:darkorange;" class="fa fa-gear"></span></h5>
+            </div>
+            <div layout="row" flex="20" layout-align="end end">
+                <md-button style="background-color:red; opacity:0.7;" class="md-raised md-primary" aria-label="save modified changes" flex="35" ng-click="DeleteAll() ">Delete All&nbsp; <i class="fa fa-trash fa-fw "></i> </md-button>
+                <md-button style="color:whitesmoke;background-color:darkgoldenrod; opacity:0.9;" class="md-raised md-primary" aria-label="save modified changes" flex="20" ng-click="addHotelCustomerDataConfig(HotelCustomerDataConfigMain.csdata) ">Save&nbsp; <i class="fa fa-save "></i> </md-button>
+
+            </div>
+        </div>
+    </md-header>
+
+    <div class="container-panel" layout="row" layout-align="start stretch" flex="100">
+        <div class="md-whiteframe-7dp" layout-margin="2%" layout="column" layout-align="start stretch" flex="33">
+            <div>
+                <div class="bo-htd">Available Properties </div>
+
+                <md-list layout="column" flex="100">
+                    <md-list-item layout="row" class="md-whiteframe-10dp" ng-repeat="row in HotelCustomerDataConfigMain.params" style="margin-bottom:10px; height:10px;background-color:white;">
+                        <div class="md-list-item-text" flex="grow" layout-align="center" {{row.Property}}>
+                            <div layout-align="start center" style="text-align:center;">
+                                <span class="cell-style" layout-align="center" style="text-align:center;color:darkorange;font-weight:bold;opacity:0.6;"><span style="color:brown;padding:0px;" ng-click="myStyle={'color':'blue'};addId(row)" class="fa f fa-long-arrow-right "> &nbsp; </span><span ng-click="myStyle={'color':'blue'};addId(row)" ng-style="myStyle;" class="fa  fa-long-arrow-right  " ng-hide="1">  &nbsp; </span>{{row.Description}}<md-tooltip md-direction="top"><span></span>{{row.Property}}</md-tooltip></span>
+                            </div>
+                        </div>
+                </md-list>
+            </div>
+        </div>
+        <div layout="row" flex="5" style="align-self:center;" layout-align="center">
+        </div>
+        <div class="cssFade-animation md-whiteframe-7dp bo-draggable-list" layout-margin="1%" layout="column" layout-align="start stretch" flex="33" ng-show="selectedProductCategory !== null">
+            <div>
+                <div class="bo-htd">Selected Customer Configuration Properties   </div>
+                <div>
+                </div>
+            </div>
+            <div style="overflow:auto;" flex="grow" class="hitbo-virtual-repeat">
+                <div ng-include src="'header-list'" ng-if="HotelCustomerDataConfigMain.csdata.length > 0 "></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script id="header-list" type="text/ng-template">
+    <div layout="row" layout-align="start center" class="md-padding " style="font-variant:small-caps;background-color:rgb(61,81,181);">
+        <!--<strong flex="25" style="color:white;">Property</strong>-->
+        <strong flex="45" style="color:white;text-align:center">Description <span class="fa fa-pencil"></span> </strong>
+        <strong flex="25" style="color:white;text-align:center">Priority  </strong>
+          <strong flex="20" style="color:white;text-align:center">    Sort </strong>
+        <strong flex="20" style="color:white;text-align:end">    Cancel </strong>
+    </div>
+    <md-list flex="grow">
+        <md-list-item aria-label="Macros" class="md-whiteframe-4dp" ng-repeat="row in HotelCustomerDataConfigMain.csdata|orderBy:'Priority': reverse=1 " style="margin-bottom:10px; background-color:white;">
+            <div class="md-list-item-text" layout="column" layout-align="start stretch" flex="grow">
+                <div layout="row" layout-align="start center">
+                    <!--<span class="cell-style" flex="25" style="color:darkorange;font-weight:bold;  opacity:0.6;">{{row.Property}}<md-tooltip md-direction="top">{{row.Property}}</md-tooltip></span>-->
+                    <span ng-disabled="editDesc" class="cell-style" flex="45" style="color:rgb(76, 175, 80);font-weight:bold;">
+
+                        <input type="text" style="text-align:center;width:250px;border-radius:10px;" ng-model="mytext" ng-change="{{row.Description=mytext}}" placeholder="{{row.Property}}">
+                    </span>
+                    <span class="cell-style" flex="5"> {{row.Description}}</span >
+                    <!--<span class="cell-style" flex="20" style="color:rgb(61,81,181);font-weight:bold; opacity:0.7;text-align:center;">{{row.FieldType}}<md-tooltip md-direction="top">{{row.FieldType }}</md-tooltip></span>-->
+                    <span class="cell-style" flex="15" style="color:rgb(76, 175, 80);font-weight:bold; opacity:0.7;text-align:center;">{{row.Priority}}<md-tooltip md-direction="top">{{row.Priority }}</md-tooltip></span>
+                    <span class="cell-style" flex="10" style="padding-left: 40px;">
+                        <span class="fa fa-long-arrow-up" style="cursor:pointer;width:20px;" ng-click="HigherPriority(row)"></span>
+                    </span>
+                    <span class="cell-style" flex="10">
+
+                    </span>
+                    <span class="cell-style" flex="10">
+                        <span class="fa fa-long-arrow-down" style="cursor:pointer" ng-click="LowerPriority(row)"></span>
+                    </span>
+                    <div id="redCross" flex="20">
+                        <span style="cursor:pointer" id="x" ng-click="HotelCustomerDataConfigMain.removeEntry($event ,'Hotel Customer Data Configuration',row)">X</span>
+                    </div>
+                </div>
+            </div>
+    </md-list>
+</script>
+
+<style>
+    #redCross {
+        background-color: white;
+        color: red;
+        opacity:0.6;
+        font-family: 'Helvetica', 'Arial', sans-serif;
+        font-size: 2em;
+        font-weight: bold;
+        text-align: center;
+        width: 20px;
+        height: 40px;
+        border-radius: 5px;
+    }
+</style>

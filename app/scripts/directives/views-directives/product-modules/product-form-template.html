@@ -1,0 +1,126 @@
+﻿<form name="overviewRowEntryForm" flex="grow">
+    <div layout="column" layout-align="center stretch">
+        <div layout="row" layout-align="center stretch" flex="grow">
+            <md-input-container class="md-block" flex="40">
+                <label>Description</label>
+                <input name="Description" ng-model="data.Description" required ng-change="isEdited = true;data.EntityStatus = 3;">
+                <div ng-messages="overviewRowEntryForm.Description.$error">
+                    <div ng-message="required">You need to specify a Description</div>
+                </div>
+            </md-input-container>
+            <md-button class="md-icon-button md-primary" style="margin:auto;">
+                <md-tooltip md-direction="top">Apply Description to Extra and Sales Descriptions</md-tooltip>
+                <md-icon md-svg-icon="action:swap_horiz" ng-click="applyDescriptions()"></md-icon>
+            </md-button>
+            <md-input-container class="md-block" required flex="50">
+                <label>Product Category</label>
+                <md-select name="ProductCategoryId" ng-model="data.ProductCategoryId" required ng-change="isEdited = true; data.EntityStatus = 3;">
+                    <md-option ng-repeat="ch in lookups.ProductCategories" value="{{ch.Id}}">{{ch.Description}}</md-option>
+                </md-select>
+                <div ng-messages="overviewRowEntryForm.ProductCategoryId.$error">
+                    <div ng-message="required">Product Category is required.</div>
+                </div>
+            </md-input-container>
+        </div>
+        <div layout="row" layout-align="center stretch" flex="grow">
+            <md-input-container class="md-block" flex="50">
+                <label>ExtraDescription</label>
+                <input required name="ExtraDescription" ng-model="data.ExtraDescription"  ng-change="isEdited = true; data.EntityStatus = 3;">
+                <div ng-messages="overviewRowEntryForm.ExtraDescription.$error">
+                    <div ng-message="required">You need to specify a ExtraDescription</div>
+                </div>
+            </md-input-container>
+            <md-input-container class="md-block" flex="50">
+                <label>SalesDescription</label>
+                <input required name="SalesDescription" ng-model="data.SalesDescription"  ng-change="isEdited = true; data.EntityStatus = 3;">
+                <div ng-messages="overviewRowEntryForm.SalesDescription.$error">
+                    <div ng-message="required">You need to specify a SalesDescription</div>
+                </div>
+            </md-input-container>
+        </div>
+        <div layout="row" layout-align="center stretch" flex="grow">
+            <md-input-container class="md-block" flex="50">
+                <label>Code</label>
+                <!--<input name="Code" ng-model="data.Code" required ng-change="checkUniqueCode()">-->
+                <input name="Code" ng-model="data.Code" upid="{{data.Id}}" required ng-change="checkUniqueCode(overviewRowEntryForm ,data.Code ,data.Id)">
+                <div ng-messages="overviewRowEntryForm.Code.$error">
+                    <div ng-message="required">You need to specify a Code</div>
+                    <div ng-message="uniquecode">Code must be unique</div>
+                </div>
+            </md-input-container>
+            <md-input-container class="md-block" required flex="50">
+                <label>Unit</label>
+                <md-select name="UnitId" ng-model="data.UnitId" ng-change="clearnull(data.UnitId); isEdited = true; data.EntityStatus = 3;">
+                    <md-option value="null">---</md-option>
+                    <md-option ng-repeat="ch in lookups.Units" value="{{ch.Id}}">{{ch.Description}}</md-option>
+                </md-select>
+            </md-input-container>
+        </div>
+        <div layout="row" layout-align="center stretch" flex="grow">
+            <md-input-container class="md-block" flex="33">
+                <label>Kitchen</label>
+                <md-select name="KitchenId" ng-model="data.KitchenId" ng-change="clearnull(data.KitchenId); isEdited = true; data.EntityStatus = 3;">
+                    <md-option value="null">---</md-option>
+                    <md-option ng-repeat="ch in lookups.Kitchen" value="{{ch.Id}}">{{ch.Description}}</md-option>
+                </md-select>
+            </md-input-container>
+            <md-input-container class="md-block" flex="33">
+                <label>Kds</label>
+                <md-select name="KitchenId" ng-model="data.KdsId" ng-change="clearnull(data.KdsId); isEdited = true; data.EntityStatus = 3;">
+                    <md-option value="null">---</md-option>
+                    <md-option ng-repeat="ch in lookups.Kds" value="{{ch.Id}}">{{ch.Description}}</md-option>
+                </md-select>
+            </md-input-container>
+            <md-input-container class="md-block" flex="33">
+                <label>PreparationTime</label>
+                <input type="number" name="PreparationTime" ng-model="data.PreparationTime" min="0" step="1" ng-change="isEdited = true; data.EntityStatus = 3;">
+            </md-input-container>
+        </div>
+        <div layout="row" layout-align="center stretch" flex="grow">
+            <md-input-container class="md-block" flex="50">
+                <label>Kitchen Region</label>
+                <md-select name="KitchenRegionId" ng-model="data.KitchenRegionId" ng-change="clearnull(data.KitchenRegionId); isEdited = true; data.EntityStatus = 3;">
+                    <md-option value="null">---</md-option>
+                    <md-option ng-repeat="ch in lookups.KitchenRegion" value="{{ch.Id}}">{{ch.ItemRegion}}</md-option>
+                </md-select>
+            </md-input-container>
+            <div layout-gt-sm="column" layout-align="center center" flex="25">
+                <md-checkbox md-no-ink aria-label="Status" ng-model="data.IsReturnItem" class="md-primary" ng-change="isEdited = true; data.EntityStatus = 3;">IsReturnItem</md-checkbox>
+            </div>
+            <div layout-gt-sm="column" layout-align="center center" flex="25">
+                <md-checkbox md-no-ink aria-label="Status" ng-model="data.IsCustom" class="md-primary" ng-change="isEdited = true; data.EntityStatus = 3;">IsCustom</md-checkbox>
+            </div>
+        </div>
+        <!--<div layout="row" layout-align="center stretch" flex="grow">
+            <md-input-container class="md-block" flex="50">
+                <label>ImageUri</label>
+                <input name="ImageUri" ng-model="data.ImageUri" ng-change="isEdited = true; data.EntityStatus = 3;">
+            </md-input-container>
+        </div>-->
+        <md-content layout="row" layout-align="start center" flex="grow">
+            <div layout="column" flex="50" layout-align="center strech">
+                <md-input-container class="md-block">
+                    <label>Image Uri</label>
+                    <md-icon><i class="fa fa-image fa-fw"></i></md-icon>
+                    <input ng-model="data.ImageUri" disabled ng-change="imgChange()">
+                </md-input-container>
+                <div layout="row" layout-align="center center">
+                    <upload-image-file upload-model="uploadModel" data="data" datafield="ImageUri" loading-state="data.loadingImage" callback="imgChange"></upload-image-file>
+                    <md-button class="md-primary" aria-label="removeImg" ng-click="data.ImageUri=null">
+                        <md-tooltip md-direction="top">Remove Image</md-tooltip>
+                        <i class="fa fa-trash-o fa-fw"></i>
+                    </md-button>
+                </div>
+            </div>
+            <md-content layout="column" flex="50" layout-align="center center">
+                <div ng-show="data.loadingImage == undefined || data.loadingImage != true">
+                    <div ng-show="data.ImageUri != null && data.ImageUri != undefined && data.ImageUri !=''" class="form-img-preview" style="background-image: url({{data.ImageUri}});"></div>
+                    <div ng-show="data.ImageUri == null || data.ImageUri == undefined && data.ImageUri ==''" class="form-img-preview" style="background-image: url('Images/noImagePreview.png');"></div>
+                </div>
+                <div ng-show="data.loadingImage == true" layout="column" layout-align="center center" style="width:100%;">
+                    <md-progress-linear md-mode="indeterminate"></md-progress-linear>
+                </div>
+            </md-content>
+        </md-content>
+    </div>
+</form>

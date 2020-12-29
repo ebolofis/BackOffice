@@ -1,0 +1,85 @@
+﻿<md-dialog ng-class="{'fullscreen-dialog' : fullscreenModal}" aria-label="editEntityModelModal" ng-cloak style="min-width: 30vw;" class="stickyDialog">
+    <form name="dynFormEdit">
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>{{dfm.templateOptions.modalTitle}}</h2>
+                <span flex></span>
+                <toggle-fs-modal tvar="fullscreenModal"></toggle-fs-modal>
+                <md-button class="md-icon-button" aria-label="CloseModal" ng-click="dfm.cancel()">
+                    <md-icon md-svg-icon="navigation:close"></md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content>
+            <div class="md-dialog-content">
+                <div ng-cloak class="md-inline-form"><ng-include src="dfm.templateOptions.entityId" layout-fill></ng-include></div>
+            </div>
+        </md-dialog-content>
+        <md-dialog-actions layout="row">
+            <md-button ng-click="dfm.cancel('cancel')" aria-label="CancelAction">Cancel</md-button>
+            <md-button ng-click="dfm.confirm('save')" class="md-primary" ng-disabled="dynFormEdit.$invalid" style="margin-right:20px;" aria-label="ConfAction">Save</md-button>
+        </md-dialog-actions>
+    </form>
+</md-dialog>
+<!-- Template to edit Repo Property -->
+<script id="singleEntityForm" type="text/ng-template">
+    <md-content>
+        <div layout="row" layout-align="center stretch" flex="grow">
+            <md-input-container class="md-block" flex="50">
+                <label>Description</label>
+                <input name="DescriptionField" ng-model="dfm.dataModel.DescriptionField" required>
+                <div ng-messages="dfm.dynFormEdit.DescriptionField.$error">
+                    <div ng-message="required">You need to specify a Description</div>
+                </div>
+            </md-input-container>
+            <md-input-container class="md-block" flex="50">
+                <label>Type</label>
+                <md-select name="InvoicesTypeId" ng-model="dfm.dataModel.type" required>
+                    <md-option ng-repeat="ch in dfm.allDataTypes" value="{{ch}}">{{ch}}</md-option>
+                </md-select>
+                <div ng-messages="dynFormEdit.type.$error">
+                    <div ng-message="required">Fields of model require a data Type</div>
+                </div>
+            </md-input-container>
+        </div>
+        <div layout="row" layout-align="start stretch" flex="grow">
+            <div layout="row" layout-align="start center" flex="33">
+                <md-checkbox name="visible" ng-model="dfm.dataModel.visible" class="md-primary" value="dataModel.visible" ng-init="(dfm.dataModel.visible != true) ? dfm.dataModel.visible=false : dfm.dataModel.visible= true">Visible</md-checkbox>
+            </div>
+            <div layout="row" layout-align="start center" flex="33">
+                <md-checkbox name="editable" ng-model="dfm.dataModel.editable" class="md-primary" value="dataModel.editable" ng-init="(dfm.dataModel.editable != true) ? dfm.dataModel.editable=false : dfm.dataModel.editable= true">Editable</md-checkbox>
+            </div>
+            <div layout="row" layout-align="start center" flex="33">
+                <md-checkbox name="nullable" ng-model="dfm.dataModel.nullable" class="md-primary" value="dataModel.nullable" ng-init="(dfm.dataModel.nullable != true) ? dfm.dataModel.nullable= false : dfm.dataModel.nullable= true">Nullable</md-checkbox>
+            </div>
+        </div>
+    </md-content>
+</script>
+<!-- Template to edit Repo Entity Name -->
+<script id="singleInputField" type="text/ng-template">
+    <md-content>
+        <div layout="row" layout-align="center stretch" flex="grow">
+            <md-input-container class="md-block" flex>
+                <label>Description</label>
+                <input name="DescriptionField" ng-model="dfm.dataModel.DescriptionField" required>
+                <div ng-messages="dfm.dynFormEdit.DescriptionField.$error">
+                    <div ng-message="required">You need to specify a Description</div>
+                </div>
+            </md-input-container>
+        </div>
+    </md-content>
+</script>
+<!-- Template to export Models json -->
+<script id="jsonExportText" type="text/ng-template">
+    <md-content>
+        <div layout="row" layout-align="center stretch" flex="grow">
+            <md-input-container class="md-block" flex>
+                <label>Json Generated</label>
+                <textarea ng-model="dfm.dataModel.jsonGenerated" rows="15" md-select-on-focus></textarea>
+            </md-input-container>
+        </div>
+    </md-content>
+</script>
+
+
+

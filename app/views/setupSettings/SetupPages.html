@@ -1,0 +1,344 @@
+﻿<div ng-controller="PagesController" ng-init="initView()" layout="column" layout-align="start stretch" ng-cloak style="height: 100%;">
+    <!--<md-subheader class="wrappers-view-header md-whiteframe-7dp md-primary">Manage your Pages</md-subheader>-->
+    <!--<div layout="row" layout-align="start center"><div layout="row" layout-align="start center" flex="40">{{selectedPageSet.Description}}</div><div layout="row" layout-align="start center" flex="40">{{selectedPage.Description}}</div></div>-->
+    <div layout="row" layout-align="start start">
+        <!-- Page Set Section DropDown -->
+        <div layout="row" layout-align="start center" flex="40">
+            <md-autocomplete ng-disabled="deletedButtons.length > 0 || editedPageButtons == true" md-no-cache="true" md-selected-item="selectedPageSet" md-search-text="searchPagesetText" md-search-text-change="searchTextChange(searchPagesetText)" md-selected-item-change="selectedItemChange(item,'PageSet')"
+                             md-items="item in querySearch(searchPagesetText ,'PageSet')" md-item-text="item.Description" md-min-length="0" placeholder="Select a Pageset" flex style="margin: 6px 8px;">
+                <md-item-template><span md-highlight-text="searchPagesetText" md-highlight-flags="^i">{{item.Description}}</span></md-item-template>
+                <md-not-found>No pagesets matching "{{searchPagesetText}}" were found.</md-not-found>
+            </md-autocomplete>
+            <div style="margin-left:auto;" class="dropdown">
+                <md-button type="button" data-toggle="dropdown" class="md-icon-button" aria-label="manage selected pageset">
+                    <i class="fa fa-edit fa-fw"></i>
+                </md-button>
+                <ul class="dropdown-menu">
+                    <li ng-click="addPageSet('Insert')" class="ng-scope"><a>Insert <i class="fa fa-plus fa-fw"></i></a></li>
+                    <li ng-click="addPageSet('Update')" class="ng-scope"><a>Update <i class="fa fa-edit fa-fw"></i></a></li>
+                </ul>
+            </div>
+            <md-button class="md-icon-button md-warn" aria-label="delete displayed page" ng-click="deletePageSet()">
+                <md-tooltip md-direction="top">Delete selected Page set </md-tooltip><i class="fa fa-trash-o fa-fw"></i>
+            </md-button>
+        </div>
+        <!-- Page Section DropDown -->
+        <div layout="row" layout-align="start center" flex="40">
+            <md-autocomplete ng-disabled="selectedPageSet == null ||  deletedButtons.length > 0 || editedPageButtons ==true"
+                             md-no-cache="true" md-selected-item="selectedPage" md-search-text="searchPageText" md-search-text-change="searchTextChange(searchPageText)" md-selected-item-change="selectedItemChange(item, 'Page')"
+                             md-items="item in querySearch(searchPageText ,'Page')" md-item-text="item.Description" md-min-length="0" placeholder="Select a Page" flex style="margin: 6px 8px;">
+                <md-item-template> <span md-highlight-text="searchPageText" md-highlight-flags="^i">{{item.Description}}</span> </md-item-template>
+                <md-not-found> No pagesets matching "{{searchPageText}}" were found. </md-not-found>
+            </md-autocomplete>
+            <md-button type="button" class="md-icon-button md-primary" aria-label="add new page" ng-click="addPage()">
+                <md-tooltip md-direction="top">Add new page </md-tooltip><i class="fa fa-plus fa-fw"></i>
+            </md-button>
+            <md-button class="md-icon-button md-warn" aria-label="delete displayed page" ng-click="deletePage()">
+                <md-tooltip md-direction="top">Delete current page </md-tooltip><i class="fa fa-trash-o fa-fw"></i>
+            </md-button>
+        </div>
+        <div layout="row" layout-align="end center" flex="20">
+            <md-menu md-position-mode="target-right target" ng-if="devAccess">
+                <md-button aria-label="UserSettings" class="md-icon-button md-primary" ng-click="$mdOpenMenu($event)">
+                    <md-tooltip md-direction="top">Develop - Debug</md-tooltip>
+                    <md-icon md-menu-origin md-svg-icon="device:developer_mode"></md-icon>
+                </md-button>
+                <md-menu-content width="4" style="max-height:none;">
+                    <md-content layout="column" layout-align="start stretch" flex="grow" class="md-padding">
+                        <h4 style="font-variant:small-caps; text-align:center;">Use Debug Actions</h4>
+                        <md-button class="md-raised" ng-click="devlog('Pageset')">Log PageSet</md-button>
+                        <md-button class="md-raised" ng-click="devlog('Page')">Log Page</md-button>
+                        <md-button class="md-raised" ng-click="devlog('selectedPageset')">Log Selected PageSet</md-button>
+                        <md-button class="md-raised" ng-click="devlog('selectedPage')">Log Selected Page</md-button>
+                        <md-button class="md-raised" ng-click="devlog('PageButtons')">Log Buttons</md-button>
+                    </md-content>
+                </md-menu-content>
+            </md-menu>
+            <md-button ng-if="editedPageButtons == true" class="md-raised md-warn" aria-label="save changes on page management" ng-disabled="savingProcess" ng-click="discardChanges()">Discard&nbsp; <i class="fa fa-trash fa-fw"></i> </md-button>
+            <md-button class="md-raised md-primary" aria-label="save changes on page management" ng-disabled="savingProcess" ng-click="saveCurrentPage()">Save&nbsp; <i class="fa fa-save fa-fw"></i> </md-button>
+        </div>
+    </div>
+    <div layout="row" layout-align="start stretch" flex style="overflow:hidden;">
+        <div layout="column" layout-align="start stretch" flex="20" ng-include src="'left-insert-template'" style="min-width:320px;"></div>
+        <div layout="column" layout-align="start stretch" flex ng-include src="'main-draggable-template'" style="overflow:hidden;"></div>
+        <div layout="row" layout-align="start stretch" flex="20" ng-include src="'right-panel-template'"></div>
+    </div>
+</div>
+
+<!-- Insert page buttons panel -->
+<script id="left-insert-template" type="text/ng-template">
+    <!-- Drop down select insertion property of products categories and pcats -->
+    <md-toolbar class="slim-material-toolbar">
+        <div class="md-toolbar-tools">
+            <md-select ng-model="insertType" flex aria-label="Setting Panel Option" style="margin:0;">
+                <md-select-header><md-subheader class="md-no-sticky">{{insertType}}</md-subheader><md-divider></md-divider></md-select-header>
+                <md-option ng-value="inst" ng-repeat="inst in insertTypeOptions" ng-click="selectDropOption(inst)">{{inst}}</md-option>
+            </md-select>
+        </div>
+    </md-toolbar>
+    <!-- header of product insertion selection -->
+    <div ng-if="insertType == 'Products'" layout="row" layout-align="space-between center">
+        <input flex uib-tooltip="Display filter By Description" class="form-control" type="text" ng-focus="searchProd.ProductCode = ''; enterKeySearchProductCode('')" style="border-radius: 150px; margin:auto 0;" placeholder="Search ..." ng-model="searchProd.Description" ng-change="enterKeySearchProduct(searchProd.Description)">
+        <input flex uib-tooltip="Display filter By Code" class="form-control" type="text" ng-focus="searchProd.Description = ''; enterKeySearchProduct('')" style="color:blue; border-radius: 150px; margin:auto 0;" placeholder="Code..." ng-model="searchProd.ProductCode" ng-change="enterKeySearchProductCode(searchProd.ProductCode)">
+        <div style="margin-left:auto; display: inline-flex;">
+            <md-button class="md-fab md-mini md-warn" aria-label="search-products-filter" ng-class="(dirtyExSearch == true) ? 'search-button-dirty' : '' " ng-click="openExtFilter()"><i class="fa fa-search"></i></md-button>
+            <md-button class="md-fab md-mini md-accent" aria-label="toggle-product-selection-list" ng-click="toggleSelection();"><md-tooltip md-direction="top">toggle selection</md-tooltip><i class="fa fa-fw" ng-class="selectAll == false ? 'fa-square-o' : 'fa-check-square-o'"></i></md-button>
+            <md-button class="md-fab md-mini md-accent" aria-label="append-products-page-buttons" ng-click="addPageButtonsProducts();"><md-tooltip md-direction="top">add selected</md-tooltip><i class="fa fa-plus fa-fw"></i></md-button>
+        </div>
+    </div>
+    <!--main scrollable drop down container-->
+    <div flex ng-switch="insertType" style="overflow-y:auto;">
+        <div class="animate-switch" ng-switch-when="Categories" layout="column" layout-align="start stretch">
+            <div class="list-repeat-element container-panel-content" layout="column" layout-align="start stretch" container-class="'dropListContainer'" display-field="'Description'" mainlist="categories" loop-item-class="'notice content-overflow-ellipsis noticeCustom'" loop-item-selected-class="'notice-warning'" search-placeholder="'Search ...'" action-fun="addPageButtonsCategory()" action-icon="'fa fa-xs fa-plus'"></div>
+        </div>
+        <div class="animate-switch" ng-switch-when="ProductCategories" layout="column" layout-align="start stretch">
+            <div class="list-repeat-element container-panel-content" layout="column" layout-align="start stretch" container-class="'dropListContainer'" display-field="'Description'" mainlist="productCategories" loop-item-class="'notice content-overflow-ellipsis noticeCustom'" loop-item-selected-class="'notice-warning'" search-placeholder="'Search ...'" action-fun="addPageButtonsProductCategory()" action-icon="'fa fa-xs fa-plus'"></div>
+        </div>
+        <div class="animate-switch" ng-switch-default>
+            <div class="notice content-overflow-ellipsis noticeCustom" ng-repeat="prds in products| filter:searchProd" ng-class="prds.selected ? 'notice-info' : ''" ng-click="(prds.selected = !prds.selected)">
+                <span style="color:blue">{{prds.ProductCode}}</span><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span>{{prds.Description}}</span>
+            </div>
+        </div>
+    </div>
+    <!-- paggination sector over products insertion -->
+    <section ng-if="insertType == 'Products'" class="md-padding" layout="column" layout-align="center center">
+        <cl-paging class="small-fabs-30" flex cl-pages="numPages" cl-steps="3" cl-page-changed="categoryfiltersChanged(exFilterModel)" cl-align="center center" cl-current-page="paggination.page"></cl-paging>
+    </section>
+</script>
+<!-- Main draggable component of page buttons-->
+<script id="main-draggable-template" type="text/ng-template">
+    <md-toolbar class="slim-material-toolbar"><div class="md-toolbar-tools" layout-align="center center"><span>Page Buttons</span><span ng-if="spagebuttonslength !=0"> ({{spagebuttonslength}})</span></div></md-toolbar>
+    <div layout="row" layout-align="space-between center">
+        <div>
+            <md-menu-bar>
+                <md-menu>
+                    <button style="font-variant:small-caps;" ng-click="$mdOpenMenu($event).open()">Sort</button>
+                    <md-menu-content>
+                        <md-menu-item>
+                            <md-menu>
+                                <md-button ng-click="$mdMenu.open()" style="font-variant:small-caps;">Order Page Buttons</md-button>
+                                <md-menu-content>
+                                    <md-menu-item><md-button ng-click="sortPageButtons('Description', $event)" style="font-variant:small-caps;">Button Description</md-button></md-menu-item>
+                                    <md-menu-item><md-button ng-click="sortPageButtons('Id', $event)" style="font-variant:small-caps;">Button ID (register Order)</md-button></md-menu-item>
+                                    <md-menu-item><md-button ng-click="sortPageButtons('Type', $event)" style="font-variant:small-caps;">Type</md-button></md-menu-item>
+                                    <md-menu-item><md-button ng-click="sortPageButtons('ProductId', $event)" style="font-variant:small-caps;">Product ID (products register Order)</md-button></md-menu-item>
+                                    <md-menu-item><md-button ng-click="sortPageButtons('SalesDescritpion', $event)" style="font-variant:small-caps;">Products Sales Description</md-button></md-menu-item>
+                                    <md-menu-item><md-button ng-click="sortPageButtons('Background', $event)" style="font-variant:small-caps;">Button Color</md-button></md-menu-item>
+                                </md-menu-content>
+                            </md-menu>
+                        </md-menu-item>
+                    </md-menu-content>
+                </md-menu>
+            </md-menu-bar>
+        </div>
+        <div layout="row" layout-align="start center">
+            <span style="font-variant:small-caps;">Special Buttons:&nbsp;</span>
+            <md-button class="md-fab md-mini" ng-click="actionsButtonsClicked('empty')"><md-tooltip md-direction="top">Empty Button</md-tooltip><i class="fa fa-square-o fa-fw"></i></md-button>
+            <md-button class="md-fab md-mini md-primary " ng-click="actionsButtonsClicked('pricelist')"><md-tooltip md-direction="top">Pricelist</md-tooltip><i class="fa fa-th-list fa-fw"></i></md-button>
+            <md-button class="md-fab md-mini md-primary" ng-click="actionsButtonsClicked('navigate')"><md-tooltip md-direction="top">Navigate to Page</md-tooltip><i class="fa fa-link fa-fw"></i></md-button>
+            <md-button class="md-fab md-mini md-primary " ng-click="actionsButtonsClicked('salesType')"><md-tooltip md-direction="top">Sales Type</md-tooltip><i class="fa fa-th-list fa-fw"></i></md-button>
+            <md-button class="md-fab md-mini md-warn" ng-click="actionsButtonsClicked('kitchen')"><md-tooltip md-direction="top">Kichen Instruction</md-tooltip><i class="fa fa-file-o fa-fw"></i></md-button>
+        </div>
+        <div layout="row" layout-align="end center">
+            <span style="font-variant:small-caps;" layout="row" layout-align="end center">
+                {{(selectType==true) ? 'Single' : 'Multi'}} Select Mode:
+                <md-switch ng-model="selectType" aria-label="toggle mutli selection" class="md-warn" ng-change="changeMode(selectType)"></md-switch>
+            </span>
+            <md-button class="md-primary md-icon-button" ng-disabled="selectType == true" ng-click="clearSelectedButtons()">
+                <md-tooltip md-direction="top">Clear selection of page buttons</md-tooltip>
+                <md-icon md-svg-icon="editor:border_clear"></md-icon>
+            </md-button>
+            <md-button class="md-primary md-icon-button" ng-disabled="selectType == true" ng-click="selectAllButtons()">
+                <md-tooltip md-direction="top">Select all page buttons</md-tooltip>
+                <md-icon md-svg-icon="content:select_all"></md-icon>
+            </md-button>
+
+        </div>
+    </div>
+    <div layout="column" layout-align="start stretch" style="overflow-y:auto;" flex class="multiDemo">
+        <div class="container-element">
+            <!--Draggable UI of page buttons -->
+            <ul id="draggable-list-component" dnd-effect-allowed="move" style="background: #E1E1E1; margin-bottom: 0;"
+                dnd-list dnd-drop="onDrop(pageButtons, item, index)">
+                <li class="draggable-page-button md-whiteframe-5dp"
+                    ng-repeat="item in pageButtons"
+                    style="background-color:{{item.Background}}; color:{{item.Color}}; width:{{defaultButton.width}}; height:{{defaultButton.height}};"
+                    dnd-draggable="getSelectedItemsIncluding(pageButtons, item)"
+                    dnd-dragstart="onDragstart(pageButtons, event)"
+                    dnd-moved="onMoved(pageButtons)"
+                    dnd-dragend="dragging = false"
+                    ng-hide="dragging && item.selected"
+                    dnd-canceled="onCanceled()"
+                    ng-class="{'isedited': item.isEdited, 'selected': item.selected  ,'has-error' : item.hasError}"
+                    page-button="item"
+                    select-button-fun="selectPageButton"
+                    delete-button-fun="deletePageButton">
+                </li>
+            </ul>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</script>
+
+<script id="right-panel-template" type="text/ng-template">
+    <div layout="column" layout-align="start stretch" flex="grow">
+
+        <div layout="column" layout-align="start stretch">
+            <md-toolbar class="slim-material-toolbar"><div class="md-toolbar-tools">Page Properties</div></md-toolbar>
+            <form name="pageOptionsForm">
+                <div layout="column" layout-align="center stretch">
+                    <md-input-container class="md-block" style="margin-bottom:0;">
+                        <label>Description</label><input name="Description" ng-model="selectedPage.Description" required>
+                        <div ng-messages="pageOptionsForm.Description.$error"><div ng-message="required">You need to specify a Description for the page</div></div>
+                    </md-input-container>
+                    <md-input-container class="md-block" required style="margin-bottom:0;">
+                        <label>Default PriceList</label>
+                        <md-select name="DefaultPriceListId" ng-model="selectedPage.DefaultPriceListId" required>
+                            <md-option ng-repeat="ch in priceLists" value="{{ch.Id}}">{{ch.Description}}</md-option>
+                        </md-select>
+                        <div ng-messages="pageOptionsForm.DefaultPriceListId.$error"><div ng-message="required">Default PriceList is required.</div></div>
+                    </md-input-container>
+                    <md-input-container class="md-block" style="margin-bottom:0;">
+                        <label>Sort</label>
+                        <input type="number" name="Sort" ng-model="selectedPage.Sort" step="1" required min="0" disabled>
+                        <div ng-messages="pageOptionsForm.Sort.$error">
+                            <div ng-message="required">You need to specify a sort order</div>
+                            <div ng-message="min">Minimum sort order is 1</div>
+                        </div>
+                    </md-input-container>
+                    <md-input-container class="md-block" required style="margin-bottom:0;">
+                        <md-checkbox ng-model="selectedPage.Status" class="md-primary">Is Active</md-checkbox>
+                        <div ng-messages="pageOptionsForm.Status.$error"><div ng-message="required">Status is required.</div></div>
+                    </md-input-container>
+
+                    <!--<form name="pageOptionsForm" sf-schema="pageOptionSchema" sf-form="pageOptionForm" sf-model="pageOptionEntity"></form>-->
+                </div>
+            </form>
+        </div>
+        <div layout="column" layout-align="start stretch">
+            <md-toolbar class="slim-material-toolbar"><div class="md-toolbar-tools">Button Properties</div></md-toolbar>
+            <div ng-if="multiEdit == false" class="smooth-opacity-showhide" style="overflow:auto;">
+                <form name="pageButtonForm" sf-schema="pbSchema" sf-form="pbForm" sf-model="pbEntity" style="padding: 0 6%;"></form>
+                <div ng-if="selectedPageButton.Id !== -1"><label style="font-size:12px;">Type:&nbsp;</label><span class="badge" style="font-size:12px; background: #337AB7;">{{enumTypeDescs[selectedPageButton.Type]}}</span></div>
+                <div ng-if="selectedPageButton.Id !== -1 ">
+                    <label style="font-size:12px;">Id:&nbsp;</label><span class="badge" style="font-size:12px; background: #337AB7;">{{selectedPageButton.ProductId}}</span>
+                    <label style="font-size:12px;">Code:&nbsp;</label>
+                    <span ng-if="loadingSpecDesc ==false;" class="badge" style="font-size:12px; background: #337AB7;">{{CodeSelectedButton}}</span>
+                    <br />
+                    <label style="font-size:12px;">Desc:&nbsp;</label>
+                    <span ng-if="loadingSpecDesc ==false;" class="badge" style="font-size:12px; background: #337AB7;">{{DescriptionSelectedButton}}</span>
+                    <!--<md-progress-circular ng-if="loadingSpecDesc ==true;" class="md-hue-2" md-mode="determinate" md-diameter="20px"></md-progress-circular>-->
+                </div>
+            </div>
+            <div ng-if="multiEdit == true" class="smooth-opacity-showhide" style="padding:0 2%; text-align:center">
+                <form name="pageButtonForm" sf-schema="pbSchema" sf-form="multipbForm" sf-model="multipbEntity"></form>
+                <div layout="column" layout-align="space-around stretch">
+                    <div layout="row" layout-align="space-around center">
+                        <md-button class="md-raised md-warn" ng-click="deleteSelectedPageButtons()">
+                            <md-tooltip md-direction="top">Delete selected page buttons</md-tooltip>
+                            <md-icon md-svg-icon="action:delete"></md-icon>Selected
+                        </md-button>
+                        <md-button class="md-raised md-warn" ng-click="deleteAllPageButtons()">
+                            <md-tooltip md-direction="top">Delete all page buttons</md-tooltip>
+                            <md-icon md-svg-icon="action:delete"></md-icon>All
+                        </md-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</script>
+
+<script id="filter-product-modal-template" type="text/ng-template">
+
+</script>
+<style>
+    .small-fabs-30 > button.md-button {
+        width: 30px !important;
+        height: 30px !important;
+        line-height: 16px;
+        min-height: 30px !important;
+        margin: 0 3px;
+    }
+
+    .dropListContainer {
+        max-height: 100vh !important;
+        min-height: 100%;
+        height: 100%;
+        overflow-y: auto;
+    }
+
+    .inlineFormDisplay {
+        display: inline-flex;
+        width: 100%;
+    }
+
+        .inlineFormDisplay > sf-decorator {
+            width: 50%;
+        }
+
+    .colorHalfSplit {
+        /*width: 50%;*/
+    }
+
+    .isedited {
+        box-shadow: 0px 0px 5px 3px #FF8004;
+    }
+
+    .selected {
+        box-shadow: 0px 0px 3px 3px #337AB7;
+    }
+
+    .has-error {
+        border-bottom: 5px dashed red;
+    }
+
+    .selecting {
+        background-color: yellow !important;
+    }
+
+    .select-helper {
+        position: absolute;
+        border: 1px dashed red;
+        background: red;
+        opacity: 0.2;
+    }
+
+    .pagebutton-details > .row {
+        margin: auto 0px;
+    }
+
+    .noPadding {
+        margin-bottom: 0px;
+    }
+
+    .custom-form-style {
+        height: 25px;
+        padding: 2px 12px;
+        font-size: 12px;
+        line-height: 16px;
+        margin-bottom: 0px;
+    }
+
+    .noticeCustom {
+        cursor: pointer;
+        font-size: 10px;
+        font-weight: 700;
+        margin-bottom: 2px;
+    }
+
+    .ceffect:hover {
+        background: black;
+        box-shadow: 0px 0px 4px 4px #7FB1DC;
+        cursor: pointer;
+    }
+
+    .slim-material-toolbar {
+        min-height: 50px;
+    }
+
+        .slim-material-toolbar > div.md-toolbar-tools {
+            height: 50px;
+        }
+</style>

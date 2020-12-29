@@ -1,0 +1,156 @@
+﻿<div layout="column" layout-align="start stretch" ng-cloak ng-controller="PricelistMasterController" ng-init="initView()">
+    <md-subheader class="wrappers-view-header md-whiteframe-7dp md-primary">Pricelist Master</md-subheader>
+    <div layout="row" layout-align="end center" flex="grow">
+        <span class="pull-right" style="text-align:right; margin-bottom:1%;">
+            <md-button aria-label="addDataRow" id="addData" class="md-raised" style="line-height: 32px; min-height: 32px;" ng-disabled="savingProcess" ng-click="addData()">Add&nbsp;<i class="fa fa-plus-circle fa-fw"></i> </md-button>
+            <md-button aria-label="deleteDataRow" class="md-raised" style="line-height: 32px; min-height: 32px;" ng-disabled="savingProcess" ng-click="removeObject()">Remove&nbsp;<i class="fa fa-trash fa-fw"></i> </md-button>
+            <md-button aria-label="SaveChanges" class="md-raised md-primary" style="line-height: 32px; min-height: 32px;" ng-disabled="savingProcess" ng-click="saveChanges()">Save&nbsp;<i class="fa fa-save fa-fw"></i> </md-button>
+        </span>
+    </div>
+
+
+    <div layout="column" layout-align="center stretch">
+        <div layout="row" layout-align="start end" class="md-padding" flex="grow" style="font-weight: bold;">
+            <span flex="5" style="margin:auto; text-align:center;">#Id</span>
+            <div flex="20">Description</div>
+            <div flex="10" style="text-align:center;">Status</div>
+            <div flex="10" style="text-align:center;">Active</div>
+            <div flex>Included Salestypes</div>
+        </div>
+        <md-divider></md-divider>
+    </div>
+    <div ng-if="restCalling == true"layout="row" layout-align="center center" flex="grow">
+        <br />
+        <div  flex="50" layout="column" layout-align="center center">
+            <md-subheader class="md-no-sticky">Loading entities ...</md-subheader><br><md-progress-linear md-mode="indeterminate"></md-progress-linear>
+        </div>
+    </div>
+    <div ng-if="restCalling == false">
+        <div layout="column" layout-align="center stretch" ng-repeat="pl in pricelistMaster" ng-click="justChanged = true;selectPl(pl)">
+            <div class="masterPricelistRow" layout="row" layout-align="start end" flex="grow" ng-class="(selectedRow.Id == pl.Id) ? 'rowEntrySelected' : ((pl.isEdited == true)? 'rowEntryEdited':'') ">
+                <span flex="5" style="margin:auto; text-align:center;">#{{pl.Id}}</span>
+                <md-input-container md-no-float flex="20" layout="column" layout-align="center center" style="margin:0; height:48px;">
+                    <input ng-model="pl.Description" placeholder="Add a description" ng-change="pl.isEdited= true">
+                </md-input-container>
+                <div flex="10" style="text-align:center; margin:auto;" layout="row" layout-align="center center"><md-checkbox md-no-ink aria-label="Status"layout-align="center center"ng-model="pl.Status" class="md-primary" ng-change="pl.isEdited= true" style="margin:auto;"></md-checkbox></div>
+                <div flex="10" style="text-align:center; margin:auto;" layout="row" layout-align="center center"><md-checkbox md-no-ink aria-label="Active"layout-align="center center" ng-model="pl.Active" class="md-primary" ng-change="pl.isEdited= true"  style="margin:auto;"></md-checkbox></div>
+                <div flex class="multiSelectChipCustomStyle">
+                    <md-chips-select class="md-primary custom-chip-nopad" ng-model="pl.selectedAssocs" select-items="pl.allAvailableAssocs" main-title="SalesTypeDescription" value-update-change="pl.isEdited"></md-chips-select>
+                </div>
+            </div>
+            <md-divider></md-divider>
+        </div>
+    </div>
+</div>
+<style>
+    .masterPricelistRow:hover {
+        background-color: #f3f3f3;
+    }
+    .rowEntrySelected,.rowEntrySelected:hover {
+        background-color: #d6dcff;
+    }
+
+    .rowEntryEdited {
+        background-color: rgb(255, 241, 179);
+    }
+
+    md-select-list {
+        z-index: 9;
+    }
+
+    md-select-item-wrapper {
+        height: 35px;
+    }
+
+        md-select-item-wrapper.active {
+            color: white;
+            background-color: #3f51b5;
+        }
+
+
+    .custom-chip-nopad > .md-chips-wrap {
+        padding-bottom: 0;
+    }
+</style>
+
+<script id="pricelistMasterModalTemplate" type="text/ng-template">
+    <form aria-label="PlMasterModalForm" name="pricelistMasterModalForm">
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>Add new Pricelist Master</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" aria-label="CloseModal" ng-click="hide()">
+                    <md-icon md-svg-icon="navigation:close"></md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content>
+            <div ng-cloak class="md-inline-form">
+                <div class="md-dialog-content">
+                    <md-content layout="column" layout-align="start stretch" flex>
+                        <div layout-gt-sm="row">
+                            <md-input-container class="md-block" flex="50">
+                                <label>Description</label>
+                                <input name="Description" ng-model="plm.Description" required>
+                                <div ng-messages="pricelistMasterModalForm.Description.$error">
+                                    <div ng-message="required">Description field can't be empty </div>
+                                </div>
+                            </md-input-container>
+                            <md-input-container flex="50">
+                                <label>Sales Types</label>
+                                <md-select ng-model="plm.selectedSalesTypes" multiple="true">
+                                    <md-optgroup label="Sales Types">
+                                        <md-option ng-value="st" ng-repeat="st in salesTypes">{{st.SalesTypeDescription}}</md-option>
+                                    </md-optgroup>
+                                </md-select>
+                            </md-input-container>
+                        </div>
+                        <div layout-gt-sm="row">
+                            <div layout-gt-sm="column" flex="50">
+                                <md-checkbox md-no-ink aria-label="Status" ng-model="plm.Status" class="md-primary">
+                                    Status
+                                </md-checkbox>
+                            </div>
+                            <div layout-gt-sm="column" flex="50">
+                                <md-checkbox md-no-ink aria-label="Active" ng-model="plm.Active" class="md-primary">
+                                    Active
+                                </md-checkbox>
+                            </div>
+                        </div>
+                    </md-content>
+                </div>
+            </div>
+        </md-dialog-content>
+        <md-dialog-actions layout="row">
+            <md-button ng-click="cancel('cancel')" aria-label="CancelAction">Cancel</md-button>
+            <md-button class="md-primary" ng-disabled="pricelistMasterModalForm.$invalid" ng-click="confirm('ok')" style="margin-right:20px;" aria-label="PlMasterModalForm">OK</md-button>
+        </md-dialog-actions>
+    </form>
+</script>
+
+<!--<md-table-container>
+    <table md-table md-row-select ng-model="selectedRows" md-progress="promise">
+        <thead md-head md-order="query.order" md-on-reorder="getDesserts">
+            <tr md-row>
+                <th md-column><span>Id</span></th>
+                <th md-column><span>Description</span></th>
+                <th md-column>Status</th>
+                <th md-column>Active</th>
+                <th md-column>Actions</th>
+            </tr>
+        </thead>
+        <tbody md-body>
+            <tr md-row md-select="pl" md-select-id="pl.Id" ng-repeat="pl in pricelistMaster" ng-click="selectPl(pl)">
+                <td md-cell>{{pl.Id}}</td>
+                <td md-cell>{{pl.Description}}</td>
+                <td md-cell><md-checkbox md-no-ink aria-label="Status" ng-model="pl.Status" class="md-primary"></md-checkbox></td>
+                <td md-cell><md-checkbox md-no-ink aria-label="Active" ng-model="pl.Active" class="md-primary"></md-checkbox></td>
+                <td md-cell flex style="min-width:200px;">
+                    <md-chips-select ng-model="saleTypes" select-items="pl.selectedAssocs" main-title="SalesTypeDescription"></md-chips-select>
+                </td>
+                <td md-cell><md-button class="md-icon-button" aria-label="editCurrentRow" ng-click="addData(pl)"><md-icon><i class="fa fa-edit fa-fw"></i></md-icon></md-button></td>
+            </tr>
+        </tbody>
+    </table>
+</md-table-container>
+<md-table-pagination md-limit="query.limit" md-limit-options="[5, 10, 15]" md-page="query.page" md-total="{{desserts.count}}" md-on-paginate="getDesserts" md-page-select></md-table-pagination>-->

@@ -1,0 +1,336 @@
+﻿[
+  {
+    "OptionName": "Store Info",
+    "Icon": "fa fa-home fa-fw",
+    "CollapseValue": "home",
+    "StateRef": "dashboard.home",
+    "Options": []
+  },
+  {
+    "OptionName": "Products",
+    "Icon": "fa fa-file-powerpoint-o fa-fw",
+    "CollapseValue": "products",
+    "StateRef": null,
+    "Options": [
+      {
+        "Name": "Categories",
+        "StateRef": "dashboard.SetupCategories"
+      },
+      {
+        "Name": "Product Categories",
+        "StateRef": "dashboard.SetupProductCategories"
+      },
+      {
+        "Name": "Update Product Categories Vat",
+        "StateRef": "dashboard.UpdateProductCategoriesVat"
+      },
+      {
+        "Name": "Update Transfer Mappings",
+        "StateRef": "dashboard.UpdateTransferMappings"
+      },
+      {
+        "Name": "Products",
+        "StateRef": "dashboard.ManageProducts"
+      },
+      {
+        "Name": "Ingredients",
+        "StateRef": "dashboard.SetupIngredients"
+      },
+      {
+        "Name": "External Products",
+        "StateRef": "dashboard.ManageExternalProducts"
+      },
+      {
+        "Name": "Locker Products",
+        "StateRef": "dashboard.ManageRegionLockerProduct"
+      },
+      {
+        "Name": "Items",
+        "StateRef": "dashboard.SetupItems"
+      },
+      {
+        "Name": "Units",
+        "StateRef": "dashboard.SetupUnits"
+      },
+      {
+        "Name": "KitchenRegion",
+        "StateRef": "dashboard.SetupKitchenRegion"
+      },
+      {
+        "Name": "Vat",
+        "StateRef": "dashboard.SetupInvoiceVat"
+      },
+      {
+        "Name": "Tax",
+        "StateRef": "dashboard.SetupInvoiceTax"
+      }
+    ]
+  },
+  {
+    "OptionName": "Vodafone Promos",
+    "Icon": "fa fa-users fa-fw",
+    "CollapseValue": "vodafonepromos",
+    "StateRef": null,
+    "Options": [
+      {
+        "Name": "HeaderDetailsPromos",
+        "StateRef": "dashboard.HeaderDetailsPromos"
+      }
+    ]
+  },
+  {
+    "OptionName": "Pricelists",
+    "Icon": "fa fa-sitemap fa-fw",
+    "CollapseValue": "pricelists",
+    "StateRef": null,
+    "Options": [
+      {
+        "Name": "Pricelist Master",
+        "StateRef": "dashboard.SetupPricelistMaster"
+      },
+      {
+        "Name": "Pricelist",
+        "StateRef": "dashboard.SetupPricelist"
+      },
+      {
+        "Name": "Product Prices",
+        "StateRef": "dashboard.SetupProductPrices"
+      },
+      {
+        "Name": "Ingredient Prices",
+        "StateRef": "dashboard.SetupIngredientPrices"
+      },
+      {
+        "Name": "Discounts",
+        "StateRef": "dashboard.SetupDiscount"
+      }
+    ]
+
+  },
+  {
+    "OptionName": "Pages",
+    "Icon": "fa fa-clipboard fa-fw",
+    "CollapseValue": "pages",
+    "StateRef": "dashboard.SetupPages",
+    "Options": []
+  },
+  {
+    "OptionName": "Tables",
+    "Icon": "fa fa-table fa-fw",
+    "CollapseValue": "tables",
+    "StateRef": "dashboard.SetupTables",
+    "Options": []
+  },
+  {
+    "OptionName": "Staff Options",
+    "Icon": "fa fa-users fa-fw",
+    "CollapseValue": "staffoptions",
+    "StateRef": null,
+    "Options": [
+      {
+        "Name": "Edit Staff",
+        "StateRef": "dashboard.EditStaff"
+      },
+      {
+        "Name": "Staff Positions",
+        "StateRef": "dashboard.StaffPositions"
+      },
+      {
+        "Name": "Authorization Groups",
+        "StateRef": "dashboard.SetupAuthorizedGroup"
+      },
+      {
+        "Name": "Auth Group Actions",
+        "StateRef": "dashboard.AuthGroupActions"
+      },
+      {
+        "Name": "Payrole",
+        "StateRef": "dashboard.PayroleOverview"
+      }
+    ]
+  },
+  {
+    "OptionName": "Hotel",
+    "Icon": "fa fa-building-o fa-fw",
+    "CollapseValue": "hotelconnection",
+    "StateRef": null,
+    "Options": [
+      {
+        "Name": "Department Mapping",
+        "StateRef": "dashboard.SetupDeparmentsMapping"
+      },
+      {
+        "Name": "Board Meal",
+        "StateRef": "dashboard.SetupBoardMeals"
+      },
+      {
+        "Name": "Account Mappings",
+        "StateRef": "dashboard.SetupAccountMapping"
+      }
+    ]
+  },
+  {
+    "OptionName": "Exclusions",
+    "Icon": "fa fa-random fa-fw",
+    "CollapseValue": "exclusions",
+    "StateRef": null,
+    "Options": [
+      {
+        "Name": "Excluded Accounts",
+        "StateRef": "dashboard.SetupExcludedAccounts"
+      },
+      {
+        "Name": "Excluded Pricelists",
+        "StateRef": "dashboard.SetupPosInfoDetailPricelistAssoc"
+      }
+    ]
+  },
+  {
+    "OptionName": "Modules Configuration",
+    "Icon": "fa fa-fax fa-fw",
+    "CollapseValue": "moduleconf",
+    "StateRef": null,
+    "Options": [
+      {
+        "Name": "Departments",
+        "StateRef": "dashboard.SetupDeparments"
+      },
+      {
+        "Name": "POS Devices",
+        "StateRef": "dashboard.SetupModules"
+
+      },
+      {
+        "Name": "PDA Modules",
+        "StateRef": "dashboard.SetupPdaModules"
+      },
+      {
+        "Name": "KDS",
+        "StateRef": "dashboard.SetupKds"
+      },
+      {
+        "Name": "Kichen Configuration",
+        "CollapseValue2": "kichenconf",
+        "StateRef": null,
+        "Options": [
+          {
+            "Name": "Kitchen",
+            "StateRef": "dashboard.SetupKitchen"
+          },
+          {
+            "Name": "Kitchen Instruction",
+            "StateRef": "dashboard.SetupKitchenInstructions"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "OptionName": "Transactions",
+    "Icon": "fa fa-exchange fa-fw",
+    "CollapseValue": "transactions",
+    "StateRef": null,
+    "Options": [
+      {
+        "Name": "Accounts",
+        "StateRef": "dashboard.SetupAccounts"
+      },
+      {
+        "Name": "Invoice Types",
+        "StateRef": "dashboard.SetupInvoiceTypes"
+      },
+      {
+        "Name": "Transaction Types",
+        "StateRef": "dashboard.SetupTransactionTypes"
+      },
+      {
+        "Name": "Sales Types",
+        "StateRef": "dashboard.SetupSalesType"
+      },
+      {
+        "Name": "Vouchers-Credits",
+        "StateRef": "dashboard.SetupPredefinedCredits"
+      }
+    ]
+  },
+  {
+    "OptionName": "Associations",
+    "Icon": "fa fa-link fa-fw",
+    "CollapseValue": "associations",
+    "StateRef": null,
+    "Options": [
+      {
+        "Name": "POS Associations",
+        "StateRef": "dashboard.SetupModulesAssocs"
+      },
+      {
+        "Name": "Ingredient Associations",
+        "StateRef": "dashboard.SetupIngredientAssocs"
+      }
+    ]
+  },
+  {
+    "OptionName": "Manage Receipts",
+    "Icon": "fa fa-print fa-fw",
+    "CollapseValue": "receiptsPolicy",
+    "StateRef": null,
+    "Options": [
+      {
+        "Name": "Manage Receipts",
+        "StateRef": "dashboard.ManageReceipts"
+      },
+      {
+        "Name": "Closing Year",
+        "StateRef": "dashboard.CloseYear"
+      }
+    ]
+  },
+  {
+    "OptionName": "Settings",
+    "Icon": "fa fa-cogs fa-fw",
+    "CollapseValue": "settings",
+    "StateRef": null,
+    "Options": [
+      {
+        "Name": "Remote Control",
+        "StateRef": "dashboard.RemoteQueries"
+      }
+    ]
+  },
+  {
+    "OptionName": "Development",
+    "Icon": "fa fa-cogs fa-fw",
+    "CollapseValue": "develop",
+    "visible": "dev",
+    "StateRef": null,
+    "Options": [
+      {
+        "Name": "New POS Modules",
+        "StateRef": "dashboard.PosModules"
+      },
+      {
+        "Name": "Dev Products",
+        "StateRef": "dashboard.ManageProducts"
+      },
+      {
+        "Name": "New Pages",
+        "StateRef": "dashboard.ManagePages"
+      },
+      {
+        "Name": "Test View",
+        "StateRef": "dashboard.test"
+
+      },
+      {
+        "Name": "404 Page",
+        "StateRef": "dashboard.notFound"
+      },
+      {
+        "Name": "Closing Year",
+        "StateRef": "dashboard.CloseYear"
+
+      }
+    ]
+  }
+]
+						

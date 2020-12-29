@@ -1,0 +1,408 @@
+﻿<style>
+    md-tab-content > div {
+        height: 100%;
+    }
+
+    .small-fabs-30 > button.md-button {
+        width: 30px !important;
+        height: 30px !important;
+        /*line-height: 30px !important;*/
+        min-height: 30px !important;
+        margin: 0 3px;
+    }
+
+    .selected-row {
+        background-color: rgb(210, 210, 255);
+    }
+
+    .deleted-row {
+        background-color: rgba(250, 0, 0,0.35);
+    }
+
+    .new-row {
+        background-color: rgba(0,250, 0,0.35);
+    }
+
+    .edited-row {
+        background-color: rgba(255, 152, 0,0.35);
+    }
+    .imported-row {
+        background-color: rgba(200, 122, 255,0.35);
+
+    }
+
+    .disabled-force-row > button > div > * > * > *,
+    .disabled-force-row > button > div > * > * > * > * {
+        color: rgba(0,0,0,0.5) !important;
+    }
+    /*Classes to overwrite styling form inputs to be aligned  in same height*/
+    .fix-input-display {
+        margin: 0;
+    }
+
+        .fix-input-display > div.md-errors-spacer {
+            display: none;
+        }
+
+        .fix-input-display > input {
+            height: 40px;
+            line-height: 40px;
+        }
+    /*Classes that overwrites input container*/
+    /* of header toolbar over products drop down*/
+    md-input-container.fix-input-display-h > input {
+        color: rgb(255, 255, 255);
+        border-color: rgba(255, 255, 255, 0.12);
+        margin: 0;
+    }
+
+    md-input-container.fix-input-display-h > md-select.md-default-theme:not([disabled]):focus .md-select-value, md-input-container.fix-input-display-h > md-select:not([disabled]):focus .md-select-value {
+        color: rgb(250, 250, 250);
+    }
+
+    .message {
+        background: #FAFAFA;
+        border: 1px solid #CCCCCC;
+        color: #000;
+        width: 100%;
+        min-width: 300px;
+        opacity: 1;
+        transition: all 0.05s cubic-bezier(0.25, 0.8, 0.25, 1);
+        transition-duration: 200ms;
+        overflow: hidden;
+        box-sizing: border-box;
+        position: absolute;
+        right: 0%;
+        z-index: 10;
+    }
+
+    .textRight {
+        text-align: right;
+    }
+
+    .zeroPadR {
+        padding-right: 12px !important;
+    }
+</style>
+<div ng-controller="ManageProductsController" ng-init="init();" style="overflow:hidden;" layout="column" layout-align="start stretch" layout-fill>
+    <!--<md-subheader class="wrappers-view-header-forcepad md-whiteframe-7dp md-primary">
+        <div layout="row" layout-align="center center">
+            <span flex="30"></span>
+            <span flex>Products</span>
+            <span flex="30" layout="row" layout-align="end center">
+                <a ui-sref="dashboard.SetupProducts">
+                    Old View
+                    <md-icon md-svg-icon="av:new_releases"></md-icon>
+                    <md-tooltip md-direction="left">Navigate to old products management</md-tooltip>
+                </a>
+            </span>
+        </div>
+    </md-subheader>-->
+    <div layout="column" layout-align="start stretch" flex ng-include="displayOptionTemplate"></div>
+</div>
+<script id="initiallizing-products-template" type="text/ng-template">
+    <div layout="row" layout-align="center center" flex="50">
+        <div layout="column" layout-align="center stretch" flex="50">
+            <h4 style="text-align:center">Loading Dependencies</h4>
+            <div layout="column" layout-align="start space-between" flex="70">
+                <div ng-repeat="(key , state) in initProc" layout="row" layout-align="start center" flex style="min-height:50px;">
+                    <md-icon class="md-primary" ng-if="state.State == 'success'" md-svg-icon="navigation:check"></md-icon>
+                    <md-icon class="md-warn" ng-if="state.State == 'failed'" md-svg-icon="navigation:close"></md-icon>
+                    <strong>{{state.Description}}</strong>
+                    <span flex></span>
+                    <md-progress-circular ng-if="state.State == 'idle'" md-mode="indeterminate"></md-progress-circular>
+                    <md-icon ng-if="state.State == 'failed' && state.fun != undefined" md-svg-icon="navigation:refresh" ng-click="state.fun()"></md-icon>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+<script id="main-layout-template" type="text/ng-template">
+    <div layout="row" layout-align="start center">
+        <!-- LEFT PANEL  -->
+        <div layout="column" layout-align="center stretch" flex="40">
+            <div style="display: inline-flex; width: 100%;">
+                <!-- barcode Search -->
+                <div layout="row" layout-align="start center" flex="40">
+                    <div class="input-group">
+                        <span style="position:relative;" class="add-clear-span">
+                            <input class="form-control" type="text" style="border-radius: 150px;" placeholder="Search Barcode" ng-model="searchBarcodeInput" ng-keypress="enterKeyBarcodeEvent($event, searchBarcodeInput)">
+                        </span>
+                        <span class="input-group-btn">
+                            <a class="btn" style="color: rgb(204, 204, 204); text-decoration: none; position: absolute; right: 0px; top: 0px; z-index: 50;" ng-click="searchBarcodeInput = ''"><i class="fa fa-times"></i></a>
+                        </span>
+                    </div>
+                </div>
+
+                <div style="margin-bottom:1%; display:flex; margin-left:auto; max-width: 60%;">
+                    <div style="position:relative;">
+                        <!-- Add new Product Button -->
+                        <md-button class="md-icon-button md-primary" id="addData" ng-click="addProduct()">
+                            <md-tooltip md-direction="top">Insert new product</md-tooltip>
+                            <md-icon md-menu-origin md-svg-icon="content:add"></md-icon>
+                        </md-button>
+                        <!-- Query Manage Filter -->
+                        <md-button aria-label="UserSettings" class="md-icon-button md-primary" ng-click="toggleSearch();$event.stopPropagation();">
+                            <md-tooltip md-direction="top">External filter search</md-tooltip>
+                            <md-icon md-menu-origin md-svg-icon="action:search"></md-icon>
+                        </md-button>
+                        <div width="4" style="max-height:none;" id="collapseFilterSearch" uib-collapse="filterCatCollapsed == false" class="collapseWindow message">
+                            <md-content layout="column" layout-align="start stretch" flex="grow" class="md-padding">
+                                <h4 style="font-variant:small-caps; text-align:center;">Filter Options</h4>
+                                <div layout="column" class="md-padding">
+                                    <md-input-container class="md-block" flex>
+                                        <label>Product Categories</label>
+                                        <md-select name="filter-pcat" aria-label="Current ProductCategory" ng-model="selectedFilters.fpcat">
+                                            <md-option ng-repeat="ch in lookups.ProductCategories" value="{{ch.Id}}">{{ch.Description}}</md-option>
+                                        </md-select>
+                                    </md-input-container>
+                                    <md-input-container class="md-block" flex><label>Code</label><input ng-model="selectedFilters.fcode"></md-input-container>
+                                    <md-input-container class="md-block" flex><label>Description</label><input ng-model="selectedFilters.fdesc"></md-input-container>
+                                </div>
+                                <md-button class="md-raised" ng-click="clearCatFilters()">Clear Filter</md-button>
+                                <md-button class="md-raised md-primary" ng-click="categoryfiltersChanged(selectedFilters)">Search</md-button>
+                            </md-content>
+                        </div>
+                        <!-- Manage Display Filter -->
+                        <md-menu md-position-mode="target-right target">
+                            <md-button aria-label="UserSettings" class="md-icon-button md-primary" ng-click="checkToggleCollapsed();$mdOpenMenu($event)">
+                                <md-tooltip md-direction="top">Management view settings</md-tooltip>
+                                <md-icon md-menu-origin md-svg-icon="navigation:apps"></md-icon>
+                            </md-button>
+                            <md-menu-content width="4" style="max-height:none;">
+                                <md-content layout="column" layout-align="start stretch" flex="grow" class="md-padding">
+                                    <h4 style="font-variant:small-caps; text-align:center;">Display Options</h4>
+                                    <md-divider></md-divider>
+                                    <span layout="row" layout-align="space-between center" flex>
+                                        <strong style="font-variant:small-caps;">Use Delete:</strong>
+                                        <md-switch ng-model="deleteAction" aria-label="toggle delete selection" class="md-warn" ng-change="deleteOptionView(deleteAction)"></md-switch>
+                                    </span>
+                                    <md-divider></md-divider>
+                                    <span layout="row" layout-align="space-between center" flex>
+                                        <strong style="font-variant:small-caps;">Restore Deleted:</strong>
+                                        <md-button class="md-fab md-mini md-warn" ng-click="restoreIsDeleted()">
+                                            <md-tooltip md-direction="top">Restore available deleted products on server.</md-tooltip>
+                                            <md-icon md-svg-icon="action:settings_backup_restore"></md-icon>
+                                        </md-button>
+                                    </span>
+                                    <md-divider></md-divider>
+                                    <h5 style="font-variant:small-caps;">Selected Display:</h5>
+                                    <md-radio-group ng-model="selectedDisplayType.Type" ng-change="changeDP(selectedDisplayType.Type)" flex>
+                                        <!--//loaded: 0, detailed: 1, created: 2, edited: 3, deleted: 4-->
+                                        <md-radio-button value="loaded" class="md-primary" aria-label="common-use">Common Search Use</md-radio-button>
+                                        <md-radio-button value="detailed" class="md-primary" aria-label="loaded-entities">Has Details loaded</md-radio-button>
+                                        <md-radio-button value="created" class="md-primary" aria-label="created-entities">Recently Created</md-radio-button>
+                                        <md-radio-button value="edited" class="md-warn" aria-label="edited-entities">Edited</md-radio-button>
+                                        <md-radio-button value="deleted" class="md-accent" aria-label="deleted-entities">Marked Deleted</md-radio-button>
+                                        <md-radio-button value="imported" class="" aria-label="imported-entities">File Imported</md-radio-button>
+                                    </md-radio-group>
+                                </md-content>
+                            </md-menu-content>
+                        </md-menu>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- RIGHT Details panel -->
+        <div layout="column" layout-align="start stretch" flex="60">
+            <div layout="row" layout-align="end center" style="text-align:right;">
+                <md-menu md-position-mode="target-right target" ng-if="devAccess">
+                    <md-button aria-label="UserSettings" class="md-icon-button md-primary" ng-click="$mdOpenMenu($event)">
+                        <md-tooltip md-direction="top">Develop - Debug</md-tooltip>
+                        <md-icon md-menu-origin md-svg-icon="device:developer_mode"></md-icon>
+                    </md-button>
+                    <md-menu-content width="4" style="max-height:none;">
+                        <md-content layout="column" layout-align="start stretch" flex="grow" class="md-padding">
+                            <h4 style="font-variant:small-caps; text-align:center;">Use Debug Actions</h4>
+                            <md-button class="md-raised" ng-click="validationCheckOverProduct(selectedProduct)">Validate</md-button>
+                            <md-button class="md-raised" ng-click="logMap()">LogMap</md-button>
+                            <md-button class="md-raised" ng-click="logSelected()">Log Selected</md-button>
+                            <md-button class="md-raised" ng-click="logDisplayed()">Log Displayed</md-button>
+                            <md-button class="md-raised" ng-click="logEntity(selectedDisplayType)">Log Entity</md-button>
+
+                        </md-content>
+                    </md-menu-content>
+                </md-menu>
+
+                <md-button class="md-fab md-mini md-warn" ng-click="discardAllChanges()">
+                    <md-tooltip md-direction="top">Discard changes on objects</md-tooltip>
+                    <md-icon md-svg-icon="action:autorenew"></md-icon>
+                </md-button>
+
+                <md-button class="md-fab md-mini md-primary" ng-disabled="savingProcess" ng-click="saveGridChanges()">
+                    <md-tooltip md-direction="top">Save changes</md-tooltip>
+                    <md-icon md-svg-icon="content:save"></md-icon>
+                </md-button>
+            </div>
+        </div>
+    </div>
+    <div layout="row" layout-align="start stretch" flex style="overflow:hidden;">
+        <!-- List of Products -->
+        <div layout="column" layout-align="start stretch" flex="40">
+            <!-- Header on Products view list -->
+            <md-toolbar class="md-primary md-padding" layout="column" layout-align="start stretch" style="font-size:small;">
+                <div layout="row" layou-align="start center">
+                    <div flex="10">Id</div>
+                    <div flex="35">S.Description</div>
+                    <div flex="20">Code</div>
+                    <div flex="35">Category</div>
+                </div>
+                <div layout="row" layou-align="start end">
+                    <md-input-container flex="10" class="fix-input-display fix-input-display-h"><input name="dummy-idf" value="#" aria-label="header-droplist-id" ng-disabled="true"></md-input-container>
+                    <md-input-container flex="35" class="fix-input-display fix-input-display-h"><input name="filter-pdesc" aria-label="Current SalesDesc" ng-model="selectedFilters.fdesc" ng-change="categoryfiltersChanged(selectedFilters)"></md-input-container>
+                    <md-input-container flex="20" class="fix-input-display fix-input-display-h"><input name="filter-pcode" aria-label="Current Code" ng-model="selectedFilters.fcode" ng-change="categoryfiltersChanged(selectedFilters)"></md-input-container>
+                    <md-input-container flex="35" class="fix-input-display fix-input-display-h">
+                        <md-select name="filter-pcat" aria-label="Current ProductCategory" ng-model="selectedFilters.fpcat" style="line-height: 36px;" ng-change="categoryfiltersChanged(selectedFilters)">
+                            <md-option value=""> -- </md-option>
+                            <md-option ng-repeat="ch in lookups.ProductCategories" value="{{ch.Id}}">{{ch.Description}}</md-option>
+                        </md-select>
+                    </md-input-container>
+                </div>
+            </md-toolbar>
+            <md-divider></md-divider>
+            <!-- Loading section -->
+            <div ng-if="searchingProcess == true" layout="column" layout-align="center center" flex="grow"><md-progress-circular md-mode="indeterminate"></md-progress-circular><span>Loading Products...</span></div>
+            <!-- Main list sproducts template -->
+            <div style="overflow:auto;" flex="grow" ng-if="searchingProcess==false;">
+                <md-list>
+                    <md-list-item ng-repeat="pr in displayedProducts track by $index" ng-click="changeSelectedProductId(pr)" aria-label="mrowprod-{{pr}}"
+                                  ng-class="{ 
+                                  'selected-row' : pr == selectedProduct,
+                                  'disabled-force-row' : pr != selectedProduct ,
+                                  'new-row' : pmap[pr].EntityStatus == 2 && pmap[pr].isDeleted != true, 
+                                  'deleted-row' : pmap[pr].isDeleted == true, 
+                                  'edited-row' : pmap[pr].EntityStatus == 3 && pmap[pr].isDeleted != true ,
+                                  'imported-row':pmap[pr].EntityStatus == 5 && pmap[pr].isDeleted != true }">
+                        <div class="md-list-item-text" layout="row" layout-align="start center" flex="grow">
+                            <md-checkbox aria-label="marked_delete-{{pr}}" ng-if="deleteAction" ng-checked="pmap[pr].isDeleted" ng-click="removeProduct(pr)" class="md-primary" style="margin: auto;">
+                            </md-checkbox>
+                            <md-input-container flex="10" class="fix-input-display">
+                                <span ng-if="pmap[pr].EntityStatus > 0">*</span><span>{{pr}}</span>
+                                <md-tooltip md-direction="top">Id *indicates fully loaded</md-tooltip>
+                            </md-input-container>
+                            <md-input-container flex="30" class="fix-input-display"><input name="PSaldesc" aria-label="Current SalesDesc" ng-model="pmap[pr].SalesDescription" ng-disabled="pr != selectedProduct" required ng-change="markEdited(pr)"></md-input-container>
+                            <md-input-container flex="20" class="fix-input-display"><input name="PCode" aria-label="Current Code" ng-model="pmap[pr].Code" ng-disabled="pr!= selectedProduct" required ng-change="markEdited()"></md-input-container>
+                            <md-input-container flex="30" class="fix-input-display">
+                                <md-select name="PProductCategoryId" aria-label="Current ProductCategory" ng-model="pmap[pr].ProductCategoryId" ng-disabled="pr != selectedProduct" required ng-change="markEdited()">
+                                    <md-option ng-repeat="ch in lookups.ProductCategories" value="{{ch.Id}}">{{ch.Description}}</md-option>
+                                </md-select>
+                            </md-input-container>
+                            <md-button class="md-icon-button md-mini" ng-if="!deleteAction" ng-disabled="savingProcess" ng-click="discardItemChanges(pr)" aria-label="reload crow">
+                                <md-tooltip md-direction="top">Reload selected product from server</md-tooltip>
+                                <md-icon md-svg-icon="navigation:refresh"></md-icon>
+                            </md-button>
+                            <md-button class="md-icon-button md-mini md-warn md-raised" ng-if="deleteAction" aria-label="mark-deleted-{{pr}}" ng-click="removeProduct(pr)">
+                                <md-tooltip md-direction="top">Mark / Unmark selected product as deleted</md-tooltip>
+                                <md-icon md-svg-icon="action:settings_backup_restore" ng-if="pmap[pr].isDeleted == true">Unmark</md-icon>
+                                <md-icon md-svg-icon="action:delete" ng-if="pmap[pr].isDeleted != true">Delete</md-icon>
+                            </md-button>
+                        </div>
+                    </md-list-item>
+                </md-list>
+            </div>
+            <div flex></div>
+            <md-divider></md-divider>
+            <!-- Paggination -->
+            <section layout="row" layout-align="space-between center" nf-if="">
+                <cl-paging class="small-fabs-30" cl-pages="paging.total" cl-steps="4" cl-page-changed="paging.onPageChanged(selectedFilters)" cl-align="center center" cl-current-page="paging.current"></cl-paging>
+                <md-select aria-label="pagesize dropdown" ng-model="paging.pageSize" ng-change="categoryfiltersChanged(selectedFilters)">
+                    <md-optgroup label="Page Size">
+                        <md-option ng-repeat="ch in [20,50,100,200]" value="{{ch}}">{{ch}}</md-option>
+                    </md-optgroup>
+                </md-select>
+            </section>
+        </div>
+        <!-- Tabs of details 60% -->
+        <div layout="column" layout-align="start stretch" flex="60" style="padding-left:1%;">
+            <md-tabs md-border-bottom flex md-selected="selectedTab">
+                <!-- Overview TAB -->
+                <md-tab label="{{(pmap[selectedProduct]['emodel']['formEdited'] == true) ? '*' :''}}Overview ({{(pmap[selectedProduct]['vmodel']['Overview'] == true) ? 'V' :'I'}})" ng-click="showDivSelection='overview '+'x'" ng-class="{'md-warn': pmap[selectedProduct]['vmodel']['Overview'] != true}">
+                    <div layout="row" layout-align="start stretch" layout-fill>
+                        <md-content class="md-padding" layout="column" layout-align="start stretch" flex="grow" ng-cloak>
+                            <div layout="row" layout-align="center start" style="margin-top:4%;" ng-if="selectedProduct == undefined" flex="grow">
+                                <md-toolbar class="md-accent md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="start center"><md-icon class="md-margin" md-svg-icon="action:info"></md-icon>Please select a product from list to display Overview form.</md-toolbar>
+                            </div>
+                            <div ng-if="selectedProduct != undefined && loadingTabs == true" layout="column" layout-align="center center" flex="grow"><md-progress-circular md-mode="indeterminate"></md-progress-circular><span>Loading...</span></div>
+                            <product-entity-form ng-show="selectedProduct != undefined && loadingTabs == false" layout="row" layout-align="start stretch" flex="grow"
+                                                 data="pmap[selectedProduct]"
+                                                 valid="pmap[selectedProduct].vmodel.Overview"
+                                                 is-edited="pmap[selectedProduct].emodel.formEdited"
+                                                 use-unique="BIconf.BIPolicy.Product.UniqueCode"
+                                                 lookups="lookups">
+                            </product-entity-form>
+                        </md-content>
+                    </div>
+                </md-tab>
+                <!-- Recipes TAB -->
+                <md-tab label="{{(pmap[selectedProduct]['emodel']['recipesEdited'] == true) ? '*' :''}}Recipes ({{pmap[selectedProduct].ProductRecipe.length || '-'}})" ng-click="showDivSelection='recipe'">
+                    <div layout="row" layout-align="start stretch" layout-fill>
+                        <md-content class="md-padding" layout="column" layout-align="start stretch" flex="grow" ng-cloak>
+                            <div layout="row" layout-align="center start" style="margin-top:4%;" ng-if="selectedProduct == undefined" flex="grow">
+                                <md-toolbar class="md-accent md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="start center"><md-icon class="md-margin" md-svg-icon="action:info"></md-icon>Please select a product from list to display Recipe.</md-toolbar>
+                            </div>
+                            <product-recipes-comp ng-if="selectedProduct != undefined && loadingTabs == false && showDivSelection=='recipe'" name="product-details-recipe" layout="row" layout-align="start stretch" flex="grow"
+                                                  data="pmap[selectedProduct]"
+                                                  is-edited="pmap[selectedProduct].emodel.recipesEdited"
+                                                  lookups="lookups">
+                            </product-recipes-comp>
+                            <div ng-if="selectedProduct != undefined && loadingTabs == true" layout="column" layout-align="center center" flex="grow">
+                                <md-progress-circular md-mode="indeterminate"></md-progress-circular><span>Loading...</span>
+                            </div>
+                        </md-content>
+                    </div>
+                    <!-- Extras TAB -->
+                    <md-tab label="{{(pmap[selectedProduct]['emodel']['extrasEdited'] == true) ? '*' :''}}Extras ({{pmap[selectedProduct].ProductExtras.length || '-'}})" ng-click="showDivSelection='extras'">
+                        <div layout="row" layout-align="start stretch" layout-fill>
+                            <md-content class="md-padding" layout="column" layout-align="start stretch" flex="grow">
+                                <div layout="row" layout-align="center start" style="margin-top:4%;" ng-if="selectedProduct == undefined" flex="grow">
+                                    <md-toolbar class="md-accent md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="start center"><md-icon class="md-margin" md-svg-icon="action:info"></md-icon>Please select a product from list to display Extras.</md-toolbar>
+                                </div>
+                                <product-extras-comp ng-if="selectedProduct != undefined && loadingTabs == false && showDivSelection=='extras'" name="product-details-extras" layout="row" layout-align="start stretch" flex="grow"
+                                                     data="pmap[selectedProduct]"
+                                                     is-edited="pmap[selectedProduct].emodel.extrasEdited"
+                                                     lookups="lookupExtras"
+                                                     pcatmap ="pmap[selectedProduct].ProductCategoryId">
+                                </product-extras-comp>
+                                <div ng-if="selectedProduct != undefined && loadingTabs == true" layout="column" layout-align="center center" flex="grow"><md-progress-circular md-mode="indeterminate"></md-progress-circular><span>Loading...</span></div>
+                            </md-content>
+                        </div>
+                    </md-tab>
+                    <!-- Barcodes TAB -->
+                    <md-tab label="{{(pmap[selectedProduct]['emodel']['barcodesEdited'] == true) ? '*' :''}}Barcodes ({{pmap[selectedProduct].ProductBarcodes.length || '-'}})" ng-click="showDivSelection='barcodes'">
+                        <div layout="row" layout-align="start stretch" layout-fill>
+                            <md-content class="md-padding" layout="column" layout-align="start stretch" flex="grow">
+                                <div layout="row" layout-align="center start" style="margin-top:4%;" ng-if="selectedProduct == undefined" flex="grow">
+                                    <md-toolbar class="md-accent md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="start center"><md-icon class="md-margin" md-svg-icon="action:info"></md-icon>Please select a product from list to display Barcodes.</md-toolbar>
+                                </div>
+                                <product-barcodes-list ng-if="selectedProduct != undefined && loadingTabs == false && showDivSelection=='barcodes'" name="product-details-barcodes" layout="row" layout-align="start stretch" flex="grow"
+                                                       data="pmap[selectedProduct]"
+                                                       is-edited="pmap[selectedProduct].emodel.barcodesEdited"
+                                                       lookups="lookups">
+                                </product-barcodes-list>
+                                <div ng-if="selectedProduct != undefined && loadingTabs == true" layout="column" layout-align="center center" flex="grow"><md-progress-circular md-mode="indeterminate"></md-progress-circular><span>Loading...</span></div>
+                            </md-content>
+                        </div>
+                    </md-tab>
+                    <!-- Prices TAB -->
+                    <md-tab label="{{(pmap[selectedProduct]['emodel']['pricesEdited'] == true) ? '*' :''}}Pricelists ({{pmap[selectedProduct].ProductPrices.length || '-'}})" ng-click="showDivSelection='pricelists'">
+                        <div layout="row" layout-align="start stretch" layout-fill>
+                            <md-content class="md-padding" layout="row" layout-align="start stretch" flex="grow">
+                                <div layout="row" layout-align="center start" style="margin-top:4%;" ng-if="selectedProduct == undefined" flex="grow">
+                                    <md-toolbar class="md-accent md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="start center">
+                                        <md-icon class="md-margin" md-svg-icon="action:info"></md-icon>Please select a product from list to display Pricelists.
+                                    </md-toolbar>
+                                </div>
+                                <product-prices-list ng-if="selectedProduct != undefined && loadingTabs == false && showDivSelection=='pricelists'" name="product-details-barcodes" layout="row" layout-align="start stretch" flex="grow"
+                                                     data="pmap[selectedProduct]"
+                                                     is-edited="pmap[selectedProduct].emodel.pricesEdited"
+                                                     lookups="lookups"
+                                                     lookup-objects="lookupObjects">
+                                </product-prices-list>
+                                <div ng-if="selectedProduct != undefined && loadingTabs == true" layout="column" layout-align="center center" flex="grow"><md-progress-circular md-mode="indeterminate"></md-progress-circular><span>Loading...</span></div>
+                            </md-content>
+                        </div>
+                    </md-tab>
+            </md-tabs>
+        </div>
+    </div>
+</script>

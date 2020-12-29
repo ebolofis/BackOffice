@@ -1,0 +1,49 @@
+﻿<div layout="column" layout-align="center stretch" flex="grow">
+    <md-subheader class="md-no-sticky">
+        <div layout="row" layou-align="start center">
+            <div flex="50">Barcode</div>
+            <div flex></div>
+            <div flex="15">Action</div>
+        </div>
+    </md-subheader>
+    <md-divider></md-divider>
+    <div layout="row" layout-align="center center" ng-if="data['ProductBarcodes'].length == 0">
+        <md-toolbar class="md-warn md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="start center">
+            <md-icon class="md-margin" md-svg-icon="action:info"></md-icon><span>No Barcodes assigned.</span>
+        </md-toolbar>
+    </div>
+    <div style="overflow:auto;" flex="grow" ng-if="data['ProductBarcodes'].length > 0">
+        <md-list>
+            <md-list-item ng-repeat="pr in data['ProductBarcodes']">
+                <div class="md-list-item-text" layout="row" layout-align="start center" flex="grow" ng-class="{'new-row' : pr.EntityStatus == 0 , 'edited-row' : pr.EntityStatus == 1 ,'deleted-row' : pr.EntityStatus == 2 }">
+                    <md-input-container flex="50" class="fix-input-display">
+                        <input name="Barcode-Detail" aria-label="Barcode-detail" ng-model="pr.Barcode" ng-change="markEditedDetail(pr)">
+                        <!--<div ng-messages="barcodeform.Barcode.$error">
+                            <div ng-message="required">You need to specify a Barcode</div>
+                        </div>-->
+                    </md-input-container>
+                    <div flex></div>
+                    <div flex="15" layout="row" layout-align="center center">
+                        <md-button class="md-fab md-mini md-warn" style="margin: 0 auto;" ng-if="pr.EntityStatus != 2" ng-click="removeDetail('ProductBarcodes',pr, $index)">
+                            <md-tooltip md-direction="top">Remove barcode entry</md-tooltip>
+                            <md-icon md-svg-icon="action:delete"></md-icon>
+                        </md-button>
+                        <md-button class="md-fab md-mini" style="margin: 0 auto;" ng-if="pr.EntityStatus == 2" ng-click="refreshRow('ProductBarcodes',pr)">
+                            <md-tooltip md-direction="top">Restore Entity from delete state</md-tooltip>
+                            <md-icon md-svg-icon="action:settings_backup_restore"></md-icon>
+                        </md-button>
+                    </div>
+                </div>
+            </md-list-item>
+        </md-list>
+    </div>
+    <div flex></div>
+    <md-divider></md-divider>
+    <div layout="row" layout-align="space-between center">
+        <md-button class="md-raised md-primary" ng-click="addDetail('ProductBarcodes')">
+            <md-tooltip md-direction="top">Add new extra</md-tooltip>
+            Add Barcode
+        </md-button>
+        <strong>Results:&nbsp;#{{data['ProductBarcodes'].length}}</strong>
+    </div>
+</div>

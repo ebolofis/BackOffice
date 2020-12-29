@@ -1,0 +1,171 @@
+﻿<div ng-controller="ManagePagesController" ng-init="init()" layout="column" layout-align="start stretch" ng-cloak style="height: 100%;">
+    <md-subheader class="wrappers-view-header md-whiteframe-7dp md-primary">Pages Management</md-subheader>
+    <div layout="row" layout-align="start stretch" style="overflow:hidden;" flex="grow" ng-cloak>
+        <div ng-if="loadingProccess == true" layout="column" layout-align="center center" flex="grow"><md-progress-circular md-mode="indeterminate"></md-progress-circular><span>Loading...</span></div>
+        <div layout="column" layout-align="start stretch" flex="grow" ng-if="loadingProccess == false" ng-include src="mainTemplate" ng-cloak></div>
+    </div>
+    <div style="background-color:black; color:white;">zavara end height</div>
+    <md-divider></md-divider>
+</div>
+<!-- Template Tab of Pages Grid layout management -->
+<script type="text/ng-template" id="select-page-template">
+    <div layout="column" layout-align="start stretch" flex="grow">
+        <div layout="row" layout-align="start center" style="margin:10px 0;">
+            <strong style="font-variant:small-caps;">Selected Set: &nbsp;&nbsp;</strong>
+            <!--<md-autocomplete ng-disabled="selectedPageset.isDirty == true"
+                             md-no-cache="ctrl.noCache"
+                             md-selected-item="ctrl.selectedItem"
+                             md-search-text-change="ctrl.searchTextChange(ctrl.searchText)"
+                             md-search-text="ctrl.searchText"
+                             md-selected-item-change="ctrl.selectedItemChange(item)"
+                             md-items="item in ctrl.querySearch(ctrl.searchText)"
+                             md-item-text="item.display"
+                             md-min-length="0"
+                             placeholder="What is your favorite US state?">
+                <md-item-template>
+                    <span md-highlight-text="ctrl.searchText" md-highlight-flags="^i">{{item.display}}</span>
+                </md-item-template>
+                <md-not-found>
+                    No states matching "{{ctrl.searchText}}" were found.
+                    <a ng-click="ctrl.newState(ctrl.searchText)">Create a new one!</a>
+                </md-not-found>
+            </md-autocomplete>-->
+            <dynamic-autocomplete ng-model="Id" sel-ent="selectedPageset" entity-handling="pagesets" auto-funs="autoCompleteObjFun" search-list="" flex="40"></dynamic-autocomplete>
+        </div>
+        <md-divider></md-divider>
+        <md-toolbar class="md-primary md-whiteframe-8dp slim-material-toolbar" style="padding:0 10px;" layout="row" layout-align="start center">
+            <span>Manage your Pages</span>
+            <md-button class="md-icon-button" aria-label="add new pageset" ng-click="modalmanage('add','page' , {})"><md-icon md-svg-icon="content:add"></md-icon><md-tooltip position="top">Add new page</md-tooltip></md-button>
+        </md-toolbar>
+        <div ng-if="pages == undefined || pages.length <= 0" layout="row" layout-align="center start" flex="grow">
+            <md-toolbar class="md-warn md-whiteframe-8dp md-margin" layout="row" layout-align="start center">
+                <md-icon class="md-margin" md-svg-icon="action:info"></md-icon>No pages found. Try reload or add a newone.<span flex></span>
+                <!--<md-icon class="md-margin" md-svg-icon="navigation:refresh" ng-click="reloadPagesets()"></md-icon>-->
+            </md-toolbar>
+        </div>
+        <div layout='row' layout-align="start stretch" ng-if="pages.length > 0" style="overflow:hidden;" flex>
+            <div layout="row" layout-align="start start" flex="grow" style="overflow:auto;" layout-wrap>
+                <div layout="column" layout-align="start stretch" ng-include src="'page-card'" flex="25" ng-repeat="p in pages"></div>
+            </div>
+        </div>
+    </div>
+</script>
+<!-- Pageset card view -->
+<script type="text/ng-template" id="page-card">
+    <md-card class="md-whiteframe-8dp" flex="grow">
+        <md-card-header style="padding:8px;">
+            <md-card-avatar>
+                <md-icon class="md-avatar-icon" layout-fill md-svg-icon="action:description"></md-icon>
+            </md-card-avatar>
+            <md-card-header-text>
+                <span class="md-title">{{p.Description}}</span>
+                <span class="md-subhead">{{p.ExtendedDesc}}</span>
+            </md-card-header-text>
+            <div layout="row" layout-align="center center">
+                <md-tooltip md-direction="top">Order/Sort Number</md-tooltip>
+                <md-icon class="md-margin" md-svg-icon="content:sort"></md-icon>
+                <span>{{p.Sort}}</span>
+            </div>
+        </md-card-header>
+        <md-card-content style="padding:0 8px;">
+            <div layout="row" layout-align="start start">
+                <md-input-container class="md-block" required flex="50">
+                    <label>Default Pricelist</label>
+                    <md-select name="DefaultPriceList" ng-model="p.DefaultPriceListId" ng-disabled="true">
+                        <md-option ng-repeat="ch in lookups.PriceList" value="{{ch.Id}}">{{ch.Description}}</md-option>
+                    </md-select>
+                </md-input-container>
+                <md-input-container class="md-block" required flex="50">
+                    <label>Page Set</label>
+                    <md-select name="PageSetId" ng-model="p.PageSetId" ng-disabled="true">
+                        <md-option ng-repeat="ch in pagesets" value="{{ch.Id}}">{{ch.Description}}</md-option>
+                    </md-select>
+                </md-input-container>
+            </div>
+        </md-card-content>
+        <md-card-actions style="margin:0;">
+            <div layout="row" layout-align="end center">
+                <md-button class="md-icon-button md-warn" aria-label="removeEntity" ng-click="deleteEntity('page', p)"><md-icon md-svg-icon="action:delete"></md-icon><md-tooltip md-direction="top">Remove Page</md-tooltip></md-button>
+                <md-button class="md-icon-button" aria-label="Editentity"><md-icon md-svg-icon="editor:mode_edit"></md-icon><md-tooltip md-direction="top">Edit Page</md-tooltip></md-button>
+                <md-button class="md-icon-button md-primary" aria-label="managePages" ng-click="managePageButtons(p)"><md-icon md-svg-icon="action:view_module"></md-icon><md-tooltip md-direction="top">Manage Page buttons</md-tooltip></md-button>
+            </div>
+        </md-card-actions>
+    </md-card>
+</script>
+
+<!-- Template Tab of Pagesets Grid layout management -->
+<script type="text/ng-template" id="select-pageset-template">
+    <div layout="column" layout-align="start stretch" flex="grow">
+        <md-toolbar class="md-primary md-whiteframe-8dp slim-material-toolbar" style="padding:0 10px;" layout="row" layout-align="start center">
+            <span>Manage your Pagesets</span>
+            <md-button class="md-icon-button" aria-label="add new pageset" ng-click="modalmanage('add','pageset' , {})"><md-icon md-svg-icon="content:add"></md-icon><md-tooltip position="top">Add a new pageset</md-tooltip></md-button>
+        </md-toolbar>
+        <div ng-if="pagesets == undefined || pagesets.length <= 0" layout="row" layout-align="center start" flex="grow">
+            <md-toolbar class="md-warn md-whiteframe-8dp md-margin" layout="row" layout-align="start center">
+                <md-icon class="md-margin" md-svg-icon="action:info"></md-icon>No pagesets found. Try reload or add a newone.<span flex></span><md-icon class="md-margin" md-svg-icon="navigation:refresh" ng-click="reloadPagesets()"></md-icon>
+            </md-toolbar>
+        </div>
+        <div layout='row' layout-align="start stretch" ng-if="pagesets.length > 0" style="overflow:hidden;" flex>
+            <div layout="row" layout-align="start start" flex="grow" style="overflow:auto;" layout-wrap>
+                <div layout="column" layout-align="start stretch" ng-include src="'pageset-card'" flex="33" ng-repeat="ps in pagesets"></div>
+            </div>
+        </div>
+    </div>
+</script>
+<!-- Pageset card view -->
+<script type="text/ng-template" id="pageset-card">
+    <md-card class="md-whiteframe-8dp" flex="grow">
+        <md-card-header style="padding:8px;">
+            <md-card-avatar>
+                <md-icon class="md-avatar-icon" layout-fill md-svg-icon="av:my_library_books"></md-icon>
+            </md-card-avatar>
+            <md-card-header-text>
+                <span class="md-title">{{ps.Description}}</span>
+                <span class="md-subhead">{{ps.PosInfoId}}</span>
+            </md-card-header-text>
+        </md-card-header>
+        <md-card-content style="padding:8px; padding-top:0;">
+            <span layout="row" layout-align="start start">
+                <span layout="row" layout-align="start center" flex="50">
+                    <md-datepicker ng-model="ps.DPActivationDate" ng-disabled="true" md-placeholder="viewDayfrom"></md-datepicker>
+                </span>
+                <span layout="row" layout-align="start center" flex="50">
+                    <md-datepicker ng-model="ps.DPDeactivationDate" ng-disabled="true" md-placeholder="viewDayTo"></md-datepicker>
+                </span>
+            </span>
+            <div layout="row" layout-align="space-between center" flex="grow">
+                <div layout="row" layout-align="center center" flex="33">
+                    <md-tooltip md-direction="top">Pages</md-tooltip>
+                    <md-icon class="md-margin" md-svg-icon="action:description"></md-icon>
+                    <span>{{ps.Pages.length}}</span>
+                </div>
+                <div layout="row" layout-align="center center" flex="33">
+                    <md-tooltip md-direction="top">Pda Device</md-tooltip>
+                    <md-icon class="md-margin" md-svg-icon="hardware:phone_iphone"></md-icon>
+                    <span>{{ps.PdaModuleId || '--'}}</span>
+                </div>
+                <div layout="row" layout-align="center center" flex="33">
+                    <md-tooltip md-direction="top">
+                        <div layout="column" layout-align="start start" flex>
+                            <span>Associated Pos Devices. Associated Pos Devices</span>
+                            <span ng-repeat="pos in ps.AssosiatedPos">{{pos.PosInfoId}}</span>
+                        </div>
+                    </md-tooltip>
+                    <md-icon class="md-margin" md-svg-icon="device:devices"></md-icon>
+                    <span>{{ps.AssosiatedPos.length}}</span>
+                </div>
+            </div>
+        </md-card-content>
+        <md-card-actions>
+            <div layout="row" layout-align="end center">
+                <md-button class="md-icon-button md-warn" aria-label="removeEntity" ng-click="deleteEntity('pageset', ps)"><md-icon md-svg-icon="action:delete"></md-icon><md-tooltip md-direction="top">Remove PageSet</md-tooltip></md-button>
+                <md-button class="md-icon-button" aria-label="Editentity"><md-icon md-svg-icon="editor:mode_edit"></md-icon><md-tooltip md-direction="top">Edit PageSet</md-tooltip></md-button>
+                <md-button class="md-icon-button md-primary" aria-label="managePages" ng-click="managePages(ps)"><md-icon md-svg-icon="device:storage"></md-icon><md-tooltip md-direction="top">Manage Pages</md-tooltip></md-button>
+            </div>
+        </md-card-actions>
+    </md-card>
+</script>
+
+<style>
+
+</style>

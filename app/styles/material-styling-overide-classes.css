@@ -1,0 +1,69 @@
+﻿/*md-Dialog full window mode class*/
+md-dialog.fullscreen-dialog {
+       max-width: 100%;
+        max-width: 100%;
+        max-height: 100%;
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+    }
+/*Toolbar of material styling */
+.slim-material-toolbar {
+    min-height: 50px;
+}
+
+    .slim-material-toolbar > div.md-toolbar-tools {
+        height: 50px;
+    }
+
+.bo-header-toolbar {
+    min-height: 40px;
+}
+
+    .bo-header-toolbar > div.md-toolbar-tools {
+        height: 40px;
+        font-weight: bolder;
+        text-align: center;
+        font-size: 15px;
+        justify-content: center;
+    }
+
+
+.h-c-ext-list {
+    text-align: center;
+    align-self: center;
+}
+
+.h-ext-list {
+    align-self: center;
+}
+
+.subhead-nopad > div.md-subheader-inner {
+    padding: 0;
+}
+
+
+.bo-form-input-errors{
+  /* NOTE: Check the demo's HTML to see some additional RTL support CSS */
+  /* Setup animations similar to the ng-messages */ }
+  .bo-form-input-errors .hint {
+    /* Position the hint */
+    position: absolute;
+    left: 2px;
+    right: auto;
+    bottom: 7px;
+    /* Copy styles from ng-messages */
+    font-size: 12px;
+    line-height: 14px;
+    transition: all 0.3s cubic-bezier(0.55, 0, 0.55, 0.2);
+    /* Set our own color */
+    color: grey; }
+  .bo-form-input-errors .hint.ng-hide,
+  .bo-form-input-errors .hint.ng-enter,
+  .bo-form-input-errors .hint.ng-leave.ng-leave-active {
+    bottom: 26px;
+    opacity: 0; }
+  .bo-form-input-errors .hint.ng-leave,
+  .bo-form-input-errors .hint.ng-enter.ng-enter-active {
+    bottom: 7px;
+    opacity: 1; }

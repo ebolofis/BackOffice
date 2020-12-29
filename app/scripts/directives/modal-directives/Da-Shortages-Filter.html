@@ -1,0 +1,88 @@
+﻿<md-dialog ng-class="{'fullscreen-dialog' : fullscreenModal}" aria-label="EditPosInfo" ng-cloak style="min-width: 50vw;">
+    <form name="receiptFilterForm">
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>Search Receipts</h2>
+                <span flex></span>
+                <toggle-fs-modal tvar="fullscreenModal"></toggle-fs-modal>
+                <md-button class="md-icon-button" aria-label="CloseModal" ng-click="cancel()">
+                    <md-icon md-svg-icon="navigation:close"></md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content>
+            <div layout="column" layout-align="center stretch" class="md-padding">
+                <!--<div layout="row" layout-align="start stretch">
+        <md-input-container class="md-block" required flex="40">
+            <label>Pos Info</label>
+            <md-select name="Posinfolist" ng-model="mfilt.PosInfoId" required>
+                <md-option ng-repeat="ch in lookupslists.PosInfoId" value="{{ch.Id}}">{{ch.Description}}</md-option>
+            </md-select>
+            <div ng-messages="receiptFilterForm.Posinfolist.$error"><div ng-message="required">You need to provide a POS system.</div></div>
+
+        </md-input-container>
+        <div flex="40" layout="row" layout-align="start center">
+            <md-datepicker ng-model="mfilt.FromDate" md-placeholder="From date" ng-change="logdate(mfilt.FromDate)" ng-disabled="mfilt.usedate != true"></md-datepicker>
+        </div>
+        <div layout="row" layout-align="start center">
+            <md-checkbox md-no-ink aria-label="useDay" ng-model="mfilt.usedate" class="md-primary" style="margin:0;">Use date</md-checkbox>
+        </div>
+
+    </div>
+    <div layout="row" layout-align="start stretch">
+        <md-input-container class="md-block" flex="50"><label>ReceiptNo</label><input name="ReceiptNo" ng-model="mfilt.ReceiptNo"></md-input-container>
+        <md-input-container class="md-block" flex="50"><label>OrderNo</label><input name="OrderNo" ng-model="mfilt.OrderNo"></md-input-container>
+    </div>
+    <div layout="row" layout-align="start stretch">
+        <md-input-container class="md-block" flex="50"><label>TableCode</label><input name="TableCode" ng-model="mfilt.TableCode"></md-input-container>
+        <md-input-container class="md-block" flex="50"><label>Room</label><input name="Room" ng-model="mfilt.Room"></md-input-container>
+    </div>
+    <div layout="row" layout-align="start stretch">
+        <div flex="33.33">
+            <md-input-container class="md-block" required flex="50">
+                <label>IsInvoiced</label>
+                <md-select name="IsInvoiced" ng-model="mfilt.IsInvoiced">
+                    <md-option value="{{null}}">Either</md-option>
+                    <md-option value="true">Invoiced</md-option>
+                    <md-option value="false">NotInvoiced</md-option>
+                </md-select>
+            </md-input-container>
+        </div>
+        <div flex="33.33">
+            <md-input-container class="md-block" required flex="50">
+                <label>IsPaid</label>
+                <md-select name="IsPaid" ng-model="mfilt.IsPaid">
+                    <md-option value="{{null}}">Either</md-option>
+                    <md-option value="true">Paid</md-option>
+                    <md-option value="false">NotPaid</md-option>
+                </md-select>
+            </md-input-container>
+        </div>
+        <div flex="33.33">
+            <md-input-container class="md-block" required flex="50">
+                <label>IsPrinted</label>
+                <md-select name="IsPrinted" ng-model="mfilt.IsPrinted">
+                    <md-option value="{{null}}">Either</md-option>
+                    <md-option value="true">Printed</md-option>
+                    <md-option value="false">NotPrinted</md-option>
+                </md-select>
+            </md-input-container>
+        </div>
+    </div>-->
+                <div layout="row" layout-align="start stretch">
+                    <md-input-container class="md-block" required flex="50">
+                        <label>StoreId</label>
+                        <md-select name="StoreId" ng-model="mfilt.StoreId" multiple="true">
+                            <md-option ng-repeat="ch in lookupslists.StoreId" value="{{ch.Type}}">{{ch.Description}}</md-option>
+                        </md-select>
+                    </md-input-container>
+                </div>
+            </div>
+        </md-dialog-content>
+        <md-dialog-actions layout="row">
+            <md-button class="md-raised md-warn" ng-click="cancel()" aria-label="CancelAction">Close<md-tooltip md-direction="top">Close modal, cancel action search</md-tooltip></md-button>
+            <md-button class="md-raised md-accent" ng-click="clearfilter()" aria-label="CancelAction">Clear<md-tooltip md-direction="top">Clear Filters to default values</md-tooltip></md-button>
+            <md-button class="md-raised md-primary" ng-click="confirm(mfilt)" style="margin-right:20px;" aria-label="ConfAction">Search<md-tooltip md-direction="top">Proceed and search base on filters</md-tooltip></md-button>
+        </md-dialog-actions>
+    </form>
+    </>

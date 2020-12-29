@@ -1,0 +1,12 @@
+﻿<div>
+    <div class="modal-header">
+        <h3 class="modal-title">Add new register</h3>
+    </div>
+    <div class="modal-body">
+        <form name="createRowEntryForm" sf-schema="vm.schema" sf-form="vm.form" sf-model="vm.entity" ng-submit="save(createRowEntryForm)"></form>
+    </div>
+    <div class="modal-footer">
+        <button class="hvr-fade hvr-warning" style="text-decoration:none; height: inherit;" ng-click="$close()">Cancel</button>
+        <button class="hvr-fade hvr-success" style="text-decoration:none; height: inherit;" ng-click="vm.save()">Save</button>
+    </div>
+</div>

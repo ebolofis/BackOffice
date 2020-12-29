@@ -1,0 +1,234 @@
+<md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="left">
+    <div layout="column" layout-fill style="overflow:hidden;">
+        <md-toolbar class="md-theme-indigo">
+            <!--md-is-locked-open="$mdMedia('gt-md')"-->
+            <h1 class="md-toolbar-tools">Menu</h1>
+        </md-toolbar>
+        <md-content layout-padding ng-controller="LeftCtrl">
+            <!--<form>
+                <md-input-container>
+                    <label for="testInput">Search Menu</label>
+                    <input type="text" id="testInput" ng-model="data" md-autofocus>
+                </md-input-container>
+            </form>-->
+            <ul class="nav in">
+                <!--<sidebar-search></sidebar-search>-->
+                <!--<li ui-sref-active="active">
+                    <button type="button" class="btn btn-outline btn-primary" ng-controller="DynamicApiServiceController" ng-click="getTest()"> TestDynamicController</button>
+                </li>-->
+                <li ui-sref-active="active" ng-class="sideCollapse ? 'sideBarCollapseList' : ''">
+                    <a ui-sref="dashboard.home" style="font-weight:bold;" ng-click="toggleLeft()"><i class="fa fa-home fa-fw"></i>&nbsp;STORE INFO</a>
+                    <md-divider></md-divider>
+
+                </li>
+                <li ng-class="{active: collapseVar=='productslvl1','sideBarCollapseList' : sideCollapse }">
+                    <a href="" ng-click="check('productslvl1')" style="font-weight:bold;" layout="row" layout-align="start center" flex="grow">
+                        <i class="fa fa-file-powerpoint-o fa-fw"></i>
+                        <span>PRODUCTS</span>
+                        <span flex></span>
+                        <md-icon md-svg-icon="hardware:keyboard_arrow_up" class="pull-right md-icon-rotate-ontoggle" ng-class="{'toggled' : collapseVar !='productslvl1'}"></md-icon>
+                    </a>
+                    <ul class="nav nav-second-level" uib-collapse="collapseVar!='productslvl1'">
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.SetupCategories">Categories</a></li>
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.SetupProductCategories">Product Categories</a></li>
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.ChangeProductCategoriesVat">Change Product Categories Vat</a></li>
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.UpdateTransferMappings">Update Transfer Mappings</a></li>
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.ManageProducts">Products</a></li>
+                        <!--<li><a ng-click="toggleLeft()" ui-sref="dashboard.SetupProducts">Products</a></li>-->
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.SetupIngredients">Ingredients</a></li>
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.ManageExternalProducts">External Products</a></li>
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.ManageRegionLockerProduct">Locker Products</a></li>
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.SetupItems">Items</a></li>
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.SetupUnits">Units</a></li>
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.SetupKitchenRegion">KitchenRegion</a></li>
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.SetupInvoiceVat">Vat</a></li>
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.SetupInvoiceTax">Tax</a></li>
+                    </ul>
+                    <md-divider></md-divider>
+
+                </li>
+
+                <li ng-class="{active: collapseVar=='pricelistslvl1','sideBarCollapseList' : sideCollapse }">
+                    <a href="" ng-click="check('pricelistslvl1')" style="font-weight:bold;">
+                        <i class="fa fa-sitemap fa-fw"></i>
+                        <span>PRICELISTS</span>
+                        <span flex></span>
+                        <md-icon md-svg-icon="hardware:keyboard_arrow_up" class="pull-right md-icon-rotate-ontoggle" ng-class="{'toggled' : collapseVar !='pricelistslvl1'}"></md-icon>
+                    </a>
+                    <ul class="nav nav-second-level" uib-collapse="collapseVar!='pricelistslvl1'">
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.SetupPricelistMaster">Pricelist Master</a></li>
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.SetupPricelist">Pricelist</a></li>
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.SetupProductPrices">Product Prices</a></li>
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.SetupIngredientPrices">Ingredient Prices</a></li>
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.SetupDiscount">Discounts</a></li>
+                    </ul>
+                    <md-divider></md-divider>
+
+                </li>
+                <li ui-sref-active="active" ng-class="sideCollapse ? 'sideBarCollapseList' : ''">
+                    <a ng-click="toggleLeft()" ui-sref="dashboard.SetupPages" style="font-weight:bold;"><i class="fa fa-clipboard fa-fw"></i>&nbsp;PAGES</a>
+                    <md-divider></md-divider>
+                </li>
+                <li ui-sref-active="active" ng-class="sideCollapse ? 'sideBarCollapseList' : ''">
+                    <a ng-click="toggleLeft()" ui-sref="dashboard.SetupTables" style="font-weight:bold;"><i class="fa  fa-table fa-fw"></i>&nbsp;TABLES</a>
+                    <md-divider></md-divider>
+                </li>
+
+                <li ng-class="{active: collapseVar=='staffoptionslvl1','sideBarCollapseList' : sideCollapse }">
+                    <a href="" ng-click="check('staffoptionslvl1')" style="font-weight:bold;">
+                        <i class="fa  fa-users fa-fw"></i>
+                        <span>STAFF OPTIONS</span><span flex></span>
+                        <md-icon md-svg-icon="hardware:keyboard_arrow_up" class="pull-right md-icon-rotate-ontoggle" ng-class="{'toggled' : collapseVar !='staffoptionslvl1'}"></md-icon>
+                    </a>
+                    <ul class="nav nav-second-level" uib-collapse="collapseVar!='staffoptionslvl1'">
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.EditStaff">Edit Staff</a></li>
+                        <!--<li><a ng-click="toggleLeft()" ui-sref="dashboard.SetupStaff">Staff</a></li>-->
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.StaffPositions">Staff Positions</a></li>
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.SetupAuthorizedGroup">Authorization Groups</a></li>
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.AuthGroupActions">Auth Group Actions</a></li>
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.PayroleOverview">Payrole</a></li>
+                    </ul>
+                    <md-divider></md-divider>
+
+                </li>
+                <li ng-class="{active: collapseVar=='hotelconnectionlvl1','sideBarCollapseList' : sideCollapse }">
+                    <a href="" ng-click="check('hotelconnectionlvl1')" style="font-weight:bold;">
+                        <i class="fa fa-building-o fa-fw"></i>
+                        <span>HOTEL CONNECTION</span><span flex></span>
+                        <md-icon md-svg-icon="hardware:keyboard_arrow_up" class="pull-right md-icon-rotate-ontoggle" ng-class="{'toggled' : collapseVar !='hotelconnectionlvl1'}"></md-icon>
+                    </a>
+                    <ul class="nav nav-second-level" uib-collapse="collapseVar!='hotelconnectionlvl1'">
+
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.SetupDeparmentsMapping">Department Mapping</a></li>
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.SetupBoardMeals">Board Meal</a></li>
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.SetupAccountMapping">Account Mappings</a></li>
+                    </ul>
+                    <md-divider></md-divider>
+
+                </li>
+                <li ng-class="{active: collapseVar=='exclusionslvl1','sideBarCollapseList' : sideCollapse }">
+                    <a href="" ng-click="check('exclusionslvl1')" style="font-weight:bold;">
+                        <i class="fa fa-random fa-fw"></i>
+                        <span>EXCLUSIONS</span><span flex></span>
+                        <md-icon md-svg-icon="hardware:keyboard_arrow_up" class="pull-right md-icon-rotate-ontoggle" ng-class="{'toggled' : collapseVar !='exclusionslvl1'}"></md-icon>
+                    </a>
+                    <ul class="nav nav-second-level" uib-collapse="collapseVar!='exclusionslvl1'">
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.SetupExcludedAccounts">Excluded Accounts</a></li>
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.SetupPosInfoDetailPricelistAssoc">Excluded Pricelists</a></li>
+                    </ul>
+                    <md-divider></md-divider>
+
+                </li>
+                <li ng-class="{active: collapseVar=='moduleconflvl1','sideBarCollapseList' : sideCollapse }">
+                    <a href="" ng-click="check('moduleconflvl1')" style="font-weight:bold;">
+                        <i class="fa  fa-fax fa-fw"></i>
+                        <span>MODULE CONFIGURATION</span><span flex></span>
+                        <md-icon md-svg-icon="hardware:keyboard_arrow_up" class="pull-right md-icon-rotate-ontoggle" ng-class="{'toggled' : collapseVar !='moduleconflvl1'}"></md-icon>
+                    </a>
+                    <ul class="nav nav-second-level" uib-collapse="collapseVar!='moduleconflvl1'">
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.SetupDeparments">Departments</a></li>
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.SetupModules">POS Devices</a></li>
+                        <!--<li><a ng-click="toggleLeft()" ui-sref="dashboard.PosModules">POS Modules</a></li>-->
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.SetupClientPos">Client POS</a></li>
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.SetupPdaModules">PDA Modules</a></li>
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.SetupKds">KDS</a></li>
+                        <li ng-init="third=!third" ng-class="{active: multiCollapseVar=='kichenconflvl2'}">
+                            <a href="" ng-click="multiCheck('kichenconflvl2')">
+                                Kichen Configuration
+                                <span flex></span>
+                                <md-icon md-svg-icon="hardware:keyboard_arrow_up" class="pull-right md-icon-rotate-ontoggle" ng-class="{'toggled' : multiCollapseVar!='kichenconflvl2'}"></md-icon>
+                            </a>
+                            <ul class="nav nav-third-level" uib-collapse="multiCollapseVar!='kichenconflvl2'">
+                                <li><a ng-click="toggleLeft()" style="padding-left: 34px;" ui-sref="dashboard.SetupKitchen">Kitchen</a></li>
+                                <li><a ng-click="toggleLeft()" style="padding-left: 34px;" ui-sref="dashboard.SetupKitchenInstructions">Kitchen Instructions</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <md-divider></md-divider>
+
+                </li>
+                <li ng-class="{active: collapseVar=='transactionslvl1','sideBarCollapseList' : sideCollapse }">
+                    <a href="" ng-click="check('transactionslvl1')" style="font-weight:bold;">
+                        <i class="fa  fa-exchange fa-fw"></i>
+                        <span>TRANSACTIONS</span><span flex></span>
+                        <md-icon md-svg-icon="hardware:keyboard_arrow_up" class="pull-right md-icon-rotate-ontoggle" ng-class="{'toggled' : collapseVar !='transactionslvl1'}"></md-icon>
+                    </a>
+                    <ul class="nav nav-second-level" uib-collapse="collapseVar!='transactionslvl1'">
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.SetupAccounts">Accounts</a></li>
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.SetupInvoiceTypes">Invoice Types</a></li>
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.SetupTransactionTypes">Transaction Types</a></li>
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.SetupSalesType">Sales Types</a></li>
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.SetupPredefinedCredits">Vouchers-Credits</a></li>
+                    </ul>
+                    <md-divider></md-divider>
+                </li>
+                <li ng-class="{active: collapseVar=='associationslvl1','sideBarCollapseList' : sideCollapse }">
+                    <a href="" ng-click="check('associationslvl1')" style="font-weight:bold;">
+                        <i class="fa fa-link fa-fw"></i>
+                        <span>ASSOCIATIONS</span><span flex></span>
+                        <md-icon md-svg-icon="hardware:keyboard_arrow_up" class="pull-right md-icon-rotate-ontoggle" ng-class="{'toggled' : collapseVar !='associationslvl1'}"></md-icon>
+                    </a>
+                    <ul class="nav nav-second-level" uib-collapse="collapseVar!='associationslvl1'">
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.SetupModulesAssocs">POS Associations</a></li>
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.SetupIngredientAssocs">Ingredient Associations</a></li>
+                    </ul>
+                    <md-divider></md-divider>
+
+                </li>
+                <li ng-class="{active: collapseVar=='receiptsPolicy','sideBarCollapseList' : sideCollapse }">
+                    <a href="" ng-click="check('receiptsPolicy')" style="font-weight:bold;">
+                        <!--<md-icon md-svg-icon="action:receipt"></md-icon>-->
+                        <i class="fa fa-print fa-fw"></i>
+                        <span>MANAGE RECEIPTS</span><span flex></span>
+                        <md-icon md-svg-icon="hardware:keyboard_arrow_up" class="pull-right md-icon-rotate-ontoggle" ng-class="{'toggled' : collapseVar !='receiptsPolicy'}"></md-icon>
+                    </a>
+                    <ul class="nav nav-second-level" uib-collapse="collapseVar!='receiptsPolicy'">
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.ManageReceipts">Manage Receipts</a></li>
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.CloseYear">Close Year</a></li>
+                    </ul>
+                    <md-divider></md-divider>
+
+                </li>
+                <li ng-class="{active: collapseVar=='settings','sideBarCollapseList' : sideCollapse }">
+                    <a href="" ng-click="check('settings')" style="font-weight:bold;">
+                        <i class="fa fa-cogs fa-fw"></i>
+                        <span>Settings</span><span flex></span>
+                        <md-icon md-svg-icon="hardware:keyboard_arrow_up" class="pull-right md-icon-rotate-ontoggle" ng-class="{'toggled' : collapseVar !='settings'}"></md-icon>
+                    </a>
+                    <ul class="nav nav-second-level" uib-collapse="collapseVar!='settings'">
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.RemoteQueries">Remote Control</a></li>
+                    </ul>
+                    <md-divider></md-divider>
+                </li>
+
+                 <!--<li ng-class="{active: collapseVar=='develop','sideBarCollapseList' : sideCollapse }">
+                    <a href="" ng-click="check('develop')" style="font-weight:bold;">
+                        <i class="fa fa-connectdevelop fa-fw"></i>
+                        <span>Development</span><span flex></span>
+                        <md-icon md-svg-icon="hardware:keyboard_arrow_up" class="pull-right md-icon-rotate-ontoggle" ng-class="{'toggled' : collapseVar !='develop'}"></md-icon>
+                    </a>
+                    <ul class="nav nav-second-level" uib-collapse="collapseVar!='develop'">
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.PosModules">POS Modules</a></li>
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.ManageProducts">Products</a></li>
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.ManagePages">Pages</a></li>
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.RemoteQueries">Remote Control</a></li>
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.CloseYear">Close Year</a></li>
+                        
+                       <li><a ng-click="toggleLeft()" ui-sref="dashboard.dataTableManager">Data- Table Manager</a></li>
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.test">Test</a></li>
+                        <li><a ng-click="toggleLeft()" ui-sref="dashboard.mdtInvoiceTypes">MDT InvoiceTypes</a></li>
+                    </ul>
+                    <md-divider></md-divider>
+                </li>-->
+
+            </ul>
+        </md-content>
+        <div flex></div>
+        <div layout="row" layout-align="end center" style="padding:5px; cursor:pointer;">
+            <span>
+                Version:{{projectVersion}}
+                <md-tooltip md-direction="top">Full version: {{fullVersion}}</md-tooltip>
+            </span>
+        </div>
+    </div>
+</md-sidenav>

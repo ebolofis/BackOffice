@@ -1,0 +1,170 @@
+﻿<div layout="column" layout-align="start stretch" ng-controller="DeparmentsServiceController" ng-init="initView()" ng-cloak style="height: 100%; overflow: hidden;">
+    <md-subheader class="wrappers-view-header md-whiteframe-7dp md-primary">Manage Department Mappings</md-subheader>
+    <div layout="row" layout-align="space-between center" class="md-margin">
+        <md-content layout="row" layout-align="start center" flex="40">
+            <md-subheader class="md-no-sticky">Hotel Selected</md-subheader>
+            <div layout="row" flex>
+                <select id="hotelSelection" class="form-control" ng-model="hotelOnSelect" ng-options="hotel as hotel.Description for hotel in hotelInfo" ng-change="hotelChanged(hotelOnSelect)">
+                    <option value="">--</option>
+                </select>
+            </div>
+        </md-content>
+        <md-content layout="row" layout-align="start center" flex="40">
+            <md-subheader class="md-no-sticky">Departments</md-subheader>
+            <div layout="row" flex>
+                <div ng-show="selectedHotel !== null">
+                    <select id="departmentSelection" class="form-control" ng-model="depOnSelect" ng-options="item as item.Description for item in deparmentArrayOptions" ng-change="departmentChanged(depOnSelect)"></select>
+                </div>
+            </div>
+        </md-content>
+        <md-content layout="row" layout-align="end center" flex="20">
+            <!--<button class="hvr-fade hvr-success" style="text-decoration:none; height: inherit;" ng-click="displayView()">Display Mappings&nbsp;<i class="fa fa-check fa-fw"></i></button>-->
+            <!--<button class="hvr-fade hvr-success" style="text-decoration:none; height: inherit;" ng-click="validateModel()">Check Mappings&nbsp;<i class="fa fa-check fa-fw"></i></button>-->
+            <md-button class="md-raised md-primary" ng-disabled="savingProcess" ng-click="saveTransferMappings()">Save&nbsp;<i class="fa fa-save fa-fw"></i></md-button>
+            <!--<button class="hvr-fade" style="text-decoration:none; height: inherit;" ng-click="saveTransferMappings()">SaveChanges&nbsp;<i class="fa fa-save fa-fw"></i></button>-->
+            <!--<button class="hvr-fade hvr-warning" style="text-decoration:none; height: inherit;" ng-click="displaylogs()">Display Logs&nbsp;<i class="fa fa-plus-circle fa-fw"></i></button>-->
+        </md-content>
+    </div>
+    <div ng-if="selectedHotel !== null" layout="row" layout-align="start stretch" flex>
+        <div layout="column" layout-align="start stretch" flex="30" layout-margin="1%" class="md-whiteframe-7dp">
+            <div class="bo-htd">Lookup Entities</div>
+            <md-tabs md-border-bottom flex>
+                <md-tab label="Pricelists">
+                    <md-content layout="column" layout-align="start stretch">
+                        <div class="list-repeat-element container-panel-content" layout="column" layout-align="start stretch"
+                             display-field="'Description'" mainlist="tmpPricelists"
+                             loop-item-class="'notice content-overflow-ellipsis noticeCustom'" loop-item-selected-class="'notice-info'"
+                             search-placeholder="'Search Pricelists...'" extra-filter="filterPLS"
+                             action-fun="insertNewPriceLists()" action-desc="'Add '" action-disable="(selectedDeparment == null)" action-icon="'fa fa-xs fa-arrow-right'">
+                        </div>
+                    </md-content>
+                </md-tab>
+                <md-tab label="Pms">
+                    <md-content layout="column" layout-align="start stretch">
+                        <div class="list-repeat-element container-panel-content" layout="column" layout-align="start stretch"
+                             display-field="'Description'" mainlist="tmpPmsLookUpResults"
+                             loop-item-class="'notice content-overflow-ellipsis noticeCustom'" loop-item-selected-class="'notice-info'"
+                             search-placeholder="'Search Pms...'" extra-filter="filterPMS"
+                             action-fun="insertNewPmsDeps()" action-desc="'Add '" action-disable="(selectedContainerObject == null)" action-icon="'fa fa-xs fa-arrow-right'">
+                        </div>
+                    </md-content>
+                </md-tab>
+                <md-tab label="Categories">
+                    <md-content layout="column" layout-align="start stretch">
+                        <div class="list-repeat-element container-panel-content" layout="column" layout-align="start stretch"
+                             display-field="'Description'" mainlist="tmpProductCategories"
+                             loop-item-class="'notice content-overflow-ellipsis noticeCustom'" loop-item-selected-class="'notice-info'"
+                             search-placeholder="'Search Categories...'" extra-filter="filterCATS"
+                             action-fun="insertNewProdCats()" action-desc="'Add '" action-disable="(selectedPmsObject == null)" action-icon="'fa fa-xs fa-arrow-right'">
+                        </div>
+                    </md-content>
+                </md-tab>
+            </md-tabs>
+        </div>
+        <div flex="70" layout-margin="1%" class="md-whiteframe-7dp">
+            <div ng-if="loadedPromises == false">
+                <div class="bo-htd">Lookup Entities</div>
+                <div ng-include src="'unloadedLookup'"></div>
+            </div>
+            <div ng-if="loadedPromises == true">
+                <div class="bo-htd">Department Mappings</div>
+                <div class="alert alert-info" ng-show="containerObjects.length == 0  && selectedDeparment === null" style="margin-top:4%;"><i class="fa fa-xs fa-info-circle"></i>&nbsp;Please Select a department to manage</div>
+                <div class="alert alert-info" ng-show="containerObjects.length == 0 && selectedDeparment !== null" style="margin-top:4%;"><i class="fa fa-xs fa-info-circle"></i>&nbsp;No mapping Results. Create new mappings.</div>
+                <div style="padding:0; min-height: 70vh; max-height:70vh; overflow-y:auto">
+                    <div ng-repeat="cObj in containerObjects">
+                        <!-- row selected  &&   -->
+                        <div class="container-panel-header" style="min-height:0px;">
+                            <h4 ng-class="(selectedContainerObject == cObj) ? 'successSelected' : ((cObj.currentPms.length > 0 ) ? 'success':'default')" style="display:flex; cursor:pointer;  margin-bottom: 0;" ng-click="clickSelectContainerObject(cObj)" tooltip="{{masterPanelTooltip(cObj)}}" tooltip-placement="top">
+                                <span class="overflow-text-on-component" style="display: flex; width: 92%;">
+                                    <small ng-repeat="cPl in cObj.currentPls"><span class="badge" style="background-color: #000; margin-right: 4px; border-radius:0;">{{pricelistEnumOptions[cPl]}}</span></small>
+                                </span>
+                                <span class="btn-group" style="float:right;">
+                                    <button type="button" class="btn btn-xs btn-primary" ng-click="updateGroupPricelist(cObj)"><i class="fa fa-xs fa-pencil"></i></button>
+                                    <button type="button" class="btn btn-xs btn-default" ng-click="groupDeleteAction(cObj)"><i class="fa fa-xs fa-times"></i></button>
+                                </span>
+                            </h4>
+                            <div class="smooth-opacity-showhide" style="padding:0; display:inline-block; width: 100%; max-height: 50vh; overflow: auto; border: 1px solid; min-height: 60px;" ng-show="(selectedContainerObject  == cObj)">
+                                <!-- PMS DEPS repeat -->
+                                <div class="col-md-4 col-xs-4 " ng-repeat="cPms in cObj.currentPms">
+                                    <div>
+                                        <div class="container-panel-header" style="min-height: 0;">
+                                            <h4 style="cursor: pointer; text-align: left; font-size: 12px; padding: 2.5% 2%;" ng-class="(selectedPmsObject == cPms && selectedContainerObject  == cObj) ? 'warning' : 'default'" ng-click="clickSelectPmsObject(cPms , cObj)">
+                                                <span class="col-md-10 col-xs-10 overflow-text-on-component" style="margin: 4% 0px;">{{pmsLookUpEnum[cPms]}}</span>
+                                                <a class="hvr-fade hvr-danger" style="text-decoration:none; height: inherit;" ng-click="pmsDeleteAction( cPms, cObj )"><i class="fa fa-xs fa-times"></i></a>
+                                            </h4>
+                                        </div>
+                                        <div>
+                                            <div class="" ng-repeat="cGroup in cObj.currentCats[cPms]">
+                                                <div class="notice" style="cursor:pointer; display: inline-flex; cursor: pointer; width: 100%;">
+                                                    <span class="col-md-10 col-xs-10  overflow-text-on-component" style="font-size:12px;">{{productCategoriesEnum[cGroup]}}</span>
+                                                    <a class="hvr-fade hvr-danger" style="text-decoration:none; padding: 0 1em; margin:0;" ng-click="categoryDeleteAction(cGroup ,cPms, cObj )">
+                                                        <i class="fa fa-xs fa-trash-o"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr />
+</div>
+<script type="text/ng-template" id="unloadedLookup">
+    <md-list flex="grow">
+        <md-list-item>
+            <p>Pricelist Loaded:&nbsp;<span class="badge">{{pricelists.length}}</span></p>
+            <md-button ng-show="loadedPlsSuccess==true" class="md-fab md-mini  md-raised" disabled aria-label="reloadPls"><i class="fa fa-check fa-fw"></i></md-button>
+            <md-button style="background-color:red;" ng-show="loadedPlsSuccess==false" class="md-fab md-mini  md-raised" disabled aria-label="reloadPls">
+                <i class="fa fa-times fa-fw">
+                    <md-tooltip md-direction="left">Error Loading Pricelists</md-tooltip>
+                </i>
+            </md-button>
+
+        </md-list-item>
+        <md-list-item>
+            <p>Pms Departments Loaded:&nbsp;<span class="badge">{{pmsLookUpResults.length}}</span></p>
+            <md-button ng-show="loadedPmsSuccess==true" class="md-fab md-mini  md-raised" disabled aria-label="reloadPms"><i class="fa fa-check fa-fw"></i></md-button>
+            <md-button style="background-color:red;" ng-show="loadedPmsSuccess==false" class="md-fab md-mini  md-raised" disabled aria-label="reloadPms">
+                <i class="fa fa-times fa-fw">
+                    <md-tooltip md-direction="left">Error: No PMS Departments found.</md-tooltip>
+
+                </i>
+            </md-button>
+
+        </md-list-item>
+        <md-list-item>
+            <p>Product Categories Loaded:&nbsp;<span class="badge">{{productCategories.length}}</span></p>
+            <md-button ng-show="loadedCatsSuccess==true" class="md-fab md-mini  md-raised" disabled aria-label="reloadPcats"><i class="fa fa-check fa-fw"></i></md-button>
+            <md-button style="background-color:red;" ng-show="loadedCatsSuccess==false" class="md-fab md-mini  md-raised" disabled aria-label="reloadPcats">
+                <i class="fa fa-times fa-fw">
+                    <md-tooltip md-direction="left">Error Loading Product Categories</md-tooltip>
+                </i>
+            </md-button>
+        </md-list-item>
+        <md-divider></md-divider>
+    </md-list>
+</script>
+<style>
+    .noticeCustom {
+        cursor: pointer;
+        font-size: 10px;
+        font-weight: 700;
+        margin-bottom: 2px;
+    }
+
+    .container-panel-content {
+        min-height: 55vh;
+        max-height: 55vh;
+    }
+
+    md-tab-content, md-tab-content > div {
+        height: 100%;
+        overflow: hidden;
+    }
+</style>

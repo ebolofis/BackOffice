@@ -1,0 +1,224 @@
+﻿<md-dialog ng-class="{'fullscreen-dialog' : fullscreenModal}" aria-label="AddNewProductModal" ng-cloak style="min-width: 90vw;">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>Saving Processed Products</h2>
+            <span flex></span>
+            <toggle-fs-modal tvar="fullscreenModal"></toggle-fs-modal>
+            <md-button class="md-icon-button" aria-label="CloseModal" ng-disabled="processing==true" ng-click="confirm()">
+                <md-icon md-svg-icon="navigation:close"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-dialog-content>
+        <div class="md-dialog-content">
+            <div layout="row" layout-align="start stretch" layout-fill style="min-height:60vh;">
+                <div layout="column" layout-align="start stretch" flex ng-include src="templateOption"></div>
+            </div>
+        </div>
+        <!--<div layout="row" layout-align="space-around center">
+            <span style="font-variant:small-caps;" flex="50"<md-button ng-click="viewDetails('edit')">View Changed</md-button></span>
+            <span style="font-variant:small-caps;" flex="50">#Marked as Deleted Products: {{delarr.length}} <md-button ng-click="viewDetails('delete')">View Deleted</md-button></span>
+            <md-button ng-click="logsars()"></md-button>
+        </div>
+        <div layout="row" layout-align="start stretch" layout-fill>
+            <div layout="column" layout-align="start stretch" flex="grow" ng-include src="templateOption"></div>
+        </div>-->
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+        <md-button ng-click="confirm('cancel')" ng-disabled="processing==true" aria-label="CancelAction">Done</md-button>
+        <md-button ng-click="applyChanges()" ng-disabled="processing==true" class="md-primary md-raised" aria-label="ConfAction">Apply Changes</md-button>
+    </md-dialog-actions>
+</md-dialog>
+
+<script id="view-edited-template" type="text/ng-template">
+    <md-tabs md-border-bottom flex>
+        <!-- Entities marked to Update -->
+        <md-tab label="#Edited: {{editarr.length || '-'}}">
+            <div layout="row" layout-align="start stretch" layout-fill>
+                <div layout="column" layout-align="start stretch" flex="grow">
+                    <md-subheader class="md-no-sticky">
+                        <div layout="row" layou-align="start center">
+                            <div flex="6"><md-checkbox aria-label="toggle-edit-multi-selection" ng-checked="selectAllEdit == true" ng-click="selectAllEdit = !selectAllEdit; toggle('edited', selectAllEdit);" class="md-primary" style="margin: auto;"></md-checkbox></div>
+                            <div flex="10">Id</div>
+                            <div flex="20">Description</div>
+                            <div flex="14">Code</div>
+                            <div flex="14">Category</div>
+
+                            <div flex="6">Overview</div>
+                            <div flex="6">Recipes</div>
+                            <div flex="6">Extras</div>
+                            <div flex="6">Barcodes</div>
+                            <div flex="6">Prices</div>
+                            <div flex="6"></div>
+                        </div>
+                    </md-subheader>
+                    <md-divider></md-divider>
+                    <div layout="row" layout-align="center center" ng-if="editarr.length == 0" flex>
+                        <md-toolbar class="md-warn md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="start center">
+                            <md-icon class="md-margin" md-svg-icon="action:info"></md-icon>Your products have no changes.
+                        </md-toolbar>
+                    </div>
+                    <div style="overflow:auto;" flex="grow" ng-if="editarr.length > 0">
+                        <md-list>
+                            <md-list-item ng-repeat="epr in editarr">
+                                <div layout="row" layout-align="start center" flex="grow">
+                                    <div flex="6">
+                                        <md-checkbox aria-label="stosave-{{epr.Id}}" ng-checked="epr.selected == true" ng-if="validToEdit(epr.vmodel)" ng-click="(epr.selected != true ) ? epr.selected = true : epr.selected = false" class="md-primary" style="margin: auto;"></md-checkbox>
+                                        <md-icon ng-if="!validToEdit(epr.vmodel)" md-svg-icon="content:block" style="margin: auto;"></md-icon>
+                                    </div>
+                                    <div flex="10">{{epr.Id}}</div>
+                                    <div flex="20">{{epr.Description}}</div>
+                                    <div flex="14">{{epr.Code}}</div>
+                                    <div flex="14">{{lookupObjects.ProductCategories[epr.ProductCategoryId].Description}}</div>
+                                    <div flex="6">
+                                        <md-icon ng-if="epr.vmodel.Overview == true" md-svg-icon="navigation:check"></md-icon>
+                                        <md-icon ng-if="epr.vmodel.Overview != true" md-svg-icon="navigation:close"></md-icon>
+                                        <md-tooltip md-direction="top" ng-if="epr.vmodel.Overview != true"> <span ng-repeat="sc in epr.vmodel.SameCodes">{{sc.Id}}:{{sc.Description}},</span></md-tooltip>
+                                    </div>
+                                    <div flex="6">
+                                        <md-icon ng-if="epr.vmodel.Recipes == true" md-svg-icon="navigation:check"></md-icon>
+                                        <md-icon ng-if="epr.vmodel.Recipes != true" md-svg-icon="navigation:close"></md-icon>
+                                    </div>
+                                    <div flex="6">
+                                        <md-icon ng-if="epr.vmodel.Extras == true" md-svg-icon="navigation:check"></md-icon>
+                                        <md-icon ng-if="epr.vmodel.Extras != true" md-svg-icon="navigation:close"></md-icon>
+                                    </div>
+                                    <div flex="6">
+                                        <md-icon ng-if="epr.vmodel.Barcodes == true" md-svg-icon="navigation:check"></md-icon>
+                                        <md-icon ng-if="epr.vmodel.Barcodes != true" md-svg-icon="navigation:close"></md-icon>
+                                    </div>
+                                    <div flex="6">
+                                        <md-icon ng-if="epr.vmodel.Prices == true" md-svg-icon="navigation:check"></md-icon>
+                                        <md-icon ng-if="epr.vmodel.Prices != true" md-svg-icon="navigation:close"></md-icon>
+                                    </div>
+                                    <div flex="6">
+                                        <md-button class="md-icon-button md-primary" ng-click="saveSingleProduct(epr)" ng-disabled="!validToEdit(epr.vmodel)">
+                                            <md-tooltip md-direction="top">Single save current product</md-tooltip>
+                                            <md-icon ng-if="validToEdit(epr.vmodel)" md-svg-icon="content:save"></md-icon>
+                                            <md-icon ng-if="!validToEdit(epr.vmodel)" md-svg-icon="content:block"></md-icon>
+                                        </md-button>
+                                    </div>
+                                </div>
+                            </md-list-item>
+                        </md-list>
+                    </div>
+                    <md-divider></md-divider>
+                    <md-button ng-click="saveMultipleProducts()" ng-disabled="editarr.length <= 0 || busyupdating == true || processing==true" class="md-primary md-raised md-hue-1" aria-label="ConfAction">Save Selected</md-button>
+                </div>
+            </div>
+        </md-tab>
+        <!-- Entities marked to Delete -->
+        <md-tab label="#Marked Deleted: {{delarr.length || '-'}}">
+            <div layout="row" layout-align="start stretch" layout-fill>
+                <div layout="column" layout-align="start stretch" flex="grow" ng-cloak>
+                    <md-subheader class="md-no-sticky">
+                        <div layout="row" layou-align="start center">
+                            <div flex="10"><md-checkbox aria-label="toggle-edit-multi-selection" ng-checked="selectAllDelete == true" ng-click="selectAllDelete = !selectAllDelete; toggle('deleted', selectAllDelete);" class="md-warn" style="margin: auto;"></md-checkbox></div>
+                            <div flex="10">Id</div>
+                            <div flex="20">Description</div>
+                            <div flex="15">Code</div>
+                            <div flex="15">Category</div>
+                            <div flex></div>
+                            <div flex="10"></div>
+                        </div>
+                    </md-subheader>
+                    <md-divider></md-divider>
+                    <div layout="row" layout-align="center center" ng-if="delarr.length == 0" flex>
+                        <md-toolbar class="md-warn md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="start center">
+                            <md-icon class="md-margin" md-svg-icon="action:info"></md-icon>No products Marked as Deleted.
+                        </md-toolbar>
+                    </div>
+                    <div style="overflow:auto;" flex="grow" ng-if="delarr.length > 0">
+                        <md-list>
+                            <md-list-item ng-repeat="dp in delarr">
+                                <div layout="row" layout-align="start center" flex="grow">
+                                    <div flex="10">
+                                        <md-checkbox aria-label="stodel-{{dp.Id}}" ng-checked="dp.selected == true" ng-click="(dp.selected != true ) ? dp.selected = true : dp.selected = false" class="md-warn" style="margin: auto;"></md-checkbox>
+                                    </div>
+                                    <div flex="10">{{dp.Id}}</div>
+                                    <div flex="20">{{dp.Description}}</div>
+                                    <div flex="15">{{dp.Code}}</div>
+                                    <div flex="15">{{lookupObjects.ProductCategories[dp.ProductCategoryId].Description}}</div>
+                                    <div flex></div>
+                                    <div flex="10">
+                                        <md-button class="md-icon-button md-warn" ng-click="deleteSingleProduct(dp)" ng-disabled="busydeleting == true ||processing==true" >
+                                            <md-tooltip md-direction="top">Delete target product</md-tooltip>
+                                            <md-icon md-svg-icon="action:delete"></md-icon>
+                                        </md-button>
+                                    </div>
+                                </div>
+                            </md-list-item>
+                        </md-list>
+                    </div>
+                    <md-divider></md-divider>
+                    <md-button ng-click="deleteMultipleProducts()" ng-disabled="delarr.length <= 0 || busydeleting == true ||processing==true" class="md-warn md-raised md-hue-1" aria-label="ConfAction">Delete Selected</md-button>
+                </div>
+            </div>
+        </md-tab>
+        <!-- Tab of rest api entities results -->
+        <md-tab label="Action Results: ({{succesfullyUpdated.length || '-'}}) ({{succesfullyDeleted.length || '-'}})">
+            <div layout="row" layout-align="start stretch" layout-fill>
+                <div layout="column" layout-align="start stretch" flex="50">
+                    <md-subheader class="md-no-sticky">
+                        <h5 style="font-variant:small-caps; text-align:center;">Succesfully Edited</h5>
+                        <div layout="row" layou-align="start center">
+                            <div flex="10">Id</div>
+                            <div flex="30">Description</div>
+                            <div flex="30">Code</div>
+                            <div flex="30">Category</div>
+                        </div>
+                    </md-subheader>
+                    <md-divider></md-divider>
+                    <div layout="row" layout-align="center center" ng-if="succesfullyUpdated.length == 0" flex>
+                        <md-toolbar class="md-warn md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="start center">
+                            <md-icon class="md-margin" md-svg-icon="action:info"></md-icon>There are no succesfully updated products.
+                        </md-toolbar>
+                    </div>
+                    <div style="overflow:auto;" flex="grow" ng-if="succesfullyUpdated.length > 0">
+                        <md-list>
+                            <md-list-item ng-repeat="upd in succesfullyUpdated">
+                                <div layout="row" layout-align="start center" flex="grow">
+                                    <div flex="10">{{upd.Id}}</div>
+                                    <div flex="30">{{upd.Description}}</div>
+                                    <div flex="30">{{upd.Code}}</div>
+                                    <div flex="30">{{lookupObjects.ProductCategories[upd.ProductCategoryId].Description}}</div>
+                                </div>
+                            </md-list-item>
+                        </md-list>
+                    </div>
+                </div>
+                <div layout="column" layout-align="start stretch" flex="50">
+                    <md-subheader class="md-no-sticky">
+                        <h5 style="font-variant:small-caps; text-align:center;">Succesfully Deleted</h5>
+                        <div layout="row" layou-align="start center">
+                            <div flex="10">Id</div>
+                            <div flex="30">Description</div>
+                            <div flex="30">Code</div>
+                            <div flex="30">Category</div>
+                        </div>
+                    </md-subheader>
+                    <md-divider></md-divider>
+                    <div layout="row" layout-align="center center" ng-if="succesfullyDeleted.length == 0" flex>
+                        <md-toolbar class="md-warn md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="start center">
+                            <md-icon class="md-margin" md-svg-icon="action:info"></md-icon>There are no succesfully deleted products.
+                        </md-toolbar>
+                    </div>
+                    <div style="overflow:auto;" flex="grow" ng-if="succesfullyDeleted.length > 0">
+                        <md-list>
+                            <md-list-item ng-repeat="del in succesfullyDeleted">
+                                <div layout="row" layout-align="start center" flex="grow">
+                                    <div flex="10">{{del.Id}}</div>
+                                    <div flex="30">{{del.Description}}</div>
+                                    <div flex="30">{{del.Code}}</div>
+                                    <div flex="30">{{lookupObjects.ProductCategories[del.ProductCategoryId].Description}}</div>
+                                </div>
+                            </md-list-item>
+                        </md-list>
+                    </div>
+                </div>
+            </div>
+    </md-tabs>
+</script>
+<script id="view-deleted-selection-choice" type="text/ng-template">
+    zavara deleted
+</script>

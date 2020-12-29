@@ -1,0 +1,72 @@
+﻿<div ng-controller="PayroleManagerCtrl" ng-init="init()" style="overflow:hidden;" layout="column" layout-align="start stretch" flex="grow" ng-cloak layout-fill>
+    <div layout="row" layout-align="end center">
+        <!--<md-checkbox md-no-ink aria-label="Status" ng-model="exporting" class="md-primary" style="margin:auto 0;">Exporting</md-checkbox>-->
+        <md-button class="md-raised" aria-label="editPayroleFilter" ng-click="selectFiltersModal()">
+            <md-icon md-svg-icon="action:visibility"></md-icon>
+            <md-tooltip md-direction="top">Manage your filters</md-tooltip>
+        </md-button>
+        <md-button class="md-raised" ng-click="exportDataArray()">
+            <md-icon md-svg-icon="action:print"></md-icon>
+            <md-tooltip md-direction="top">Export displayed results array</md-tooltip>
+        </md-button>
+    </div>
+    <div layout="row" layout-align="center center" ng-if="payroles.length == 0 && busyloading != true">
+        <md-toolbar class="md-warn md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="start center">
+            <md-icon class="md-margin" md-svg-icon="action:info"></md-icon>No registers found.
+        </md-toolbar>
+    </div>
+    <div layout="column" layout-align="start stretch" flex="grow" style="overflow:hidden;" ng-if="exporting!=true">
+        <md-subheader class="md-no-sticky" ng-if="payroles.length > 0" style="width:100%">
+            <div class="listheader" layout="row" layout-align="start center" flex="grow">
+                <strong flex="20">Staff<md-tooltip md-direction="top">Staff</md-tooltip></strong>
+                <strong flex="15">POS<md-tooltip md-direction="top">POS</md-tooltip></strong>
+                <strong flex="10">Type<md-tooltip md-direction="top">Type</md-tooltip></strong>
+                <strong flex="15">Date<md-tooltip md-direction="top">Date</md-tooltip></strong>
+                <strong flex="10">Time<md-tooltip md-direction="top">Time</md-tooltip></strong>
+                <strong flex="15">Identification<md-tooltip md-direction="top">Identification</md-tooltip></strong>
+                <strong flex="15">Shop<md-tooltip md-direction="top">Shop</md-tooltip></strong>
+            </div>
+        </md-subheader>
+        <md-divider></md-divider>
+        <div layout="column" layout-align="center center" flex="grow" ng-if="busyloading == true">
+            <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+            <span>Loading...</span>
+        </div>
+        <md-list style="overflow:auto;" ng-if="busyloading != true">
+            <md-list-item class="md-list-item-text" ng-repeat="pr in payroles" ng-click="null">
+                <p class="content-ovf" flex="20">{{ lookupEnums.Staff[pr.StaffId]['Code']}} : {{ lookupEnums.Staff[pr.StaffId]['FirstName']}} <md-tooltip md-direction="top">{{ lookupEnums.Staff[pr.StaffId]['Code']}} : {{ lookupEnums.Staff[pr.StaffId]['FirstName']}}</md-tooltip></p>
+                <p class="content-ovf" flex="15">{{ lookupEnums.PosInfo[pr.PosInfoId]['Description'] }} <md-tooltip md-direction="top">{{ lookupEnums.PosInfo[pr.PosInfoId]['Description'] }}</md-tooltip></p>
+                <p class="content-ovf" flex="10">{{ lookupEnums.Type[pr.Type] }} <md-tooltip md-direction="top">{{ lookupEnums.Type[pr.Type] }}</md-tooltip></p>
+                <p class="content-ovf" flex="15">{{ formatDateProc(pr.ActionDate)}} <md-tooltip md-direction="top">{{ formatDateProc(pr.ActionDate)}}</md-tooltip></p>
+                <p class="content-ovf" flex="10">{{ formatTimeProc(pr.ActionDate)}} <md-tooltip md-direction="top">{{ formatTimeProc(pr.ActionDate)}}</md-tooltip></p>
+                <p class="content-ovf" flex="15">{{ pr.Identification }} <md-tooltip md-direction="top">{{ pr.Identification }}</md-tooltip></p>
+                <p class="content-ovf" flex="15">{{ pr.ShopId }} <md-tooltip md-direction="top"{{ pr.ShopId }}></md-tooltip></p>
+            </md-list-item>
+        </md-list>
+        <div flex></div>
+        <md-divider></md-divider>
+        <section class="md-padding" layout="row" layout-align="space-between center" ng-if="payroles.length > 0 ">
+            <cl-paging cl-pages="paging.total" cl-steps="6" cl-page-changed="paging.onPageChanged()" cl-align="center center" cl-current-page="paging.current"></cl-paging>
+            <md-select aria-label="pagesize dropdown "ng-model="resfilter.pageSize" ng-change="triggerGetPage()">
+                <md-optgroup label="Page Size">
+                    <md-option ng-repeat="ch in [50,100,200,500]" value="{{ch}}">{{ch}}</md-option>
+                </md-optgroup>
+            </md-select>
+        </section>
+    </div>
+    <div layout="column" layout-align="start stretch" flex="grow" style="overflow:hidden;" ng-if="exporting == true">
+        <export-predifined-format dataarray="expostArray"></export-predifined-format>
+    </div>
+</div>
+<style>
+    .listheader > strong {
+        font-variant: small-caps;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+    p.content-ovf {
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+</style>

@@ -1,0 +1,156 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title> </title>
+    <style>
+        .cell-style {
+            overflow: hidden;
+            padding: 4px;
+            text-overflow: ellipsis;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 15px 25px;
+            font-size: 20px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            outline: none;
+            color: #fff;
+            background-color: lightcoral;
+            border: none;
+            border-radius: 20px;
+        }
+
+            .button:hover {
+                background-color: red;
+            }
+
+            .button:active {
+                background-color: red;
+                transform: translateY(4px);
+            }
+
+        .buttonCancel {
+            display: inline-block;
+            padding: 15px 25px;
+            font-size: 20px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            outline: none;
+            color: #fff;
+            background-color: lightblue;
+            border: none;
+            border-radius: 20px;
+        }
+
+            .buttonCancel:hover {
+                background-color: blue;
+            }
+
+            .buttonCancel:active {
+                background-color: blue;
+                transform: translateY(4px);
+            }
+
+        .btn {
+            background-color: darkred;
+            border: none;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div ng-controller="SuppliersMainCTRL as SuppliersMain" ng-init="SuppliersMain.initView()" layout-fill layout="column" layout-align="start stretch" style="overflow: hidden;">
+        <div flex="7">
+            <md-subheader class="wrappers-view-header md-whiteframe-7dp md-primary">Διαχειριση Προμηθευτων</md-subheader>
+        </div>
+        <div flex="5" layout="column">
+            <div layout="row" layout-align="center stretch" flex="grow">
+                <div flex="20">
+                    <div class="input-group">
+                        <span style="position:relative;" class="add-clear-span">
+                            <input class="form-control" type="text" style="border-radius: 150px; width: 250px;" placeholder="Αναζήτηση Περ ..." ng-model="searchSupplier.Description">
+                        </span>
+                        <span class="input-group-btn">
+                            <a class="btn" style="color: rgb(204, 204, 204); text-decoration: none; position: absolute; right: 0px; top: 0px; z-index: 50;" ng-click="searchSupplier.Description = ''"><i class="fa fa-times"></i></a>
+                        </span>
+                    </div>
+                </div>
+                <div flex="20">
+                    <div class="input-group">
+                        <span style="position:relative;" class="add-clear-span">
+                            <input class="form-control" type="text" style="border-radius: 150px; width: 250px;" placeholder="Αναζήτηση Κωδ ..." ng-model="searchSupplier.Code">
+                        </span>
+                        <span class="input-group-btn">
+                            <a class="btn" style="color: rgb(204, 204, 204); text-decoration: none; position: absolute; right: 0px; top: 0px; z-index: 50;" ng-click="searchSupplier.Code = ''"><i class="fa fa-times"></i></a>
+                        </span>
+                    </div>
+                </div>
+                <div flex="60" style="margin-top: initial; text-align: end;">
+                    <md-button aria-label="savedyngridchanges" class="md-raised md-primary" style="line-height: 32px; min-height: 32px;" align="right" ng-click="addSupplier($event ,'Suppliers',row,'add')">Προσθήκη&nbsp;&nbsp;Προμηθευτή&nbsp;<i class="fa fa-plus-circle fa-fw"></i> </md-button>
+                </div>
+            </div>
+        </div>
+        <div flex="90" layout="column">
+            <div layout="row" layout-align="start center" class="md-padding" style="font-variant:small-caps;">
+                <strong flex="10">Κωδικος</strong>
+                <strong flex="10">Περιγραφη</strong>
+                <strong flex="10">Ονομα</strong>
+                <strong flex="10">Α.Φ.Μ</strong>
+                <strong flex="10">Δ.Ο.Υ</strong>
+                <strong flex="10">διευθυνση</strong>
+                <strong flex="10">Τ.Κ</strong>
+                <strong flex="10">Τηλεφωνο</strong>
+                <strong flex="10">Email</strong>
+                <strong flex="10" align="center"></strong>
+                <strong flex="10" align="center"></strong>
+            </div>
+            <md-divider></md-divider>
+            <md-list flex="grow" style="overflow:auto;">
+                <md-list-item class="md-whiteframe-4dp" ng-repeat="data in SuppliersMain.suppliers | filter: searchSupplier" style="margin-bottom:10px; background-color:white;">
+                    <div class="md-list-item-text" layout="column" layout-align="start stretch" flex="grow">
+                        <div layout="row" layout-align="start center">
+                            <span class="cell-style" flex="10">{{data.Code}}</span>
+                            <span class="cell-style" flex="10">{{data.Description}}</span>
+                            <span class="cell-style" flex="10">{{data.FullName}}</span>
+                            <span class="cell-style" flex="10">{{data.VatNo}}</span>
+                            <span class="cell-style" flex="10">{{data.TaxOffice}}</span>
+                            <span class="cell-style" flex="10">{{data.Address}}</span>
+                            <span class="cell-style" flex="10">{{data.ZipCode}}</span>
+                            <span class="cell-style" flex="10">{{data.Phone}}</span>
+                            <span class="cell-style" flex="10">{{data.Email}}</span>
+                            <span flex="10" align="center">
+                                <md-button class="md-fab md-mini md-primary  md-raised" ng-click="editSupplier($event ,'Suppliers',data,'edit') " aria-label="Payrolls"><i class="fa fa-pencil fa-fw"></i>  <md-tooltip md-direction="top">Επεξεργασία Προμηθευτή</md-tooltip></md-button>
+                            </span>
+                            <span flex="10" align="center">
+                                <md-button class=" md-fab md-mini" ng-disabled="processingUser" ng-click='open(data)'><i class="fa fa-trash fa-fw"></i>  <md-tooltip md-direction="top">Διαγραφή Προμηθευτή</md-tooltip></md-button>
+                            </span>
+                        </div>
+                    </div>
+            </md-list>
+        </div>
+        <!--Confirmation Modal For Delete Payroll-->
+        <modal title="Διαγραφή Προμηθευτή" visible="showModal" style="position: absolute; top: 20%;">
+            <form role="form"></form>
+            <div class="modal-body">
+                Είστε σίγουρος πως θέλετε να διαγράψετε το συγκεκριμένο Προμηθευτή?
+            </div>
+            <div class="modal-footer">
+                <button type="button" style="margin-right:20px;" class="buttonCancel" data-dismiss="modal" ng-click="cancel()">Ακύρωση</button>
+                <button type="button" class="button" ng-click="DeleteSupplier(shortRow)">Διαγραφή</button>
+            </div>
+        </modal>
+    </div>
+
+</body>
+</html>
+

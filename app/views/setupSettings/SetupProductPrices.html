@@ -1,0 +1,201 @@
+﻿<div layout="column" layout-align="start stretch" ng-cloak  ng-controller="ProductsPricesController" ng-init="initView()">
+    <md-subheader class="wrappers-view-header md-whiteframe-7dp md-primary">Manage your {{entityIdentifier}} Prices</md-subheader>
+    <!-- row of actions -->
+    <div layout="column" layout-align="center stretch" ng-cloak>
+        <div layout="row" layout-align="start center" flex="grow">
+            <!-- Search Panel -->
+            <div layout="column" layout-align="start stretch" flex="80">
+                <div layout="row" layout-align="start center" flex="grow">
+                    <!-- Input Search Options -->
+                    <div layout="column" layout-align="end stretch" flex="80">
+                        <div layout="row" flex="grow">
+                            <md-input-container class="md-block" flex ng-keypress="enterKeyAction($event)"><label>Description</label><input ng-model="searchFilter.Description"></md-input-container>
+                            <md-input-container class="md-block" flex ng-keypress="enterKeyAction($event)"><label>Code</label><input ng-model="searchFilter.ProductCode"></md-input-container>
+                            <md-input-container class="md-block" flex ng-keypress="enterKeyAction($event)">
+                                <label>Product Category</label>
+                                <md-select ng-model="searchFilter.ProductCategoryId">
+                                    <md-optgroup label="Product Categories">
+                                        <md-option ng-value="item.Id" ng-repeat="item in productCategoryOptions">{{item.Description}}</md-option>
+                                    </md-optgroup>
+                                </md-select>
+                            </md-input-container>
+                        </div>
+                    </div>
+                    <!-- Search action buttons -->
+                    <div layout="column" layout-align="center end" flex="20">
+                        <div layout="row">
+                            <md-button class="md-fab md-mini md-default" aria-label="clearSearchFilters" ng-click="clearSearchFilters()"><i class="fa fa-times fa-fw"></i> </md-button>
+                            <md-button class="md-fab md-mini md-default" aria-label="clearSearchFilters" ng-click="filteredSearch(false)"><i class="fa fa-search fa-fw"></i> </md-button>
+                            <!--<md-button class="md-fab md-mini md-default" aria-label="clearSearchFilters" ng-click="togglePricelistFilter() ;$event.stopPropagation();"><i class="fa fa-desktop fa-fw"></i> </md-button>
+                            <div id="collapseFilterSearch" uib-collapse="filterPlsCollapsed == false" class="collapseWindow message" style="max-width:400px;">
+                                <div class="list-repeat-element"
+                                     header="'Select Pricelist to Display'" display-field="'Description'" mainlist="priceLists"
+                                     loop-item-class="'notice content-overflow-ellipsis noticeCustom'" loop-item-selected-class="'notice-success'"
+                                     search-placeholder="'Search...'">
+                                </div>
+                            </div>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- View Action Buttons -->
+            <div layout="column" layout-align="start end" flex="20">
+                <span class="pull-right" style="text-align:right; margin-bottom:1%;">
+                    <md-button class="md-raised" ng-disabled="savingProcess" ng-click="discardGridChanges()">Discard&nbsp;<i class="fa fa-trash-o fa-fw"></i> </md-button>
+                    <md-button class="md-raised md-primary" ng-disabled="savingProcess" ng-click="saveGridChanges()">Save&nbsp; <i class="fa fa-save fa-fw"></i> </md-button>
+                </span>
+            </div>
+        </div>
+        <md-divider></md-divider>
+        <!--<div layout="row" layout-align="center start" flex="grow" style="overflow:auto;">
+            <div layout="column" layout-align="center stretch" style="width:100%;">
+
+            </div>
+        </div>-->
+        <div ng-show="loadingState==true" layout="row" flex="grow" layout-align="center start">
+            <div layout="column" layout-align="center center">
+                <md-subheader class="md-no-sticky">Loading Entries...</md-subheader>
+                <md-progress-linear md-mode="indeterminate"></md-progress-linear>
+            </div>
+        </div>
+
+        <div ng-show="loadingState!=true" layout="row" layout-align="center start" flex="grow" style="max-height:65vh; min-height:30vh; overflow:auto;">
+            <div layout="column" layout-align="center stretch" style="width:100%;">
+                <div layout="row" md-padding="3px" layout-align="start stretch" flex>
+                    <div layout="column" layout-align="center center" class="template-custom-cell-header" style="min-width: 100px; max-width: 100px;"><strong>Code</strong></div>
+                    <div layout="column" layout-align="center center" class="template-custom-cell-header"><strong>Description</strong></div>
+                    <div layout="column" layout-align="center center" class="template-custom-cell-header" ng-repeat="pls in priceLists | filter: plIsSelected">
+                        <div layout="row" layout-align="center center">
+                            <strong>{{pls.Description}} &nbsp;</strong>
+                            <span class="badge">{{pls.Percentage}}%</span>
+                        </div>
+                        <div layout="row" layout-align="center center" flex="grow" style="width: 98%; padding-top:3px;">
+                            <strong flex="50" style="text-align: center;">Price&nbsp;</strong>
+                            <strong flex="25" style="text-align: center;">Vat&nbsp;</strong>
+                            <strong flex="25" style="text-align: center;">Tax&nbsp;</strong>
+                        </div>
+                    </div>
+                </div>
+                <div ng-repeat="item in productPrices | filter:searchDescs">
+                    <div ng-include src="'ProductPricesRow'"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <md-divider></md-divider>
+    <!-- Bottom Row Panel paggination and display size -->
+    <div layout="row" layout-align="start center" flex="grow" class="md-margin">
+        <div layout="column" layout-align="center start" flex="80">
+            <uib-pagination total-items="bigTotalItems" ng-model="bigCurrentPage" max-size="5" items-per-page="pageSize" class="pagination-sm" boundary-links="true" ng-change="pageChanged()"></uib-pagination>
+        </div>
+        <div layout="column" layout-align="center end" flex="20">
+            <md-input-container style="width: 100%;">
+                <label>Results Size</label>
+                <md-select ng-model="gridPaginationOptions.pageSize" ng-change="pageSizeChanged(gridPaginationOptions.pageSize)">
+                    <md-option ng-repeat="pags in [20,50,100]" value="{{pags}}">{{pags}}</md-option>
+                </md-select>
+            </md-input-container>
+        </div>
+    </div>
+</div>
+<script id="ProductPricesRow" type="text/ng-template">
+    <div layout="row" layout-align="start stretch" flex style="margin:2px 0;" ng-class="(item.doubles.length > 0 )?'error-custom-row':((item.edited == true) ? 'edited-custom-row' : 'unedited-custom-row')">
+        <div layout="column" layout-align="center center" class="template-custom-cell" style="min-width: 100px; max-width: 100px;">{{item.ProductCode}}</div>
+        <div layout="column" layout-align="center center" class="template-custom-cell">{{item.Description}}</div>
+        <div class="template-custom-cell" ng-repeat="pls in priceLists" ng-class="(item.edited == true) ? 'edited-custom-row' : 'unedited-custom-row'">
+            <div layout="column" layout-align="start stretch" flex="grow">
+                <!-- Product -->
+                <div layout="row" layout-align="center center" flex="grow">
+                    <div class="fix-height-pricecell" layout="column" layout-align="start stretch" flex="50">
+                        <input style="text-align:right; min-height:30px; width:100%;" type="number" ng-model="item.ProductPricesModelDetails[pls.Id].Price" ng-change="priceChanged(item,pls,item.ProductPricesModelDetails[pls.Id].Price,'Price')" />
+                    </div>
+                    <div layout="column" layout-align="start stretch" flex="25" style="border-right:1px solid;">
+                        <!--<select style="margin:0 1px;" class="form-control" ng-model="item.ProductPricesModelDetails[pls.Id].VatId" aria-label="vatCellSelect" ng-options="item.Id  as item.Percentage for vat in vats" ng-change="priceChanged(item)"></select>'-->
+                        <md-select style="margin:0 1px;" ng-model="item.ProductPricesModelDetails[pls.Id].VatId" aria-label="vatCellSelect" ng-change="priceChanged(item)">
+                            <md-option ng-repeat="vat in vats" value="{{vat.Id}}">{{vat.Percentage}}</md-option>
+                        </md-select>
+                        <!-- ng-change="priceChanged(item,pls,item.ProductPricesModelDetails[pls.Id].VatId,'Vat')" -->
+
+                    </div>
+                    <div layout="column" layout-align="start stretch" flex="25">
+                        <md-select style="margin:0 1px;" ng-model="item.ProductPricesModelDetails[pls.Id].TaxId" aria-label="taxCellSelect" ng-change="priceChanged(item)">
+                            <md-option value="{{null}}">--</md-option>
+                            <md-option ng-repeat="tax in taxs" value="{{tax.Id}}">{{tax.Description}}-{{tax.Percentage}}</md-option>
+                        </md-select>
+                    </div>
+                </div>
+                <!-- Ingredients price Without -->
+                <div ng-show="isIng==true" layout="row" layout-align="center center" flex="grow">
+                    <div class="fix-height-pricecell" layout="column" layout-align="start stretch" flex="50">
+                        <input style="text-align:right; min-height:30px; width:100%;" type="number" ng-model="item.ProductPricesModelDetails[pls.Id].PriceWithout" ng-change="priceChanged(item)" />
+                    </div>
+                    <div layout="column" layout-align="start stretch" flex="50"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
+<style>
+    .fix-height-pricecell {
+        padding: 2px 2px 1px;
+        min-height: 26px;
+    }
+
+    .template-custom-cell-header {
+        min-width: 300px;
+        max-width: 300px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        height: 45px;
+        padding: 2px;
+        border: 2px solid black;
+        background: #3F51B5;
+        color: #FAFAFA;
+    }
+
+    .template-custom-cell {
+        min-width: 300px;
+        max-width: 300px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding: 2px;
+    }
+
+    .error-custom-row {
+        background-color: red;
+    }
+
+    .edited-custom-row, .edited-custom-row:hover {
+        background-color: #FFEBA3;
+    }
+
+    .unedited-custom-row {
+        background: #F3F3F3;
+    }
+
+        .unedited-custom-row:hover {
+            background: #E6F1FC;
+        }
+
+    .message {
+        background: #FAFAFA;
+        border: 1px solid #CCCCCC;
+        color: #000;
+        width: 60%;
+        padding: 20px;
+        transition: top 300ms cubic-bezier(0.17, 0.04, 0.03, 0.94);
+        overflow: hidden;
+        box-sizing: border-box;
+        position: absolute;
+        right: 0%;
+        z-index: 100;
+    }
+
+        .message h1 {
+            color: #000;
+            font-size: 24px;
+        }
+</style>

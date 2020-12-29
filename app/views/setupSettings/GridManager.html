@@ -1,0 +1,83 @@
+﻿<div class="row" ng-controller="GridManagerController" ng-init="initView()">
+    <md-subheader class="wrappers-view-header md-whiteframe-7dp md-primary">Manage ui-grid Options</md-subheader>
+    <div class="col-md-12 col-xs-12">
+
+        <div class="col-md-8 col-xs-8">
+            <!--http://stackoverflow.com/questions/14386570/getting-the-ng-object-selected-with-ng-change-->
+            <select class="form-control" ng-model="selectedGridEntity" ng-options="item for item in gridEntityNames" ng-change="selectedEntiyChanged(selectedGridEntity)"></select>
+        </div>
+    </div>
+    <div class="col-md-12 col-xs-12">
+        <uib-tabset class="tab-animation">
+            <uib-tab heading="Main" ng-click="selectedEditViewOption='Main'">
+                <div class="smooth-opacity-showhide" ng-show="selectedEditViewOption=='Main'">
+                    <div style="width:100px; height:100px; background:black; color:white; cursor:pointer;" ng-click="selectedViewOptionChanged('Columns')">
+                        <h5>Grid Columns</h5>
+                    </div>
+                </div>
+            </uib-tab>
+
+            <uib-tab heading="Grid Options" ng-click="selectedEditViewOption='Options'">
+                <div class="smooth-opacity-showhide" ng-show="selectedEditViewOption=='Options'"></div>
+            </uib-tab>
+            <uib-tab heading="Grid Columns" ng-click="selectedEditViewOption='Columns'">
+                <div class="smooth-opacity-showhide" ng-show="selectedEditViewOption=='Columns'">
+
+                    <div class="container-panel">
+                        <div class="col-md-4 col-xs-4" style="max-height:inherit; min-height: inherit;">
+                            <div class="container-panel-header">
+                                <div class="bo-htd">Grid Columns</div>
+                                <div class="container-panel-header-toolbar">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" style="height: inherit;" placeholder="Search fieldName..." ng-model="searchColFieldName.field">
+                                    </div>
+                                    <!--<a class="hvr-back-pulse" style="text-decoration:none; height: inherit;" ng-model="incCatDisplay" ng-click="incCatDisplay =!incCatDisplay">New&nbsp;<i class="fa fa-plus fa-fw"></i></a>-->
+                                </div>
+                            </div>
+                            <div class="container-panel-content">
+                                <div class="" ng-repeat="col in gridColumnsLoaded | filter:searchColFieldName">
+                                    <div class="notice" ng-class="(col.field == selectedCol.field) ? 'notice-info' : ''" ng-click="clickSelectColObject(col)">
+                                        <div class="panel-notice-list-component">
+                                            <div class="overflow-text-on-component content-overflow-ellipsis" style="width:76%;">
+                                                <strong ng-style="(col.field == selectedCol.field) ? {'color':'#45ABCD'} : ''">{{col.field}}</strong><br />
+                                                <!-- <span>Ingredients: &nbsp;<span class="badge" ng-style="(selectedProductCategory.Id == key) ? {'background-color':'#45ABCD'} : (cObj.length == 0) ? {'background-color':'#d9534f'} : ''">{{cObj.length}}</span></span>-->
+                                            </div>
+                                            <!--<a class="hvr-fade hvr-danger" style="text-decoration:none; height: inherit;" ng-click="containerObjDeleteAction(key,cObj)"><i class="fa fa-xs fa-trash-o"></i></a>-->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-8 col-xs-8">
+                            <div class="container-panel-header">
+                                <div class="bo-htd">{{selectedCol.field}}</div>
+                                <div class="container-panel-header-toolbar">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" style="height: inherit;" placeholder="Search property..." >
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="container-panel-content">
+                                <ul class="" style="list-style-type:none;" ng-repeat="(key, cObj) in gridColumnModel">
+                                    <li style="border:1px solid black; background-color:beige; display: flex;">
+                                        <label style="width:30%">{{key}}</label>&nbsp;
+                                        <input type="text" class="form-control" style="width:70% ;height: inherit; text-align:right;" ng-placeholder="displayColFieldPlaceHolder(key)" ng-model="selectedCol[key]" ng-change="colEntityFieldChanged(key,selectedCol[key])">
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </uib-tab>
+        </uib-tabset>
+    </div>
+
+    <!--$scope.editOptions-->
+    <!--<element ng-switch="expression">
+        <element ng-switch-when="value"></element>
+        <element ng-switch-when="value"></element>
+        <element ng-switch-when="value"></element>
+        <element ng-switch-default></element>
+    </element>-->
+</div>

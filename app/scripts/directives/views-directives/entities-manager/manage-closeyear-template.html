@@ -1,0 +1,87 @@
+﻿<div ng-controller="CloseYearToHistoryCtrl" ng-init="init()" style="overflow:hidden;" layout="column" layout-align="start stretch" flex="grow" ng-cloak layout-fill>
+
+    <div layout="row" layout-align="start stretch" flex="grow">
+        <div layout="column" layout-align="start stretch" class="md-whiteframe-8dp" style="overflow:auto; padding:10px;" flex>
+            <div layout="row" layout-align="start center">
+                <md-input-container class="md-block" flex="50"><label>Search description closing</label><input ng-model="searchDesc.Description"></md-input-container>
+                <div flex></div>
+                <md-button class="md-primary md-raised" ng-click="loadValid()">Reload<md-tooltip md-direction="top">Reload closing registrations</md-tooltip></md-button>
+            </div>
+            <md-subheader class="md-no-sticky">
+                <div layout="row" layou-align="start center">
+                    <div flex="5" ng-click="orderFilt='Id'">Id</div>
+                    <div flex="10" ng-click="orderFilt='Year'">Year</div>
+                    <div flex="50" ng-click="orderFilt='Description'">Description</div>
+                    <div flex="20" ng-click="orderFilt='ClosedDate'">Action Performed</div>
+                    <div flex></div>
+                </div>
+            </md-subheader>
+            <md-divider></md-divider>
+            <md-list ng-if="yearsClosed.length > 0  && processing != true">
+                <md-list-item aria-label="yclosed-{{yc.Id}}" ng-repeat="yc in yearsClosed | filter:searchDesc | orderBy : orderFilt">
+                    <strong flex="5">{{yc.Id}}</strong>
+                    <strong flex="10">{{yc.ClosedYear}}</strong>
+                    <strong flex="50">{{yc.Description || '--'}}</strong>
+                    <div flex="20"><md-datepicker ng-model="yc.ClosedDateDP" md-placeholder="Action Date" disabled="true"></md-datepicker></div>
+                    <strong flex></strong>
+                </md-list-item>
+            </md-list>
+            <div layout="row" layout-align="start center">
+
+            <div layout="column" layout-align="start center" flex>
+                <md-toolbar class="md-accent md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="start center" ng-if="yearsClosed.length == 0 && processing != true">
+                    <md-icon class="md-margin" md-svg-icon="action:info"></md-icon>No closing year actions performed yet.
+                </md-toolbar>
+                <md-toolbar class="md-warn md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="start center" ng-if="validToClose == false && selectedClosingYear == -1  && processing != true">
+                    <md-icon class="md-margin" md-svg-icon="action:info"></md-icon>Possible closing allready running. Check your agent Idle state.
+                </md-toolbar>
+            </div>
+            </div>
+            <div ng-if="processing == true" layout="column" layout-align="center center" flex="grow"><md-progress-circular md-mode="indeterminate"></md-progress-circular><span>Loading please wait...</span></div>
+        </div>
+
+        <div layout="column" layout-align="center stretch" flex="40">
+            <div ng-include src="'close-year-actions-tab'" flex></div>
+        </div>
+    </div>
+</div>
+<!-- Card Action Template of closing Year -->
+<script type="text/ng-template" id="close-year-actions-tab">
+    <form name="closeYearForm">
+        <md-card class="md-whiteframe-8dp">
+            <md-card-title>
+                <md-card-title-text>
+                    <span class="md-headline">Closing Year</span>
+                    <span class="md-subhead">Scheduled Task on your database.</span>
+                    <br />
+                    <md-input-container class="md-block" flex="70" style="font-variant:small-caps;">
+                        <label>Year to close</label>
+                        <input name="sclosingYear" ng-model="selectedClosingYear" required ng-disabled="true">
+                        <div ng-messages="closeYearForm.sclosingYear.$error">
+                            <div ng-message="required">You need to specify a Year</div>
+                        </div>
+                    </md-input-container>
+                    <md-input-container class="md-block" flex="70">
+                        <label>Task Description</label>
+                        <input ng-model="selectedTaskDescription">
+                        <div class="hint">*With no Desc provided service will create "ClosingYearXXXX"</div>
+                    </md-input-container>
+                </md-card-title-text>
+            </md-card-title>
+            <md-card-actions layout="row" layout-align="center center">
+                <md-button class="md-warn md-raised" ng-disabled="closeYearForm.$invalid || validToClose != true" ng-click="closeYear(selectedClosingYear , selectedTaskDescription)">Close Year<md-tooltip md-direction="top" ng-disabled="processing">Transfer data to history tables</md-tooltip></md-button>
+            </md-card-actions>
+            <md-card-content>
+                <p>
+                    Each service of closing year will be available after <strong>10 January</strong> of your last closing action.
+                    <br /><br />
+                    *Procedure will take several minutes to complete, after action is submitted<br />
+                    *<strong>All actions from/to database will not be available as Procedure is active</strong><br />
+                    *Make sure <strong>SQL Agent is running </strong>in order to assign this task on SQL Server<br />
+                    <br /><br />
+                    <small>Executing this functionality will return a success message to you and schedule a job on your server.</small>
+                </p>
+            </md-card-content>
+        </md-card>
+    </form>
+</script>

@@ -1,0 +1,58 @@
+﻿<md-dialog ng-class="{'fullscreen-dialog' : fullscreenModal}" aria-label="clone-account-mapping" ng-cloak style="min-width: 50vw;">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>Clone Account Mapping</h2>
+            <span flex></span>
+            <toggle-fs-modal tvar="fullscreenModal"></toggle-fs-modal>
+            <md-button class="md-icon-button" aria-label="CloseModal" ng-click="cancel()">
+                <md-icon md-svg-icon="navigation:close"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-dialog-content>
+        <div class="md-dialog-content">
+            <div layout="row" layout-align="start center">
+                <md-input-container class="md-block" flex="40">
+                    <label>Description</label>
+                    <input name="Description" ng-model="cloneEnt.Description" ng-disabled="true">
+                </md-input-container>
+                <md-input-container class="md-block" required flex="40">
+                    <label>Pms Room</label>
+                    <input name="PmsRoom" ng-model="cloneEnt.PmsRoom" ng-disabled="true" type="number">
+                </md-input-container>
+                <div layout="row" layout-align="start center" layout-gt-sm="column" flex="20">
+                    <md-checkbox md-no-ink aria-label="Status" ng-model="cloneEnt.Status" ng-disabled="true" class="md-primary">Active</md-checkbox>
+                </div>
+            </div>
+            <div layout="row" layout-align="start center">
+                <md-input-container class="md-block" required flex="50">
+                    <label>Pos Info</label>
+                    <md-select name="PosInfoId" ng-model="cloneEnt.PosInfoId" ng-disabled="true">
+                        <md-option ng-repeat="ch in dropDownObject.PosInfoId" value="{{ch.Key}}">{{ch.Value}}</md-option>
+                    </md-select>
+                </md-input-container>
+                <md-input-container class="md-block" required flex="50">
+                    <label>Account</label>
+                    <md-select name="AccountId" ng-model="cloneEnt.AccountId" ng-disabled="true">
+                        <md-option ng-repeat="ch in dropDownObject.AccountId" value="{{ch.Key}}">{{ch.Value}}</md-option>
+                    </md-select>
+                </md-input-container>
+            </div>
+            <div layout="row" layout-align="space-between center">
+                <strong>Select POS to clone</strong>
+                <md-input-container flex="50">
+                    <label>Pos Info</label>
+                    <md-select ng-model="selectedPosToClone" multiple="true">
+                        <md-optgroup label="posinfogroup">
+                            <md-option ng-repeat="ch in dropDownObject.PosInfoId | filter : exceptProvided" value="{{ch.Key}}">{{ch.Value}}</md-option>
+                        </md-optgroup>
+                    </md-select>
+                </md-input-container>
+            </div>
+        </div>
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+        <md-button ng-click="cancel('cancel')" aria-label="CancelAction">Cancel</md-button>
+        <md-button ng-click="confirm('save')" ng-disabled="selectedPosToClone.length == 0" style="margin-right:20px;" aria-label="ConfAction">Save</md-button>
+    </md-dialog-actions>
+</md-dialog>

@@ -1,0 +1,4 @@
+﻿{
+  "tname1": "<div ng-controller=\"testController\"><span>I am a single template and my value is : {{model.desc}}</span></div>",
+  "tname2": "<div ng-controller=\"testController\"><span>I am a second template and my value is : {{model.exdesc}}</span></div>"
+}

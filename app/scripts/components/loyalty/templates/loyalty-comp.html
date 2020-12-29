@@ -1,0 +1,373 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+        .carddemoBasicUsage .card-media {
+            background-color: #999999;
+        }
+
+        .inputdemoBasicUsage .md-datepicker-button {
+            width: 36px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 15px 25px;
+            font-size: 20px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            outline: none;
+            color: #fff;
+            background-color: lightcoral;
+            border: none;
+            border-radius: 20px;
+        }
+
+            .button:hover {
+                background-color: red;
+            }
+
+            .button:active {
+                background-color: red;
+                transform: translateY(4px);
+            }
+
+        .buttonCancel {
+            display: inline-block;
+            padding: 15px 25px;
+            font-size: 20px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            outline: none;
+            color: #fff;
+            background-color: lightblue;
+            border: none;
+            border-radius: 20px;
+        }
+
+            .buttonCancel:hover {
+                background-color: blue;
+            }
+
+            .buttonCancel:active {
+                background-color: blue;
+                transform: translateY(4px);
+            }
+
+        .btn {
+            background-color: darkred;
+            border: none;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div ng-controller="LoyaltyCompCTRL as LoyaltyMain" ng-init="LoyaltyMain.initView()" layout-fill layout="column" layout-align="start stretch">
+        <div flex="50" layout="row">
+            <div flex="50">
+                <md-card>
+                    <md-card-title>
+                        <md-card-title-text layout="row">
+                            <span layout="column" layout-align="center" class="md-headline">Loyalty Configuration</span>
+                            <md-button class="md-fab md-mini md-primary md-raised" ng-click="editLoyalty($event ,'loyalty', {} , 'insert')" aria-label="EditMessages"><i class="fa fa-plus fa-fw"></i></md-button>
+                        </md-card-title-text>
+                    </md-card-title>
+                    <md-card-content layout="column" layout-align="space-between">
+                        <div layout="row">
+                            <md-input-container class="md-block" flex>
+                                <label style="color: black !important;">Gain Points Type</label>
+                                <input style="color: black !important;" ng-model="LoyaltyMain.LoyaltyConfig.GainPointsTypeDescr" disabled>
+                            </md-input-container>
+                            <md-input-container class="md-block" flex>
+                                <label style="color: black !important;">Redeem Type</label>
+                                <input style="color: black !important;" ng-model="LoyaltyMain.LoyaltyConfig.RedeemTypeDescr" disabled>
+                            </md-input-container>
+
+                        </div>
+                        <div layout="row">
+                            <md-input-container class="md-block" flex>
+                                <label style="color: black !important;">Max Points</label>
+                                <input style="color: black !important;" ng-model="LoyaltyMain.LoyaltyConfig.MaxPoints" disabled>
+                            </md-input-container>
+                            <md-input-container class="md-block" flex>
+                                <label style="color: black !important;">Expiration Period (Months)</label>
+                                <input style="color: black !important;" ng-model="LoyaltyMain.LoyaltyConfig.ExpDuration" disabled>
+                            </md-input-container>
+                        </div>
+                        <div layout="row">
+                            <md-input-container class="md-block" flex>
+                                <label style="color: black !important;">Min Amount</label>
+                                <input style="color: black !important;" ng-model="LoyaltyMain.LoyaltyConfig.MinAmount" disabled>
+                            </md-input-container>
+                            <md-input-container class="md-block" flex>
+                                <label style="color: black !important;">Initial Points</label>
+                                <input style="color: black !important;" ng-model="LoyaltyMain.LoyaltyConfig.InitPoints" disabled>
+                            </md-input-container>
+                        </div>
+                        <div layout="row" style="align-self: flex-end;">
+                            <md-content layout="row">
+                                <md-button class="md-fab md-mini md-primary  md-raised" ng-click="editLoyalty($event ,'loyalty', LoyaltyMain.LoyaltyConfig, 'edit' )" aria-label="EditLoyaltyInfo"><i class="fa fa-pencil fa-fw"></i></md-button>
+                            </md-content>
+                        </div>
+                    </md-card-content>
+                </md-card>
+            </div>
+            <div flex="50" style="margin-left:15px;" ng-if="LoyaltyMain.LoyaltyConfig.GainPointsType == 0">
+                <div layout-gt-sm="row">
+                    <div flex-xs flex-gt-xs="60" layout-gt-sm="row">
+                        <span style="font-size:20px; font-weight:100; line-height:48px; color:forestgreen">Loyalty Gain Amount Range</span>
+                        <md-button class="md-fab md-mini md-primary md-raised" ng-click="editLoyaltyGainRange($event ,'loyaltyGainPointsRange', {} , 'insert')" aria-label="EditMessages"><i class="fa fa-plus fa-fw"></i></md-button>
+                    </div>
+                    <div flex="40" style="text-align:end;">
+                        <md-button class="md-fab md-mini" ng-click="openDialogGainPointsRange()"><i class="fa fa-trash fa-fw"></i></md-button>
+                    </div>
+                </div>
+                <md-divider></md-divider>
+                <div layout="row" layout-align="start center" class="md-padding" style="font-variant:small-caps;">
+                    <strong flex="25">From Amount</strong>
+                    <strong flex="25">To Amount</strong>
+                    <strong flex="25">Points</strong>
+                    <strong flex="25"></strong>
+                </div>
+                <md-divider></md-divider>
+                <md-list style="overflow:auto; height: 73%;">
+                    <md-list-item class="md-whiteframe-4dp" ng-repeat="row in LoyaltyMain.LoyalGainRange" style="margin-bottom:10px; background-color:white;">
+                        <div class="md-list-item-text" layout="column" layout-align="start stretch" flex="grow">
+                            <div layout="row" layout-align="start center" style="padding-left:2%;">
+                                <span class="cell-style" flex="25">{{row.FromAmount.toFixed(2)}}€<md-tooltip md-direction="top">{{row.FromAmount.toFixed(2)}}€</md-tooltip></span>
+                                <span class="cell-style" flex="25">{{row.ToAmount.toFixed(2)}}€<md-tooltip md-direction="top">{{row.ToAmount.toFixed(2)}}€</md-tooltip></span>
+                                <span class="cell-style" flex="25">{{row.Points}}<md-tooltip md-direction="top">{{row.Points}}</md-tooltip></span>
+                                <span flex="25" align="center">
+                                    <md-button class="md-fab md-mini" ng-click="openGainPointsRangeRow(row)"><i class="fa fa-close fa-fw"></i></md-button>
+                                </span>
+                            </div>
+                        </div>
+                </md-list>
+            </div>
+            <div flex="50" style="margin-left:15px;" ng-if="LoyaltyMain.LoyaltyConfig.GainPointsType == 1">
+                <md-card>
+                    <md-card-title>
+                        <md-card-title-text layout="row">
+                            <span layout="column" layout-align="center" class="md-headline" style="font-size:20px; font-weight:100; line-height:48px; color:purple">Loyalty Gain Amount Ratio</span>
+                        </md-card-title-text>
+                    </md-card-title>
+                    <md-card-content layout="column" layout-align="space-between">
+                        <div layout="row">
+                            <md-input-container class="md-block" flex>
+                                <label style="color: black !important;">Πόντοι στους οποίους αντιστοιχεί 1 ευρώ</label>
+                                <input style="color: black !important;" ng-model="LoyaltyMain.LoyalGainRatio.ToPoints" disabled>
+                            </md-input-container>
+                        </div>
+                        <div layout="row" style="align-self: flex-end;">
+                            <md-content layout="row">
+                                <md-button class="md-fab md-mini md-primary  md-raised" ng-click="editLoyaltyGainPointsRatio($event ,'loyaltyGainPointsRatio', LoyaltyMain.LoyalGainRatio, 'edit' )" aria-label="EditLoyaltyInfo"><i class="fa fa-pencil fa-fw"></i></md-button>
+                            </md-content>
+                        </div>
+                    </md-card-content>
+                </md-card>
+            </div>
+        </div>
+        <div flex="50" layout="row" ng-if="LoyaltyMain.LoyaltyConfig.RedeemType != 2">
+            <div flex="50" style="margin-top:16px;" ng-if="LoyaltyMain.LoyaltyConfig.RedeemType == 0">
+                <div layout-gt-sm="row">
+                    <div flex-xs flex-gt-xs="40" layout-gt-sm="row">
+                        <span style="font-size:20px; font-weight:100; line-height:48px; color:rebeccapurple">Loyalty Redeem Free Products</span>
+                        <md-button class="md-fab md-mini md-primary md-raised" ng-click="editLoyaltyRedeemFreeProducts($event ,'loyaltyRedeemFreeProducts', {} , 'insert')" aria-label="EditMessages"><i class="fa fa-plus fa-fw"></i></md-button>
+                    </div>
+                    <div flex="40" style="text-align:center; align-self: center;">
+                        <div class="input-group">
+                            <span style="position:relative;" class="add-clear-span">
+                                <input class="form-control" type="text" style="border-radius: 150px; width: 250px;" placeholder="Search ..." ng-model="searchText" ng-change="searchText">
+                            </span>
+                            <span class="input-group-btn">
+                                <a class="btn" style="color: rgb(204, 204, 204); text-decoration: none; position: absolute; right: 0px; top: 0px; z-index: 50;" ng-click="searchText = ''"><i class="fa fa-times"></i></a>
+                            </span>
+                        </div>
+                    </div>
+                    <div flex="20" style="text-align:end;">
+                        <md-button class="md-fab md-mini" ng-click="openDialogFreeProducts()"><i class="fa fa-trash fa-fw"></i></md-button>
+                    </div>
+                </div>
+                <md-divider></md-divider>
+                <div layout="row" layout-align="start center" class="md-padding" style="font-variant:small-caps;">
+                    <strong flex="20">Product</strong>
+                    <strong flex="20">Product Category</strong>
+                    <strong flex="20">Quantity</strong>
+                    <strong flex="20">Points</strong>
+                    <strong flex="20"></strong>
+                </div>
+                <md-divider></md-divider>
+                <md-list style="overflow:auto; height: 70%;">
+                    <md-list-item class="md-whiteframe-4dp" ng-repeat="row in LoyaltyMain.LoyalRedeemFreeProduct | filter: searchText" style="margin-bottom:10px; background-color:white;">
+                        <div class="md-list-item-text" layout="column" layout-align="start stretch" flex="grow">
+                            <div layout="row" layout-align="start center" style="padding-left:2%;">
+                                <span class="cell-style" flex="20">{{row.ProductName}}<md-tooltip md-direction="top">{{row.ProductName}}</md-tooltip></span>
+                                <span class="cell-style" flex="20">{{row.ProdCategoryName}}<md-tooltip md-direction="top">{{row.ProdCategoryName}}</md-tooltip></span>
+                                <span class="cell-style" flex="20">{{row.Qnt}}<md-tooltip md-direction="top">{{row.Qnt}}</md-tooltip></span>
+                                <span class="cell-style" flex="20">{{row.Points}}<md-tooltip md-direction="top">{{row.Points}}</md-tooltip></span>
+                                <span flex="20" align="center">
+                                    <md-button class="md-fab md-mini" ng-click="openDialogFreeProductsRow(row)"><i class="fa fa-close fa-fw"></i></md-button>
+                                </span>
+                            </div>
+                        </div>
+                </md-list>
+            </div>
+            <div flex="50" style="margin-top:16px;" ng-if="LoyaltyMain.LoyaltyConfig.RedeemType == 1">
+                <md-card>
+                    <md-card-title>
+                        <md-card-title-text layout="row">
+                            <span layout="column" layout-align="center" class="md-headline" style="font-size:20px; font-weight:100; line-height:48px; color:blue">Loyalty Redeem Discount</span>
+                        </md-card-title-text>
+                    </md-card-title>
+                    <md-card-content layout="column" layout-align="space-between">
+                        <div layout="row">
+                            <md-input-container class="md-block" flex>
+                                <label style="color: black !important;">Eυρώ έκπτωσης στα οποία αντιστοιχεί 1 πόντος εξαργύρωσης</label>
+                                <input style="color: black !important;" ng-model="LoyaltyMain.LoyalRedeemDiscount.DiscountRatio" disabled>
+                            </md-input-container>
+                        </div>
+                        <div layout="row" style="align-self: flex-end;">
+                            <md-content layout="row">
+                                <md-button class="md-fab md-mini md-primary  md-raised" ng-click="editLoyaltyRedeemDiscount($event ,'LoyaltyRedeemDiscount', LoyaltyMain.LoyalRedeemDiscount, 'edit' )" aria-label="EditLoyaltyInfo"><i class="fa fa-pencil fa-fw"></i></md-button>
+                            </md-content>
+                        </div>
+                    </md-card-content>
+                </md-card>
+            </div>
+            <div flex="50">
+
+            </div>
+        </div>
+
+        <div flex="50" layout="row" ng-if="LoyaltyMain.LoyaltyConfig.RedeemType == 2" style="margin-top:18px;">
+            <div flex="50">
+                <md-card>
+                    <md-card-title>
+                        <md-card-title-text layout="row">
+                            <span layout="column" layout-align="center" class="md-headline" style="font-size:20px; font-weight:100; line-height:48px; color:blue">Loyalty Redeem Discount</span>
+                        </md-card-title-text>
+                    </md-card-title>
+                    <md-card-content layout="column" layout-align="space-between">
+                        <div layout="row">
+                            <md-input-container class="md-block" flex>
+                                <label style="color: black !important;">Eυρω έκπτωσης στα οποία αντιστοιχεί 1 πόντος εξαργύρωσης</label>
+                                <input style="color: black !important;" ng-model="LoyaltyMain.LoyalRedeemDiscount.DiscountRatio" disabled>
+                            </md-input-container>
+                        </div>
+                        <div layout="row" style="align-self: flex-end;">
+                            <md-content layout="row">
+                                <md-button class="md-fab md-mini md-primary  md-raised" ng-click="editLoyaltyRedeemDiscount($event ,'LoyaltyRedeemDiscount', LoyaltyMain.LoyalRedeemDiscount, 'edit' )" aria-label="EditLoyaltyInfo"><i class="fa fa-pencil fa-fw"></i></md-button>
+                            </md-content>
+                        </div>
+                    </md-card-content>
+                </md-card>
+            </div>
+            <div flex="50" style="margin-left:15px;">
+                <div layout-gt-sm="row">
+                    <div flex-xs flex-gt-xs="40" layout-gt-sm="row">
+                        <span style="font-size:20px; font-weight:100; line-height:48px; color:rebeccapurple">Loyalty Redeem Free Products</span>
+                        <md-button class="md-fab md-mini md-primary md-raised" ng-click="editLoyaltyRedeemFreeProducts($event ,'loyaltyRedeemFreeProducts', {} , 'insert')" aria-label="EditMessages"><i class="fa fa-plus fa-fw"></i></md-button>
+                    </div>
+                    <div flex="40" style="text-align:center; align-self: center;">
+                        <div class="input-group">
+                            <span style="position:relative;" class="add-clear-span">
+                                <input class="form-control" type="text" style="border-radius: 150px; width: 250px;" placeholder="Search ..." ng-model="searchText" ng-change="searchText">
+                            </span>
+                            <span class="input-group-btn">
+                                <a class="btn" style="color: rgb(204, 204, 204); text-decoration: none; position: absolute; right: 0px; top: 0px; z-index: 50;" ng-click="searchText = ''"><i class="fa fa-times"></i></a>
+                            </span>
+                        </div>
+                    </div>
+                    <div flex="20" style="text-align:end;">
+                        <md-button class="md-fab md-mini" ng-click="openDialogFreeProducts()"><i class="fa fa-trash fa-fw"></i></md-button>
+                    </div>
+                </div>
+                <md-divider></md-divider>
+                <div layout="row" layout-align="start center" class="md-padding" style="font-variant:small-caps;">
+                    <strong flex="25">Product</strong>
+                    <strong flex="25">Product Category</strong>
+                    <strong flex="15">Quantity</strong>
+                    <strong flex="15">Points</strong>
+                    <strong flex="20"></strong>
+                </div>
+                <md-divider></md-divider>
+                <md-list style="overflow:auto; height: 70%;">
+                    <md-list-item class="md-whiteframe-4dp" ng-repeat="row in LoyaltyMain.LoyalRedeemFreeProduct |filter: searchText" style="margin-bottom:10px; background-color:white;">
+                        <div class="md-list-item-text" layout="column" layout-align="start stretch" flex="grow">
+                            <div layout="row" layout-align="start center" style="padding-left:2%;">
+                                <span class="cell-style" flex="25">{{row.ProductName}}<md-tooltip md-direction="top">{{row.ProductName}}</md-tooltip></span>
+                                <span class="cell-style" flex="25">{{row.ProdCategoryName}}<md-tooltip md-direction="top">{{row.ProdCategoryName}}</md-tooltip></span>
+                                <span class="cell-style" flex="15">{{row.Qnt}}<md-tooltip md-direction="top">{{row.Qnt}}</md-tooltip></span>
+                                <span class="cell-style" flex="15">{{row.Points}}<md-tooltip md-direction="top">{{row.Points}}</md-tooltip></span>
+                                <span flex="20" align="center">
+                                    <md-button class="md-fab md-mini" ng-click="openDialogFreeProductsRow(row)"><i class="fa fa-close fa-fw"></i></md-button>
+                                </span>
+                            </div>
+                        </div>
+                </md-list>
+            </div>
+        </div>
+
+        <!--Confirmation Modal For Delete Amount Range Row-->
+        <modal title="Delete Loyalty Gain Amount Range" visible="showModalGainPointsRange" style="position: absolute; top: 20%;">
+            <form role="form"></form>
+            <div class="modal-body">
+                Are you sure you want to delete this Item?
+            </div>
+            <div class="modal-footer">
+                <button type="button" style="margin-right:20px;" class="buttonCancel" data-dismiss="modal" ng-click="cancelGainPointsRange()">Cancel</button>
+                <button type="button" class="button" ng-click="deleteLoyaltyGainRangeRow(rangeRow)">Delete</button>
+            </div>
+        </modal>
+
+        <!--Confirmation Modal For Delete All Amount Range-->
+        <modal title="Delete Loyalty Gain Amount Range" visible="showModal" style="position: absolute; top: 20%;">
+            <form role="form"></form>
+            <div class="modal-body">
+                Are you sure you want to delete All Items?
+            </div>
+            <div class="modal-footer">
+                <button type="button" style="margin-right:20px;" class="buttonCancel" data-dismiss="modal" ng-click="cancel()">Cancel</button>
+                <button type="button" class="button" ng-click="deleteLoyaltyGainRange()">Delete</button>
+            </div>
+        </modal>
+
+        <!--Confirmation Modal For Delete Free Products Row-->
+        <modal title="Delete Loyalty Loyalty Free Products" visible="showModalFreeProductsRow" style="position: absolute; top: 20%;">
+            <form role="form"></form>
+            <div class="modal-body">
+                Are you sure you want to delete this Item?
+            </div>
+            <div class="modal-footer">
+                <button type="button" style="margin-right:20px;" class="buttonCancel" data-dismiss="modal" ng-click="cancelFreeProductsRow()">Cancel</button>
+                <button type="button" class="button" ng-click="deleteLoyaltyFreeProductsRow(productRow)">Delete</button>
+            </div>
+        </modal>
+
+        <!--Confirmation Modal For Delete Free Products-->
+        <modal title="Delete All Loyalty Free Products" visible="showModalFreeProducts" style="position: absolute; top: 20%;">
+            <form role="form"></form>
+            <div class="modal-body">
+                Are you sure you want to delete All item?
+            </div>
+            <div class="modal-footer">
+                <button type="button" style="margin-right:20px;" class="buttonCancel" data-dismiss="modal" ng-click="cancel2()">Cancel</button>
+                <button type="button" class="button" ng-click="deleteLoyaltyFreeProducts()">Delete</button>
+            </div>
+        </modal>
+
+    </div>
+</body>
+</html>
+
+
+

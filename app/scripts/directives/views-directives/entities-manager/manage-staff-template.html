@@ -1,0 +1,133 @@
+﻿<div ng-controller="StaffManagerCtrl" ng-init="init()" style="overflow:hidden;" layout="column" layout-align="start stretch" layout-fill>
+    <div layout="row" layout-align="space-between center">
+        <div layout="row" layout-align="start center" flex>
+            <md-input-container class="md-block" flex style="margin-bottom:0;"><label>LastName</label><input ng-model="filters.LastName"></md-input-container>
+            <md-button class="md-fab md-mini md-default" aria-label="clearFNfilter" ng-click="filters.LastName = ''"><i class="fa fa-times fa-fw"></i> </md-button>
+            <md-input-container class="md-block" flex style="margin-bottom:0;"><label>FirstName</label><input ng-model="filters.FirstName"></md-input-container>
+            <md-button class="md-fab md-mini md-default" aria-label="clearLNfilter" ng-click="filters.FirstName = ''"><i class="fa fa-times fa-fw"></i> </md-button>
+            <div flex></div>
+            <md-button class="md-fab md-mini md-primary" aria-label="addNewStaff" ng-click="editEntry('add',null)" ng-disabled="processingUser">
+                <i class="fa fa-plus fa-fw"><md-tooltip md-direction="top">Add new staff</md-tooltip></i>
+            </md-button>
+        </div>
+    </div>
+    <md-content layout="row" layout-align="start stretch" flex style="overflow:hidden;">
+        <div layout-fill flex="50" layout="column" layout-align="center center" style="overflow:auto;" ng-if="busyloading == true">
+            <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+            <span>Loading...</span>
+        </div>
+        <div layout-fill flex="50" ng-if="busyloading == false" layout="column" layout-align="center stretch">
+            <div style="overflow:auto;" flex>
+                <div layout="row" layout-align="center center" ng-if="loadedStaff == -1">
+                    <md-toolbar class="md-warn md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="start center">
+                        <md-icon class="md-margin" md-svg-icon="action:info"></md-icon>Loading staff failed due to a server error. Please try reload the page.
+                    </md-toolbar>
+                </div>
+                <div layout="row" layout-align="center center" ng-if="loadedStaff.length == 0">
+                    <md-toolbar class="md-warn md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="start center">
+                        <md-icon class="md-margin" md-svg-icon="action:info"></md-icon>No registers found for staff members.
+                    </md-toolbar>
+                </div>
+                <md-list ng-if="loadedStaff.length > 0">
+                    <md-list-item class="md-3-line md-long-text md-whiteframe-3dp" style="margin:0.5em;" ng-repeat="stf in loadedStaff | filter: filters" ng-click="selectCurrentUser(stf)">
+                        <img class="md-avatar" err-src="Images/noUserPreview.jpg" src="{{stf.ImageUri}}" />
+                        <div class="md-list-item-text" flex="20"><h3>{{stf.LastName}}</h3><h3>{{stf.FirstName}}</h3></div>
+                        <div layout="column" layout-align="start start" flex>
+                            <div layout="row" layout-align="start center" flex>
+                                <strong>Pos:</strong> <md-chips class="staff-list-chip" ng-model="stf.StaffPositions" readonly="true"><md-chip-template><span>{{staffPositionsEnum[$chip.StaffPositionId]}}</span></md-chip-template></md-chips>
+                            </div>
+                            <div layout="row" layout-align="start center" flex>
+                                <strong>Auth:</strong> <md-chips class="staff-list-chip" ng-model="stf.StaffAuthorization" readonly="true"><md-chip-template><span>{{authorizedGroupsEnum[$chip.AuthorizedGroupId]}}</span></md-chip-template></md-chips>
+                            </div>
+                        </div>
+                    </md-list-item>
+                </md-list>
+            </div>
+            <!--<md-divider></md-divider>-->
+            <section class="md-padding" layout="column" layout-align="center center">
+                <cl-paging flex cl-pages="paging.total" cl-steps="6" cl-page-changed="paging.onPageChanged()" cl-align="center center" cl-current-page="paging.current"></cl-paging>
+            </section>
+        </div>
+        <div flex="50">
+            <div layout="column" layout-align="center stretch">
+                <form name="dssStaff" layout-fill ng-if="selecteUser!= null">
+                    <md-card class="md-whiteframe-8dp" flex="grow">
+                        <md-card-title>
+                            <md-card-title-media>
+                                <div class="md-media-md card-media"><img err-src="Images/noUserPreview.jpg" src="{{selecteUser.ImageUri}}" /></div>
+                            </md-card-title-media>
+                            <md-card-title-text>
+                                <div layout="row" layout-align="center stretch" flex="grow">
+                                    <md-input-container class="md-block" flex="50">
+                                        <label>FirstName</label><input name="FirstName" ng-model="selecteUser.FirstName" required disabled>
+                                        <div ng-messages="dssStaff.FirstName.$error"><div ng-message="required">You need to specify a FirstName</div></div>
+                                    </md-input-container>
+                                    <md-input-container class="md-block" flex="50">
+                                        <label>LastName</label><input name="LastName" ng-model="selecteUser.LastName" required disabled>
+                                        <div ng-messages="dssStaff.LastName.$error"><div ng-message="required">You need to specify a LastName</div></div>
+                                    </md-input-container>
+                                </div>
+                                <div layout="row" layout-align="start stretch" flex="grow">
+                                    <md-input-container class="md-block" flex="50">
+                                        <label>Identification</label><input name="Identification" ng-model="selecteUser.Identification" disabled>
+                                    </md-input-container>
+                                    <md-input-container class="md-block" flex="50">
+                                        <label>DaStore</label><input name="DaStore" ng-model="selecteUser.DaStoreDescription" disabled>
+                                    </md-input-container>
+                                </div>
+                                <div layout="row" layout-align="start stretch">
+                                    <md-input-container class="md-block" flex="50">
+                                        <label>Code</label><input name="Code" ng-model="selecteUser.Code" required disabled>
+                                        <div ng-messages="dssStaff.Code.$error"><div ng-message="required">You need to specify a Code</div></div>
+                                    </md-input-container>
+                                    <md-input-container class="md-block" flex="50">
+                                        <label>Password</label><input type="password" name="Password" ng-model="selecteUser.Password" required disabled>
+                                        <div ng-messages="dssStaff.Password.$error"><div ng-message="required">You need to specify a Password</div></div>
+                                    </md-input-container>
+                                </div>
+                                <!--<div layout="row" layout-align="start stretch">
+                                    <md-input-container class="md-block" flex="50">
+                                        <label>isAdmin</label><input name="isAdmin" ng-model="selecteUser.isAdmin" required disabled>
+                                    </md-input-container>
+                                </div>-->
+                            </md-card-title-text>
+                        </md-card-title>
+                        <md-card-content>
+                            <div layout="column" layout-align="start stretch" flex>
+                                <strong>Staff Positions</strong>
+                                <md-chips class="staff-list-chip" ng-model="selecteUser.StaffPositions" readonly="true">
+                                    <md-chip-template><span>{{staffPositionsEnum[$chip.StaffPositionId]}}</span></md-chip-template>
+                                </md-chips>
+                                <strong>Staff Authorizations</strong>
+                                <md-chips class="staff-list-chip" ng-model="selecteUser.StaffAuthorization" readonly="true">
+                                    <md-chip-template><span>{{authorizedGroupsEnum[$chip.AuthorizedGroupId]}}</span></md-chip-template>
+                                </md-chips>
+                            </div>
+                        </md-card-content>
+                        <md-card-actions layout="row" layout-align="end center">
+                            <md-button ng-disabled="processingUser" ng-click="removeModel(selecteUser)" class="md-fab md-mini"><md-tooltip md-direction="top">Delete selected user</md-tooltip><md-icon md-svg-icon="action:delete"></md-icon></md-button>
+                            <md-button ng-disabled="processingUser" ng-click="editEntry('edit',selecteUser)" class="md-fab md-mini md-primary"><md-tooltip md-direction="top">Edit selected user</md-tooltip><md-icon md-svg-icon="editor:mode_edit"></md-icon></md-button>
+                        </md-card-actions>
+                    </md-card>
+                </form>
+                <div layout="row" layout-align="center center" ng-if="selecteUser == null">
+                    <md-toolbar class="md-warn md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="start center">
+                        <md-icon class="md-margin" md-svg-icon="action:info"></md-icon>Currently no user selected. Select a user to manage.
+                    </md-toolbar>
+                </div>
+            </div>
+        </div>
+    </md-content>
+</div>
+<style>
+    .staff-list-chip md-chip {
+        height: 20px !important;
+        line-height: 20px !important;
+        font-size: 12px;
+    }
+
+    .md-input[disabled] {
+        color: black !important;
+    }
+</style>
+

@@ -1,0 +1,85 @@
+﻿<style>
+    .notice {
+        padding: 7px;
+        background-color: #fafafa;
+        border-left: 6px solid #7f7f84;
+        margin-bottom: 10px;
+        -webkit-box-shadow: 0 5px 8px -6px rgba(0,0,0,.2);
+        -moz-box-shadow: 0 5px 8px -6px rgba(0,0,0,.2);
+        box-shadow: 0 5px 8px -6px rgba(0,0,0,.2);
+    }
+
+    .notice-success {
+        border-color: #80D651;
+    }
+
+    .notice-warning {
+        border-color: #FEAF20;
+    }
+
+    .notice-danger {
+        border-color: #d73814;
+    }
+
+    .notice-info {
+        border-color: #45ABCD;
+    }
+    .deliconhover {
+        float: right;
+        border: 3px solid #2e6da4;
+        border-radius: 141px;
+        background: #BBE8FF;
+    }
+</style>
+<div class="modal-header">
+    <h3 class="modal-title">Create New Transfer Mapping Entries</h3>
+</div>
+<div class="modal-body" style="overflow: auto;   height: 45vh;  min-height: 45vh;  max-height: 45vh;">
+    <div clasa="row">
+                <div class="col-md-12 col-xs-12" ng-if="tmm.step == 'mix'">
+            <div class="col-md-6 col-xs-6">
+                <div ng-repeat="cpl in tmm.pricelistOptions">
+                    <div class="notice" ng-class="cpl.selected ? 'notice-success' : ''" style="cursor:pointer;" ng-click="(cpl.selected = !cpl.selected)">
+                        <span>{{cpl.Description}}</span>
+                        <span class="pull-right"><input type="checkbox" ng-model="cpl.selected" ng-click="(cpl.selected = !cpl.selected)"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-xs-6">
+                <div ng-repeat="cvat in tmm.vatOptions">
+                    <div class="notice" ng-class="cvat.selected ? 'notice-success' : ''" style="cursor:pointer;" ng-click="(cvat.selected = !cvat.selected)">
+                        <span>{{cvat.Description}}</span>
+                        <span class="pull-right"><input type="checkbox" ng-model="cvat.selected" ng-click="(cvat.selected = !cvat.selected)"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 col-xs-12" ng-if="tmm.step == 'manage'" ng-repeat="curr in tmm.groupMixedOptions">
+            <strong>{{curr[0].PriceListDescription}}</strong>
+            <div ng-repeat="mxd in curr">
+                <div class="notice"  style="cursor:pointer; overflow:auto;">
+                    <span class="col-md-5 col-xs-5">{{mxd.VatDescription}}</span>
+                    <span class="col-md-6 col-xs-6">
+                        <!--http://stackoverflow.com/questions/14386570/getting-the-ng-object-selected-with-ng-change-->
+                        <select class="form-control" ng-model="mxd.PmsObj" ng-options="item.Description for item in tmm.pmsLookUpResults" ng-change="tmm.manageSelectedReg(mxd)"></select>
+                    </span>
+                    <span class="col-md-1 col-xs-1">
+                        <i ng-click="tmm.transferDelete(mxd)" style="float:right;" class="fa fa-sm fa-times" ng-class="{deliconhover: hover}" ng-mouseenter="hover = true" ng-mouseleave="hover = false"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <div ng-if="tmm.step == 'mix'">
+        <button class="btn btn-danger" ng-click="tmm.dismiss('close')">Close</button>
+        <button class="btn btn-primary" ng-click="tmm.mixSelected()">Mix Selected</button>
+    </div>
+    <div ng-if="tmm.step == 'manage'">
+        <button class="btn btn-danger" ng-click="tmm.dismiss('close')">Close</button>
+        <button class="btn btn-warning" ng-click="tmm.back()">Back</button>
+        <button class="btn btn-primary" ng-click="tmm.Conf()">Save Changes</button>
+    </div>
+</div>
+

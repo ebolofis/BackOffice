@@ -1,0 +1,56 @@
+﻿<md-dialog ng-class="{'fullscreen-dialog' : fullscreenModal}" aria-label="AddNewProductModal" ng-cloak style="min-width: 80vw;" ng-init="init();">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>Restore Deleted Products</h2>
+            <span flex></span>
+            <toggle-fs-modal tvar="fullscreenModal"></toggle-fs-modal>
+            <md-button class="md-icon-button" ng-disabled="saving ==true || loading == true" aria-label="CloseModal" ng-click="hide()">
+                <md-icon md-svg-icon="navigation:close"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-dialog-content flex style="overflow:hidden;">
+        <div class="md-dialog-content" layout-align="start stretch">
+            <div layout="row" layout-align="start stretch" style="min-height:60vh; overflow:hidden;">
+                <div layout="column" layout-align="start stretch" flex ng-include src="'nested'"></div>
+            </div>
+            <small>*Select from deleted products available to restore. </small>
+        </div>
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+        <md-button ng-click="confirm('done')" ng-disabled="saving ==true || loading == true" aria-label="CancelAction">Done</md-button>
+        <md-button ng-click="restoreProducts()" ng-disabled="saving ==true || loading == true" class="md-primary md-raised" style="margin-right:20px;" aria-label="ConfAction">Restore</md-button>
+    </md-dialog-actions>
+</md-dialog>
+
+<script id="nested" type="text/ng-template">
+    <md-toolbar class="md-primary md-padding" layout="column" layout-align="start stretch" style="font-size:small;">
+        <div layout="row" layou-align="start center">
+            <md-checkbox aria-label="marked_delete-{{pr.Id}}" ng-checked="allchecked==true" ng-click="toggleSelection()" class="md-primary" style="margin: auto;"></md-checkbox>
+            <div flex="10">Id</div>
+            <div flex="30">S.Description</div>
+            <div flex="20">Code</div>
+            <div flex="30">Category</div>
+        </div>
+    </md-toolbar>
+    <!-- Loading section -->
+    <div ng-if="loading == true" layout="column" layout-align="center center" flex="grow"><md-progress-circular md-mode="indeterminate"></md-progress-circular><span>Loading Products...</span></div>
+    <!-- Main list sproducts template -->
+    <div style="overflow:auto;" flex="grow" ng-if="loading==false">
+        <md-list ng-if="products != undefined && products.length > 0">
+            <md-list-item ng-repeat="pr in products" aria-label="mrowprod-{{pr}}">
+                <div class="md-list-item-text" layout="row" layout-align="start center" flex="grow">
+                    <md-checkbox aria-label="marked_delete-{{pr.Id}}" ng-checked="pr.selected==true" ng-click="selectProd(pr)" class="md-primary" style="margin: auto;"></md-checkbox>
+                    <div flex="10">{{pr.Id}}</div>
+                    <div flex="30">{{pr.Description}}</div>
+                    <div flex="20">{{pr.Code}}</div>
+                    <div flex="30">{{pcatEnum[pr.ProductCategoryId]}}</div>
+                </div>
+            </md-list-item>
+        </md-list>
+        <div layout="row" layout-align="center start" style="margin-top:4%;" ng-if="products == undefined || products.length == 0" flex>
+            <md-toolbar class="md-accent md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="start center"><md-icon class="md-margin" md-svg-icon="action:info"></md-icon>No Products available from restore functionality.</md-toolbar>
+        </div>
+
+    </div>
+</script>

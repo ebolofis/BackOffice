@@ -1,0 +1,18 @@
+﻿<md-autocomplete ng-disabled="dactrl.isDisabled"
+                 md-no-cache="dactrl.noCache"
+                 md-selected-item="dactrl.selectedItem"
+                 md-search-text-change="dactrl.searchTextChange(dactrl.searchText)"
+                 md-search-text="dactrl.searchText"
+                 md-selected-item-change="dactrl.selectedItemChange(item , dactrl.bindmodel , dactrl.entityHandling)"
+                 md-items="item in dactrl.querySearch(dactrl.searchText)"
+                 md-item-text="item.Description"
+                 md-min-length="dactrl.minSearchLength"
+                 placeholder="Search products registered">
+    <md-item-template>
+        <span md-highlight-text="dactrl.searchText" md-highlight-flags="^i">{{item.Description}}</span>
+    </md-item-template>
+    <md-not-found>
+        No states matching "{{dactrl.searchText}}" were found.
+        <a ng-click="dactrl.newState(dactrl.searchText)">Create a new one!</a>
+    </md-not-found>
+</md-autocomplete>

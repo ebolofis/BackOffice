@@ -1,0 +1,12 @@
+﻿
+.mybox {
+    width: 1800px;
+    border: 20px solid lightblue;
+    padding: 50px;
+    margin: 20px;
+    height: 3000px;
+}
+
+input .ng-dirty.ng-invalid {
+    color: red
+}

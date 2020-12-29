@@ -1,0 +1,28 @@
+﻿<div class="modal-header">
+    <h3 class="modal-title">Display Mappings </h3>
+</div>
+<div class="modal-body">
+    <div class="row" style="max-height: 50vh; overflow-y: auto; padding: 0 2%;">
+        <div>
+            <br />
+            <div>
+                <select class="form-control" ng-model="dtm.term" ng-change="dtm.filterGender()">
+                    <option value="">--</option>
+                    <option value="ins">Select ins</option>
+                    <option value="edit">Select edit</option>
+                    <option value="load">Select load</option>
+                    <option value="react">Select react</option>
+                </select>
+            </div>
+            <div ng-show="dtm.term ==''" ui-grid="{}" ui-grid-cellnav="" ui-grid-edit="" ui-grid-resize-columns="" ui-grid-pinning="" ui-grid-selection="" ui-grid-move-columns="" class="grid"></div>
+            <div ng-show="dtm.term =='ins'" ui-grid="dtm.gridIns"ui-grid-auto-resize ui-grid-cellnav="" ui-grid-edit="" ui-grid-resize-columns="" ui-grid-pinning="" ui-grid-selection="" ui-grid-move-columns="" class="grid"></div>
+            <div ng-show="dtm.term =='edit'" ui-grid="dtm.gridEdit" ui-grid-auto-resize ui-grid-cellnav="" ui-grid-edit="" ui-grid-resize-columns="" ui-grid-pinning="" ui-grid-selection="" ui-grid-move-columns="" class="grid"></div>
+            <div ng-show="dtm.term =='load'" ui-grid="dtm.gridLoad" ui-grid-auto-resize ui-grid-cellnav="" ui-grid-edit="" ui-grid-resize-columns="" ui-grid-pinning="" ui-grid-selection="" ui-grid-move-columns="" class="grid"></div>
+            <div ng-show="dtm.term =='react'"ui-grid="dtm.gridReact"ui-grid-auto-resize  ui-grid-cellnav="" ui-grid-edit="" ui-grid-resize-columns="" ui-grid-pinning="" ui-grid-selection="" ui-grid-move-columns="" class="grid"></div>
+        </div>
+    </div>
+    <br />
+</div>
+<div class="modal-footer">
+    <button class="btn btn-success" ng-click="dtm.Conf()">Ok</button>
+</div>

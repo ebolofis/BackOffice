@@ -1,0 +1,194 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title> </title>
+    <style>
+        .cell-style {
+            overflow: hidden;
+            padding: 4px;
+            text-overflow: ellipsis;
+        }
+
+        .selected-whiteframe {
+            box-shadow: 0px 5px 5px -3px rgba(63, 81, 181, 0.2), 0px 8px 10px 1px rgba(63, 81, 181, 0.14), 0px 3px 14px 2px rgba(63, 81, 181, 0.12);
+            border-left: 4px solid #3f51b5;
+        }
+
+
+        .cell-style {
+            overflow: hidden;
+            padding: 4px;
+            text-overflow: ellipsis;
+        }
+
+
+        .button {
+            display: inline-block;
+            padding: 15px 25px;
+            font-size: 20px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            outline: none;
+            color: #fff;
+            background-color: lightcoral;
+            border: none;
+            border-radius: 20px;
+        }
+
+            .button:hover {
+                background-color: red;
+            }
+
+            .button:active {
+                background-color: red;
+                transform: translateY(4px);
+            }
+
+        .buttonCancel {
+            display: inline-block;
+            padding: 15px 25px;
+            font-size: 20px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            outline: none;
+            color: #fff;
+            background-color: lightblue;
+            border: none;
+            border-radius: 20px;
+        }
+
+            .buttonCancel:hover {
+                background-color: blue;
+            }
+
+            .buttonCancel:active {
+                background-color: blue;
+                transform: translateY(4px);
+            }
+
+        .btn {
+            background-color: darkred;
+            border: none;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 50%;
+        }
+
+        md-input-container.md-default-theme label, md-input-container label, md-input-container.md-default-theme .md-placeholder, md-input-container .md-placeholder {
+            color: black;
+        }
+
+        .md-select-value *:first-child {
+            display: flex !important;
+        }
+    </style>
+</head>
+<body>
+    <div ng-controller="PayrollMainCTRL as PayrollMain" ng-init="PayrollMain.initView()" layout-fill layout="column" layout-align="start stretch" style="overflow: hidden;">
+        <div flex="7">
+            <md-subheader class="wrappers-view-header md-whiteframe-7dp md-primary">Manage Payroll</md-subheader>
+        </div>
+        <div flex="5" layout="column">
+            <div layout="row" layout-align="center stretch" flex="grow">
+                <md-input-container flex="10">
+                    <input mdc-datetime-picker date="true" id="fromDateId" time="false" minutes="false" minute-steps="1" placeholder="Date From" today-text="Now"
+                           type="text" format="DD/MM/YYYY" ng-model-options="{timezone: 'utc'}" short-time="true" ng-model="fromDate"
+                           class="md-input" name="FromDate" ng-change="fromDateChange()">
+                </md-input-container>
+                <md-input-container flex="10">
+                    <input mdc-datetime-picker date="true" id="toDateId" time="false" minutes="false" minute-steps="1" placeholder="Date To" today-text="Now"
+                           type="text" format="DD/MM/YYYY" ng-model-options="{timezone: 'utc'}" short-time="true" ng-model="toDate"
+                           class="md-input" name="ToDate" ng-change="toDateChange()">
+                </md-input-container>
+                <md-input-container flex="15">
+                    <md-select placeholder="Positions" multiple="true" ng-model="selectedStaffPos" ng-change="calculateTotalHoursByPosition(selectedStaffPos)">
+                        <md-optgroup label="StaffPositions">
+                            <md-option ng-repeat="staffPos in PayrollMain.payrollsLookUps.StaffPositionId" value="{{staffPos.Key}}">{{staffPos.Value}}</md-option>
+                        </md-optgroup>
+                    </md-select>
+                </md-input-container>
+                <md-input-container flex="15">
+                    <md-select placeholder="Staffs" ng-model="selectedStaff" ng-change="calculateTotalHours(selectedStaff)">
+                        <md-option ng-repeat="staff in PayrollMain.staffDynLookUps" value="{{staff.Key}}">{{staff.Value}}</md-option>
+                    </md-select>
+                </md-input-container>
+                <md-input-container flex="15" style="margin-top: initial;">
+                    <button class="md-raised md-button md-ink-ripple" type="button" aria-label="addDataRow" style="line-height: 32px; min-height: 32px; background-color:lightcoral;" align="right" ng-click="PayrollMain.ClearFilter()"><span> Clear Filters &nbsp;</span><i class="fa fa-remove fa-fw"></i> </button>
+                </md-input-container>
+                <md-input-container flex="10">
+                    <strong>Total Hours:</strong>
+                </md-input-container>
+                <md-input-container flex="5">
+                    <label style="color:blue;font-weight:bold;">{{totalHours}}</label>
+                </md-input-container>
+                <md-input-container flex="20" style="margin-top: initial; text-align: end;">
+                    <md-button aria-label="savedyngridchanges" class="md-raised md-primary" style="line-height: 32px; min-height: 32px;" align="right" ng-disabled="savingProcess" ng-click="addPayroll($event ,'Payroll',row,'add')">Add&nbsp;Payroll&nbsp;<i class="fa fa-plus-circle fa-fw"></i> </md-button>
+                </md-input-container>
+            </div>
+        </div>
+        <div flex="90" layout="column">
+            <div layout="row" layout-align="start center" class="md-padding" style="font-variant:small-caps;">
+                <strong flex="10">Staff</strong>
+                <strong flex="10">PosInfo</strong>
+                <strong flex="10">Identification</strong>
+                <strong flex="10">Start</strong>
+                <strong flex="10">Date Start</strong>
+                <strong flex="10">End</strong>
+                <strong flex="10">Date End</strong>
+                <strong flex="10">Total Hours</strong>
+                <strong flex="10" align="center"></strong>
+                <strong flex="10" align="center"></strong>
+            </div>
+            <md-divider></md-divider>
+            <!-- Spinner -->
+            <div layout="column" layout-align="center center" style="overflow:auto;" ng-if="PayrollMain.restbusy == true" flex="grow">
+                <md-progress-circular md-diameter="50"></md-progress-circular>
+                <span>Loading...</span>
+            </div>
+            <md-list md-virtual-repeat-container flex="grow" style="overflow:auto;">
+                <md-list-item class="md-whiteframe-4dp" md-virtual-repeat="data in PayrollMain.payrolls | filter: PayrollMain.filterDate(PayrollMain.payrolls, fromDate, toDate) | filter: PayrollMain.FilterStaffPositions(PayrollMain.payrolls, selectedStaffPos) | filter: PayrollMain.FilterStaffs(PayrollMain.payrolls, selectedStaff)" style="margin-bottom:10px; background-color:white;">
+                    <div class="md-list-item-text" layout="column" layout-align="start stretch" flex="grow">
+                        <div layout="row" layout-align="start center">
+                            <span class="cell-style" flex="10">{{data.StaffDesc}}</span>
+                            <span class="cell-style" flex="10">{{data.PosInfoDesc}}</span>
+                            <span class="cell-style" flex="10">{{data.Identification}}</span>
+                            <span style="color:green" ng-if="data.DateFrom != NULL" class="cell-style" flex="10">START</span>
+                            <span ng-if="data.DateFrom == NULL" class="cell-style" flex="10"></span>
+                            <span style="color:green" class="cell-style" flex="10">{{data.DateFrom | date:'dd/MM/yyyy HH:mm'}}</span>
+                            <span style="color:darkred" ng-if="data.DateTo != NULL" class="cell-style" flex="10">END</span>
+                            <span ng-if="data.DateTo == NULL" class="cell-style" flex="10"></span>
+                            <span style="color:darkred" class="cell-style" flex="10">{{data.DateTo | date:'dd/MM/yyyy HH:mm'}}</span>
+                            <span style="color:blue" class="cell-style" flex="10">{{data.TotalHours}}</span>
+                            <span flex="10" align="center">
+                                <md-button class="md-fab md-mini md-primary  md-raised" ng-click="editPayroll($event ,'Payroll',data,'edit') " aria-label="Payroll"><i class="fa fa-pencil fa-fw"></i>  <md-tooltip md-direction="top">Edit Selected Payroll</md-tooltip></md-button>
+                            </span>
+                            <span flex="10" align="center">
+                                <md-button class=" md-fab md-mini" ng-disabled="processingUser" ng-click='open(data)'><i class="fa fa-trash fa-fw"></i>  <md-tooltip md-direction="top">Delete Selected  Payroll</md-tooltip></md-button>
+                            </span>
+                        </div>
+                    </div>
+            </md-list>
+        </div>
+
+        <!--Confirmation Modal For Delete Payroll-->
+        <modal title="Διαγραφή Payroll" visible="showModal" style="position: absolute; top: 20%;">
+            <form role="form"></form>
+            <div class="modal-body">
+                Είστε σίγουρος πως θέλετε να διαγράψετε το συγκεκριμένο Payroll?
+            </div>
+            <div class="modal-footer">
+                <button type="button" style="margin-right:20px;" class="buttonCancel" data-dismiss="modal" ng-click="cancel()">Ακύρωση</button>
+                <button type="button" class="button" ng-click="DeletePayroll(shortRow)">Διαγραφή</button>
+            </div>
+        </modal>
+    </div>
+
+</body>
+</html>
+

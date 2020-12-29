@@ -1,0 +1,42 @@
+﻿{
+  "InvoiceTypes": {
+    "mdt-edit-model": {
+      "Id": {
+        "fieldName": "Id",
+        "placeholder": -1,
+        "title": "Id edit form",
+        "type": "number",
+        "validators": {
+          "required": true,
+          "max": 10,
+          "min": 5
+        },
+        "messages": {
+          "required": "TestNum field is required",
+          "max": "Max is 10",
+          "min": "Min is 5"
+        },
+        "ok": "ok",
+        "cancel": "cancel"
+      },
+      "Description": {
+        "fieldName": "Description",
+        "placeholder": "Add new description",
+        "title": "Description edit form",
+        "type": "string",
+        "validators": {
+          "required": true,
+          "md-maxlength": 50,
+          "md-minlength": 10
+        },
+        "messages": {
+          "required": "Description field is required",
+          "md-maxlength": "Max Description length is 50",
+          "md-minlength": "Min Description length is 10"
+        },
+        "ok": "ok",
+        "cancel": "cancel"
+      }
+    }
+  }
+}

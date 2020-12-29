@@ -1,0 +1,55 @@
+﻿<md-dialog ng-class="{'fullscreen-dialog' : fullscreenModal}" aria-label="EditPosInfo" ng-cloak style="min-width: 50vw;">
+    <form name="pfiltermform">
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>External Products Search</h2>
+                <span flex></span>
+                <toggle-fs-modal tvar="fullscreenModal"></toggle-fs-modal>
+                <md-button class="md-icon-button" aria-label="CloseModal" ng-click="cancel()">
+                    <md-icon md-svg-icon="navigation:close"></md-icon>
+                    <!--<md-icon md-svg-src="img/icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>-->
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content>
+            <div layout="column" layout-align="center stretch" class="md-padding">
+                <div layout="row" layout-align="start stretch">
+                    <md-input-container class="md-block" flex="50"><label>Description</label><input name="Description" ng-model="exFilterModel.Description"></md-input-container>
+                    <md-input-container class="md-block" flex="50"><label>Product Code</label><input name="ProductCode" ng-model="exFilterModel.ProductCode"></md-input-container>
+                </div>
+                <div layout="row" layout-align="start stretch">
+                    <md-input-container class="md-block" required flex="50">
+                        <label>Product Category</label>
+                        <md-select name="ProductCategoryId" ng-model="exFilterModel.ProductCategoryId">
+                            <md-option value="{{null}}">--</md-option>
+                            <md-option ng-repeat="ch in productCategories" value="{{ch.Id}}">{{ch.Description}}</md-option>
+                        </md-select>
+                    </md-input-container>
+                    <md-input-container class="md-block" required flex="50">
+                        <label>Category</label>
+                        <md-select name="CategoryId" ng-model="exFilterModel.CategoryId">
+                            <md-option value="{{null}}">--</md-option>
+                            <md-option ng-repeat="ch in categories" value="{{ch.Id}}">{{ch.Description}}</md-option>
+                        </md-select>
+                    </md-input-container>
+
+                </div>
+                <div layout="row" layout-align="start stretch">
+                    <md-input-container class="md-block" required flex="50">
+                        <label>Page Size</label>
+                        <md-select name="ProductCategoryId" ng-model="exFilterModel.pageSize">
+                            <md-option ng-repeat="ch in [50,100,200]" value="{{ch}}">{{ch}}</md-option>
+                        </md-select>
+                    </md-input-container>
+                </div>
+            </div>
+        </md-dialog-content>
+        <md-dialog-actions layout="row">
+            <md-button class="md-raised md-warn" ng-click="cancel()" aria-label="CancelAction">Clear</md-button>
+            <!--clearCatFilters()-->
+            <md-button class="md-raised md-primary" ng-click="confirm(exFilterModel)" style="margin-right:20px;" aria-label="ConfAction">Go</md-button>
+            <!-- categoryfiltersChanged(exFilterModel) -->
+        </md-dialog-actions>
+    </form>
+</md-dialog>
+

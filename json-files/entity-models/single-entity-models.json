@@ -1,0 +1,46 @@
+﻿{
+  "InvoiceTypes": {
+    "repoOptions": {
+      "Id": {
+        "type": "number",
+        "visible": true,
+        "nullable": false,
+        "editable": false
+      },
+      "Description": {
+        "type": "string",
+        "visible": true,
+        "nullable": false,
+        "editable": false
+      },
+      "Code": {
+        "type": "string",
+        "visible": true,
+        "nullable": false,
+        "editable": false
+      },
+      "Abbreviation": {
+        "type": "string",
+        "visible": true,
+        "nullable": false,
+        "editable": false
+      },
+      "Type": {
+        "type": "number",
+        "visible": true,
+        "nullable": true,
+        "editable": false
+      },
+      "IsDeleted": {
+        "type": "number",
+        "visible": true,
+        "nullable": true,
+        "editable": false
+      }
+    },
+    "displayOptions": {
+
+
+    }
+  }
+}

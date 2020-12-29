@@ -1,0 +1,17 @@
+﻿<div ng-controller="TableReservationCtrl" ng-init="initView()" layout-fill layout="column" layout-align="start stretch">
+    <!--<div style="margin:0">
+        <md-subheader class="wrappers-view-header md-whiteframe-7dp md-primary">{{viewTitle}}</md-subheader>
+    </div>-->
+    <div layout="row" layout-align="start stretch" flex="grow">
+        <restaurant-comp flex ng-if="editingEntity == 'Restaurants'" viewoptions="TRViewOps"></restaurant-comp>
+        <restriction-assoc-comp flex ng-if="editingEntity == 'RestrictionAssocs'"></restriction-assoc-comp>
+        <trading-hours-comp flex ng-if="editingEntity == 'TradingHours'" viewoptions="TRViewOps"></trading-hours-comp>
+        <capacities-comp flex ng-if="editingEntity == 'Capacities'" option="capacities" viewoptions="TRViewOps" api-actions="apiActions"></capacities-comp>
+        <capacities-excluded-days-comp flex ng-if="editingEntity == 'ExcludedDays'" viewoptions="TRViewOps" api-actions="apiActions"></capacities-excluded-days-comp>
+        <restrictions-excluded-assocs-comp flex ng-if="editingEntity == 'ExcludedRestrictions'" viewoptions="TRViewOps" api-actions="apiActions"></restrictions-excluded-assocs-comp>
+        <capacities-overwritten-comp flex ng-if="editingEntity == 'OverwrittenCapacities'" viewoptions="TRViewOps" api-actions="apiActions"></capacities-overwritten-comp>
+
+        <reservations-comp flex ng-if="editingEntity == 'Reservations'" viewoptions="TRViewOps" api-actions="apiActions"></reservations-comp>
+        <!--<div ng-include src="containerTemplate" style="height:100%;"></div>-->
+    </div>
+</div>

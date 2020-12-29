@@ -1,0 +1,136 @@
+﻿<md-content layout-fill layout="row" ng-init="$ctrl.initView(true)" layout-align="start stretch">
+
+    <!-- Main component -->
+    <md-content layout="column" layout-align="start stretch" flex style="overflow:hidden;" class="md-padding">
+        <h4>
+            Reservations
+            <small ng-if=" $ctrl.lastFilter.FromDate != null &&  $ctrl.lastFilter.ToDate != null" style="float:right;">
+                <strong>From:</strong> {{$ctrl.lastFilter.FromDate | date: 'MMM dd , yyyy'}} | <strong>To:</strong> {{$ctrl.lastFilter.ToDate | date: 'MMM dd , yyyy'}}
+            </small>
+        </h4>
+        <md-divider></md-divider>
+
+        <div layout="row" layout-align="end center" class="md-margin">
+            <md-radio-group ng-model="$ctrl.displayType" layout="row" ng-change="$ctrl.reform()">
+                <md-radio-button value="restaurant">Restaurant</md-radio-button>
+                <md-radio-button value="date">Date</md-radio-button>
+            </md-radio-group>
+        </div>
+
+        <div flex style="overflow:auto;" ng-if="$ctrl.hasError != true && $ctrl.restbusy != true">
+
+            <div ng-repeat="(k,g) in $ctrl.groupDisp" ng-if="$ctrl.displayType == 'restaurant'">
+                <h5>{{$ctrl.enumRest[k][$ctrl.shortViewOpSelected.Name]}}</h5>
+                <md-divider></md-divider>
+                <br />
+                <div class="notice" layout="column" layout-align="start stretch" ng-repeat="res in g" ng-click="$ctrl.manageReservationStatus(res)">
+                    <div layout="row" layout-align="space-between center">
+                        <span>{{$ctrl.enumRest[res.RestId][$ctrl.shortViewOpSelected.Name]}}</span>
+                        <span><md-icon md-svg-icon="action:event"></md-icon>{{res.ReservationDate | date: 'MMM dd, yyyy'}}</span>
+                        <span><md-icon md-svg-icon="action:alarm"></md-icon>{{$ctrl.escape(res.ReservationTime)}}</span>
+                        <span><md-icon md-svg-icon="action:supervisor_account"></md-icon>{{res.Couver}}</span>
+                        <span><md-checkbox md-no-ink aria-label="Status" ng-model="res.BoolStatus" class="md-primary" style="margin:auto 0;" disabled></md-checkbox></span>
+                    </div>
+                    <md-divider></md-divider>
+                    <div layout="row" layout-align="start center" ng-repeat="cust in $ctrl.resCustomers[res.Id]">
+                        <span flex="40"> <md-icon md-svg-icon="action:account_circle"></md-icon>{{cust.ProtelName}} </span>
+                        <span flex="40"> <md-icon md-svg-icon="action:assignment"></md-icon>{{cust.ReservationName}} </span>
+                        <span flex="20"> <md-icon md-svg-icon="communication:business"></md-icon>{{cust.RoomNum}} </span>
+                        <!--HotelId  Id ProtelId ProtelName "ΔΗΜΗΤΡΑ ΔΡΟΥΤΣΑ" ReservationId ReservationName RoomNum-->
+                    </div>
+                </div>
+                </div>
+
+            <div ng-repeat="(y,yg) in $ctrl.groupDisp" ng-if="$ctrl.displayType == 'date'">
+                <div ng-repeat="(m,mg) in yg" ng-if="$ctrl.displayType == 'date'">
+                    <div ng-repeat="(d,dg) in mg" ng-if="$ctrl.displayType == 'date'">
+                        <br />
+                        <h5>{{y}}-{{$ctrl.monthNames[m]}}-{{d}}</h5>
+                        <div class="notice" layout="column" layout-align="start stretch" ng-repeat="res in dg" ng-click="$ctrl.manageReservationStatus(res)">
+                            <div layout="row" layout-align="space-between center">
+                                <span>{{$ctrl.enumRest[res.RestId][$ctrl.shortViewOpSelected.Name]}}</span>
+                                <span><md-icon md-svg-icon="action:event"></md-icon>{{res.ReservationDate | date: 'MMM dd, yyyy'}}</span>
+                                <span><md-icon md-svg-icon="action:alarm"></md-icon>{{$ctrl.escape(res.ReservationTime)}}</span>
+                                <span><md-icon md-svg-icon="action:supervisor_account"></md-icon>{{res.Couver}}</span>
+                                <span><md-checkbox md-no-ink aria-label="Status" ng-model="res.BoolStatus" class="md-primary" style="margin:auto 0;" disabled></md-checkbox></span>
+                            </div>
+                            <md-divider></md-divider>
+                            <div layout="row" layout-align="start center" ng-repeat="cust in $ctrl.resCustomers[res.Id]">
+                                <span flex="40"> <md-icon md-svg-icon="action:account_circle"></md-icon>{{cust.ProtelName}} </span>
+                                <span flex="40"> <md-icon md-svg-icon="action:assignment"></md-icon>{{cust.ReservationName}} </span>
+                                <span flex="20"> <md-icon md-svg-icon="communication:business"></md-icon>{{cust.RoomNum}} </span>
+                                <!--HotelId  Id ProtelId ProtelName "ΔΗΜΗΤΡΑ ΔΡΟΥΤΣΑ" ReservationId ReservationName RoomNum-->
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+            </div>
+
+        </div>
+        <!-- On Error -->
+        <div layout="row" layout-align="center center" ng-if="$ctrl.hasError == true && $ctrl.restbusy != true">
+            <md-toolbar class="md-warn md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="space-between center">
+                <span><md-icon class="md-margin" md-svg-icon="action:info"></md-icon> Loading reservations failed due to a server error. Please try reload data.</span>
+                <md-button class="md-fab md-primary md-mini" aria-label="refresh all restaurats" ng-click="$ctrl.initView()">
+                    <md-icon md-svg-icon="navigation:refresh"></md-icon>
+                </md-button>
+            </md-toolbar>
+        </div>
+        <!-- Loading template -->
+        <div layout="column" layout-align="center center" style="overflow:auto;" ng-if="$ctrl.restbusy == true" flex="grow">
+            <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+            <span>Loading...</span>
+        </div>
+    </md-content>
+
+
+    <md-content layout="column" layout-align="start stretch" style="overflow:hidden;" class="md-padding" flex="30">
+        <h4 style="text-align:center;">Reservation Filters</h4>
+        <md-divider></md-divider>
+        <div layout="row" layout-align="space-between center">
+            <label>From Date</label>
+            <md-datepicker ng-model="$ctrl.fromDate" md-placeholder="From Date"></md-datepicker>
+        </div>
+        <div layout="row" layout-align="space-between center">
+            <label>To Date</label>
+            <md-datepicker ng-model="$ctrl.toDate" md-placeholder="To Date"></md-datepicker>
+        </div>
+        <md-input-container>
+            <label>Restaurants</label>
+            <md-select ng-model="$ctrl.selectedRestaurants" multiple>
+                <md-option ng-value="rest" ng-repeat="rest in $ctrl.restaurants">{{rest[$ctrl.shortViewOpSelected.Name]}}</md-option>
+            </md-select>
+        </md-input-container>
+        <md-button class="md-warn" ng-click="$ctrl.clearFilters()">
+            Clear
+        </md-button>
+        <md-button class="md-primary md-raised" ng-click="$ctrl.searchFilters()">
+            Search
+        </md-button>
+    </md-content>
+</md-content>
+
+
+<script id="edit-reservation" type="text/ng-template">
+    <md-dialog ng-class="{'fullscreen-dialog' : fullscreenModal}" aria-label="EditPosInfo" ng-cloak style="min-width: 80vw; min-height:70vh;">
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>Reservation</h2>
+                <span flex></span>
+                <toggle-fs-modal tvar="fullscreenModal"></toggle-fs-modal>
+                <md-button class="md-icon-button" aria-label="CloseModal" ng-click="eres.cancel()">
+                    <md-icon md-svg-icon="navigation:close"></md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content layout="row" layout-align="start stretch" flex>
+            <div class="md-dialog-content" layout="column" layout-align="start stretch" flex>
+
+                {{eres.lookups.enumRestaurants[eres.reservation.Id][eres.lookups.dispRName]}}
+
+                <md-checkbox md-no-ink aria-label="Status" ng-model="eres.reservation.Status" class="md-primary" style="margin:auto 0;"></md-checkbox>
+            </div>
+        </md-dialog-content>
+    </md-dialog>
+</script>

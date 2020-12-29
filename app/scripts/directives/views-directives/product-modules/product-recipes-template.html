@@ -1,0 +1,248 @@
+﻿<div layout="column" layout-align="center stretch" flex="grow" ng-include src="viewTemplate"></div>
+<!--<div layout="column" layout-align="center stretch" flex="grow">
+   
+    <div layout="column" layout-align="center stretch" style="overflow:auto;" flex="grow" ng-if="data['ProductRecipe'].length > 0" ng-include src="viewTemplate"></div>
+
+</div>-->
+<script id="ingredient-recipes-menu" type="text/ng-template">
+    <md-menu md-position-mode="target-right target" style="padding:0;">
+        <md-button aria-label="UserSettings" class="md-icon-button" ng-click="checkToggleCollapsed();$mdOpenMenu($event)">
+            <md-tooltip md-direction="top">Ingredient options</md-tooltip>
+            <md-icon md-menu-origin md-svg-icon="navigation:apps"></md-icon>
+        </md-button>
+        <md-menu-content width="4" style="max-height:none;">
+            <md-content layout="column" layout-align="start stretch" flex="grow" class="md-padding">
+                <md-list>
+                    <md-list-item class="md-whiteframe-4dp bo-hover-negative" layout="column" layout-align="center start" ng-click="manageingrs('display')">
+                        <span class="bo-head-sc">View Recipe</span>
+                        <md-tooltip md-direction="left">Recipe Ingredients display list</md-tooltip>
+                    </md-list-item>
+                    <md-list-item class="md-whiteframe-4dp bo-hover-negative" layout="column" layout-align="center start" ng-click="manageingrs()">
+                        <span class="bo-head-sc">Edit Recipe</span>
+                        <md-tooltip md-direction="left">Recipe Ingredients display list</md-tooltip>
+                    </md-list-item>
+                    <md-list-item class="md-whiteframe-4dp bo-hover-negative" ng-show="inrgManageType == undefined || inrgManageType=='display'" ng-click="sortDisplay()">
+                        <span class="bo-head-sc">Sort Displayed</span>
+                        <md-tooltip md-direction="left">Apply sort edit based on view order</md-tooltip>
+                    </md-list-item>
+                </md-list>
+                <h4 style="font-variant:small-caps; text-align:center;">Ingredient Insert Options</h4>
+                <md-divider></md-divider>
+                <md-list>
+                    <md-list-item class="md-whiteframe-4dp bo-hover-negative" layout="column" layout-align="center start" ng-click="manageingrs('product')">
+                        <span class="bo-head-sc">Clone from Product</span>
+                        <md-tooltip md-direction="left">This allows you to keep or manage current recipe providing a list of items by product selection.</md-tooltip>
+                    </md-list-item>
+                </md-list>
+                <md-divider></md-divider>
+            </md-content>
+        </md-menu-content>
+    </md-menu>
+</script>
+
+<script id="view-recipe-ingredients" type="text/ng-template">
+    <md-subheader class="md-no-sticky subhead-nopad">
+        <div layout="row" layou-align="start center">
+            <div class="h-ext-list" flex="10">Qty</div>
+            <div class="h-ext-list" flex="15">Unit</div>
+            <div class="h-ext-list" flex="25">Ingredient</div>
+            <div class="h-ext-list" flex="10">Default Q.</div>
+            <div class="h-ext-list" flex="10">Min Q.</div>
+            <div class="h-ext-list" flex="10">Max Q.</div>
+            <div class="h-ext-list" flex="10">Sort</div>
+            <div class="h-c-ext-list" flex="10" ng-include src="'ingredient-recipes-menu'"></div>
+        </div>
+    </md-subheader>
+    <md-divider></md-divider>
+    <div layout="row" layout-align="center center" ng-if="data['ProductRecipe'].length == 0">
+        <md-toolbar class="md-warn md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="start center">
+            <md-icon class="md-margin" md-svg-icon="action:info"></md-icon>No recipes found for this product.
+        </md-toolbar>
+    </div>
+    <div class="bo-draggable-list" style="overflow:auto;" flex="grow" ng-if="data['ProductRecipe'].length > 0">
+        <ul dnd-list="data.ProductRecipe">
+            <li aria-label="pre-a" ng-repeat="pr in data['ProductRecipe']" dnd-draggable="pr" dnd-moved="data.ProductRecipe.splice($index, 1);" dnd-dragend="sortDisplay()">
+                <div layout="row" layout-align="start center" flex ng-class="{'new-row' : pr.EntityStatus == 0 , 'edited-row' : pr.EntityStatus == 1 ,'deleted-row' : pr.EntityStatus == 2 }"  style="padding: 3px 10px;">
+                    <span flex="10" class="fix-input-display">{{pr.Qty}}</span>
+                    <span flex="15">{{unitDescEnum[pr.UnitId]}} </span>
+                    <span flex="25">{{ingDescEnum[pr.IngredientId]}} </span>
+                    <span flex="10">{{pr.DefaultQty}}</span>
+                    <span flex="10">{{pr.MinQty}}</span>
+                    <span flex="10">{{pr.MaxQty}}</span>
+                    <span flex="10">{{pr.Sort}}</span>
+                    <div flex></div>
+                    <div flex="10" layout="row" layout-align="center center">
+                        <md-button class="md-fab md-mini md-warn" aria-label="delrowpr" style="margin: 0 auto;" ng-if="pr.EntityStatus != 2" ng-click="removeDetail('ProductRecipe',pr , $index)">
+                            <md-tooltip md-direction="top">Remove selected recipe</md-tooltip>
+                            <md-icon md-svg-icon="action:delete"></md-icon>
+                        </md-button>
+                        <md-button class="md-fab md-mini" style="margin: 0 auto;" ng-if="pr.EntityStatus == 2" ng-click="refreshRow('ProductRecipe',pr)">
+                            <md-tooltip md-direction="top">Restore Entity from delete state</md-tooltip>
+                            <md-icon md-svg-icon="action:settings_backup_restore"></md-icon>
+                        </md-button>
+                    </div>
+                </div>
+
+            </li>
+        </ul>
+    </div>
+    <div flex></div>
+    <md-divider></md-divider>
+    <div layout="row" layout-align="space-between center">
+        <md-button class="md-raised md-primary" ng-click="addDetail('ProductRecipe')">
+            <md-tooltip md-direction="top">Add new recipe</md-tooltip>
+            <!--<i class="fa fa-plus fa-fw"></i>-->Add
+            <md-icon md-svg-icon="content:add"></md-icon>
+        </md-button>
+        <strong>Results:&nbsp;#{{data['ProductRecipe'].length}}</strong>
+    </div>
+</script>
+<script id="edit-recipe-ingredients" type="text/ng-template">
+    <md-subheader class="md-no-sticky subhead-nopad">
+        <div layout="row" layou-align="start center">
+            <div class="h-ext-list" flex="10">Qty</div>
+            <div class="h-ext-list" flex="15">Unit</div>
+            <div class="h-ext-list" flex="25">Ingredient</div>
+            <div class="h-ext-list" flex="10">Default Q.</div>
+            <div class="h-ext-list" flex="10">Min Q.</div>
+            <div class="h-ext-list" flex="10">Max Q.</div>
+            <div class="h-ext-list" flex="10">Sort</div>
+            <div class="h-c-ext-list" flex="10" ng-include src="'ingredient-recipes-menu'"></div>
+        </div>
+    </md-subheader>
+    <md-divider></md-divider>
+    <div layout="row" layout-align="center center" ng-if="data['ProductRecipe'].length == 0">
+        <md-toolbar class="md-warn md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="start center">
+            <md-icon class="md-margin" md-svg-icon="action:info"></md-icon>No recipes found for this product.
+        </md-toolbar>
+    </div>
+    <div style="overflow:auto;" flex="grow" ng-if="data['ProductRecipe'].length > 0">
+        <md-list>
+            <md-list-item ng-repeat="pr in data['ProductRecipe'] | orderBy: 'Sort' : false" ng-click="$event.preventDefault()">
+                <div layout="row" layout-align="start center" flex="grow" ng-class="{'new-row' : pr.EntityStatus == 0 , 'edited-row' : pr.EntityStatus == 1 ,'deleted-row' : pr.EntityStatus == 2 }">
+                    <md-input-container flex="10" class="fix-input-display"><input name="Qty" aria-label="Current Id" ng-model="pr.Qty" type="number" min="0" step="1" ng-change="markEditedDetail(pr)"></md-input-container>
+                    <md-input-container flex="15" class="fix-input-display">
+                        <md-select name="Unit" aria-label="Details Unit" ng-model="pr.UnitId" required ng-change="markEditedDetail(pr)">
+                            <md-option value="">---</md-option>
+                            <md-option ng-repeat="ch in lookups.Units" value="{{ch.Id}}">{{ch.Description}}</md-option>
+                        </md-select>
+                    </md-input-container>
+                    <!--<md-input-container class="fix-input-display"> </md-input-container>-->
+                    <md-autocomplete ng-disabled="false" flex="25"
+                                     md-no-cache="false"
+                                     md-selected-item="sitemBinded(pr.IngredientId)"
+                                     md-search-text-change="searchTextChange(searchText)"
+                                     md-search-text="searchText"
+                                     md-selected-item-change="selectedItemChange(item,pr)"
+                                     md-items="item in querySearch(searchText)"
+                                     md-item-text="item.Description + ' : '+item.Code"
+                                     md-min-length="0"
+                                     placeholder="Select Ingredient">
+                        <md-item-template>
+                            <span md-highlight-text="searchText" md-highlight-flags="^i">{{item.Description + ' : ' + item.Code}}</span>
+                        </md-item-template>
+                        <md-not-found> No Ingredients matching "{{searchText}}" were found. </md-not-found>
+                    </md-autocomplete>
+                    <!--<md-select name="IngredientId" aria-label="Details Ingredient" ng-model="pr.IngredientId" required ng-change="markEditedDetail(pr)">
+        <md-option ng-repeat="ch in lookups.Ingredients" value="{{ch.Id}}">{{ch.Description}}</md-option>
+    </md-select>-->
+                    <md-input-container flex="10" class="fix-input-display"><input name="DefaultQty" aria-label="DefaultQty" ng-model="pr.DefaultQty" type="number" min="0" step="1" ng-change="markEditedDetail(pr)"></md-input-container>
+                    <md-input-container flex="10" class="fix-input-display"><input name="MinQty" aria-label="MinQty" ng-model="pr.MinQty" type="number" min="0" step="1" ng-change="markEditedDetail(pr)"></md-input-container>
+                    <md-input-container flex="10" class="fix-input-display"><input name="MaxQty" aria-label="MaxQty" ng-model="pr.MaxQty" type="number" min="0" step="1" ng-change="markEditedDetail(pr)"></md-input-container>
+                    <md-input-container flex="10" class="fix-input-display"><input name="MaxQty" aria-label="MaxQty" ng-model="pr.Sort" type="number" min="0" step="1" ng-change="markEditedDetail(pr)"></md-input-container>
+                    <div flex="10" layout="row" layout-align="center center">
+                        <md-button class="md-fab md-mini md-warn" aria-label="delrowpr" style="margin: 0 auto;" ng-if="pr.EntityStatus != 2" ng-click="removeDetail('ProductRecipe',pr , $index)">
+                            <md-tooltip md-direction="top">Remove selected recipe</md-tooltip>
+                            <md-icon md-svg-icon="action:delete"></md-icon>
+                        </md-button>
+                        <md-button class="md-fab md-mini" style="margin: 0 auto;" ng-if="pr.EntityStatus == 2" ng-click="refreshRow('ProductRecipe',pr)">
+                            <md-tooltip md-direction="top">Restore Entity from delete state</md-tooltip>
+                            <md-icon md-svg-icon="action:settings_backup_restore"></md-icon>
+                        </md-button>
+                    </div>
+                </div>
+            </md-list-item>
+        </md-list>
+        </div>
+    <div flex></div>
+    <md-divider></md-divider>
+    <div layout="row" layout-align="space-between center">
+        <md-button class="md-raised md-primary" ng-click="addDetail('ProductRecipe')">
+            <md-tooltip md-direction="top">Add new recipe</md-tooltip>
+            <!--<i class="fa fa-plus fa-fw"></i>-->Add
+            <md-icon md-svg-icon="content:add"></md-icon>
+        </md-button>
+        <strong>Results:&nbsp;#{{data['ProductRecipe'].length}}</strong>
+    </div>
+</script>
+
+<script id="byproduct-recipe-choice-template" type="text/ng-template">
+    <md-toolbar class="md-primary md-whiteframe-4dp slim-material-toolbar" style="padding:0 10px;" layout="row" layout-align="start center">
+        <div>Select Ingredients to add as Recipe</div>
+        <div flex></div>
+        <div flex="15" class="h-c-ext-list" ng-include src="'ingredient-recipes-menu'"></div>
+    </md-toolbar>
+    <div layout="column" layout-align="start stretch" flex="grow">
+        <!--<md-icon md-svg-icon="action:info"><md-tooltip md-direction="bottom">{{innerInfo}}</md-tooltip></md-icon>-->
+        <div layout="row" layout-align="start stretch" style="margin-top:20px;">
+            <md-input-container class="md-block" style="font-variant:small-caps; margin:0px;" flex="50"><label>{{innerHeader}}</label><input ng-model="searchStringClone.Description"></md-input-container>
+            <md-input-container class="md-block" style="font-variant:small-caps; margin:0px;" flex="50"><label>Selected to add</label><input ng-model="searchStringCloneToAdd.Description"></md-input-container>
+        </div>
+        <div layout="row" layout-align="start stretch">
+            <product-search-autoc flex="50" item-change="manageIngsFromProductLoaded" selected-item="searchp"></product-search-autoc>
+            <div layout="column" layout-align="start stretch" flex="50"></div>
+        </div>
+        <div layout="row" layout-align="start stretch" flex>
+            <div layout="column" layout-align="start stretch" flex="50">
+                <div style="overflow:auto;" flex="grow">
+                    <md-list ng-if="toaddingrs.length > 0">
+                        <md-list-item aria-label="ins-pici-{{ing.Id}}" ng-repeat="ing in toaddingrs| filter:searchStringClone | orderBy:'Description'" ng-if="ing.selected != true" ng-click="toggleInsSelection(ing)">
+                            <md-checkbox aria-label="ins-pici" ng-checked="ing['selected'] == true" class="md-primary" style="margin: auto;"></md-checkbox>
+                            <strong flex>{{ing.Description}}</strong>
+                        </md-list-item>
+                    </md-list>
+                </div>
+            </div>
+            <div layout="column" layout-align="start stretch" flex="50">
+                <div style="overflow:auto;" flex="grow" ng-if="toaddingrs.length > 0">
+                    <md-list>
+                        <md-list-item aria-label="ins-pici-{{ing.Id}}" ng-repeat="ing in toaddingrs| filter:searchStringCloneToAdd | orderBy:'Description'" ng-if="ing.selected == true" ng-click="toggleInsSelection(ing)">
+                            <md-checkbox aria-label="ins-pici" ng-checked="ing['selected'] == true" class="md-primary" style="margin: auto;"></md-checkbox>
+                            <strong flex>{{ing.Description}}</strong>
+                        </md-list-item>
+                    </md-list>
+                </div>
+            </div>
+        </div>
+        <md-divider></md-divider>
+        <small style="margin:0.5% auto 0.5% 0;">Product <strong>{{searchp['Description'] || '--'}}</strong> has {{toaddingrs.length || 'no'}} recipe.</small>
+        <small>{{innerInfo}}</small>
+        <div layout="row" layout-align="start center">
+            <md-button class="md-raised" ng-click="manageingrs('display')" flex="25">Return<md-tooltip md-direction="top">Return to recipe list</md-tooltip></md-button>
+            <md-button class="md-raised md-warn" ng-click="clearSelected(toaddingrs)" flex="25">Clear</md-button>
+            <md-button class="md-raised md-accent" ng-click="selectAll(toaddingrs)" flex="25">Select all</md-button>
+            <md-button class="md-raised md-primary" ng-click="appendIngredients()" flex="25">Apply</md-button>
+        </div>
+    </div>
+</script>
+
+<style>
+    .custom-menu-drop {
+        margin: 5px 0;
+        padding: 5px;
+        min-height: 80px;
+    }
+
+    .h-c-ext-list {
+        text-align: center;
+        align-self: center;
+    }
+
+    .h-ext-list {
+        align-self: center;
+    }
+
+    .subhead-nopad > div.md-subheader-inner {
+        padding: 0;
+    }
+</style>

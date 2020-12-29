@@ -1,0 +1,59 @@
+﻿<md-dialog ng-class="{'fullscreen-dialog' : fullscreenModal}" aria-label="EditUserPrefs" ng-cloak style="min-width: 50vw;">
+    <form>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>Manage User preferences</h2>
+                <span flex></span>
+                <toggle-fs-modal tvar="fullscreenModal"></toggle-fs-modal>
+                <md-button class="md-icon-button" aria-label="CloseModal" ng-click="cancel()">
+                    <md-icon md-svg-icon="navigation:close"></md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content>
+
+            <div class="md-dialog-content">
+                <div ng-cloak class="md-inline-form">
+                    <md-content>
+                        <div ng-include src="'UserPreferencesTemplate'"></div>
+                    </md-content>
+                </div>
+            </div>
+        </md-dialog-content>
+        <md-dialog-actions layout="row">
+            <md-button ng-click="cancel('cancel')" aria-label="CancelAction">
+                Cancel
+            </md-button>
+            <md-button ng-click="confirm('save')" style="margin-right:20px;" aria-label="ConfAction">
+                Save
+            </md-button>
+        </md-dialog-actions>
+    </form>
+</md-dialog>
+<script type="text/ng-template" id="UserPreferencesTemplate">
+    <div layout="column" layout-align="center stretch" flex="grow">
+        <div layout="row">
+            <md-input-container class="md-block" flex="50">
+                <label>Date Format</label>
+                <md-select name="dateFormat" ng-model="date.format">
+                    <md-option ng-repeat="ch in ['short','medium','shortDate','mediumDate','longDate','fullDate','shortTime','mediumTime' ]" value="{{ch}}">{{ch}}</md-option>
+                </md-select>
+            </md-input-container>
+            <div flex="50" layout="row" layout-align="center center" >
+                <md-datepicker ng-model="datePref" md-placeholder="Today"></md-datepicker>
+            </div>
+        </div>
+        <div layout="row">
+            <code>
+                short same as "M/d/yy h:mm a" (1/5/16 9:05 AM)
+                "medium" same as "MMM d, y h:mm:ss a" (Jan 5, 2016 9:05:05 AM)
+                "shortDate" same as "M/d/yy" (1/5/16)
+                "mediumDate" same as "MMM d, y" (Jan 5, 2016)
+                "longDate" same as "MMMM d, y" (January 5, 2016)
+                "fullDate" same as "EEEE, MMMM d, y" (Tuesday, January 5, 2016)
+                "shortTime" same as "h:mm a" (9:05 AM)
+                "mediumTime" same as "h:mm:ss a" (9:05:05 AM)
+            </code>
+        </div>
+    </div>
+</script>

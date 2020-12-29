@@ -1,0 +1,31 @@
+﻿------------------------------------------------
+Angular SignalR
+------------------------------------------------
+https://github.com/JustMaier/angular-signalr-hub
+------------------------------------------------
+Angular File Saver
+------------------------------------------------
+https://www.npmjs.com/package/angular-file-saver
+https://www.npmjs.com/package/angular-file-saver/tutorial
+https://github.com/alferov/angular-file-saver
+https://developer.mozilla.org/en/docs/Web/API/Blob
+https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types
+http://alferov.github.io/angular-file-saver/#demo
+------------------------------------------------
+Angular ng-CSV
+------------------------------------------------
+http://ngmodules.org/modules/ng-csv
+https://asafdav.github.io/ng-csv/example/
+------------------------------------------------
+Angular ng-Csv-Import
+------------------------------------------------
+https://github.com/bahaaldine/angular-csv-import
+https://www.npmjs.com/package/angular-csv-import
+------------------------------------------------
+Angular Material DateTimePicker
+------------------------------------------------
+https://github.com/beenote/angular-material-datetimepicker
+------------------------------------------------
+Angular Material Calendar
+------------------------------------------------
+https://github.com/Applandeo/Material-Calendar-View

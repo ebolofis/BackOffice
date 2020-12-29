@@ -1,0 +1,255 @@
+﻿WebApiVersion : v4.2.55
+BOAngVersion  : v4.0.6.0 Date Publish : 14/12/2018
+'version': { Main Version } . { Features Develop } . { Bug-Minor } . { External Services }
+
+-----------------------------
+Applied Features: v4.0.7.0 Publish : ??/01/2019 (to be released)
+Min-WebApi version : 4.2.56.0
+-----------------------------
+1. PMSPaymentId field in Accounts edit
+2. PMSInvoiceId field in PosInfoDetail edit
+
+-----------------------------
+Applied Features: v4.0.6.0 Publish : 14/01/2019
+Min-WebApi version : 4.2.55.0
+-----------------------------
+1. Add - Edit - Delete Combos
+2. Add - Edit - Delete Combo Details
+
+-----------------------------
+Applied Features: v4.0.5.0 Publish : 04/12/2018
+Min-WebApi version : 4.2.54.0
+-----------------------------
+1. CreateTransaction field in PosInfoDetail add
+2. IsReturnItem field in Product add - edit
+3. CustomerDisplayGif field in PosInfo add - edit
+
+-----------------------------
+Applied Features: v4.0.4.3 Publish : 19/12/2018 
+Min-WebApi version : 4.2.52.0
+-----------------------------
+1. Add - Edit - Delete Ingredient Categories
+2. Add correlation between Ingredients and Ingredient Categories
+
+-----------------------------
+Applied Features: v4.0.4.2 Publish : 23/07/2018 
+Min-WebApi version : 4.2.17.0
+-----------------------------
+1.Fix Virtual repeat on Product ( extras - recipes - pricelists ) components (dev scripts/comp/prod/ext + recipe )
+2.Fix Virtual repeat on Ingredients Assoc
+
+-----------------------------
+Applied Features: v4.0.4.1 Publish : 11/07/2018 
+Min-WebApi version : 4.2.17.0
+-----------------------------
+1.Fix color Edit on Ingredients
+
+-----------------------------
+Applied Features: v4.0.4.0 Publish : 07/06/2018 
+Min-WebApi version : 4.2.17.0
+-----------------------------
+1.Fix missmatch on overwritten capacities
+2.Add Reservation cancel view
+
+
+-----------------------------
+Applied Features: v4.0.2.0 Publish : 02/05/2018 
+Min-WebApi version : 4.2.5.0
+-----------------------------
+1.Filters General Factory 
+2.Bower Add Angular material Datetimepicker (import js after moment)
+3.Bower Install MAterial Calendar 
+4.Table reservation Add main Ctrl - view - fatory - service 
+5.Restaurant Comp
+6.Restriction Comp 
+7.Restriction Exclude Comp
+8.Capacities Comp
+9.Capacities Excluded Days 
+10. Capacities Overwritten Comp
+
+-----------------------------
+Applied Features: v4.0.1.0 Publish : 11/1/2018 
+Min-WebApi version : 2.2.0.0
+-----------------------------
+1.Correct and apply clear Table Image on tables view
+
+
+-----------------------------
+Applied Features: v4.0.0.0 Publish : 6/12/2017 
+Min-WebApi version : 2.2.0.0
+-----------------------------
+1.Correct I/O Products via file
+2.Clone Recipes
+3.Clone extras extend to clone qty min max and is required
+4.Add storeKitchen instraction to Store Info form 
+5.Visual Filter on Staff list
+6.Apply select all unselect on form staff auth and positions
+7.Modals fullscreen toggle feature and common directive 
+8.Correct Label on hotelInfo modal
+
+
+-----------------------------
+Applied Features: v1.5.1.0 Publish : 17/10/2017 
+Min-WebApi version : 2.2.0.0
+-----------------------------
+1.Correctance over Products-form HTML dropdown to not vissible LookupsKichenRegionId to KitchenRegion
+
+-----------------------------
+Applied Features: v1.5.0.0 Publish : 27/8/2017 
+Min-WebApi version : 2.2.0.0
+-----------------------------
+1.NFC generic directive configuration applied on Modules Configuration
+
+-----------------------------
+Applied Features: v1.4.2.0 Publish : 13/7/2017 
+Min-WebApi version : 2.1.6.0
+-----------------------------
+1.Apply Signal functionallity (on test release)
+2.#1172 fix on allow Taxid null on products management
+
+-----------------------------
+Applied Features: v1.4.1.0 Publish : -/-/2017 
+Min-WebApi version : 2.1.6.0
+-----------------------------
+1. ImportProducts from file.
+2. Apply Product Prices  && Ingredient Prices fix
+
+-----------------------------
+Applied Features: v1.4.0.0 Publish : 23/6/2017 
+Min-WebApi version : 2.0.33.0
+-----------------------------
+1.Tables feature Rearrange Tables on multi edit tables panel.
+2. New menu layout dynamic entities from json 
+3. New products View (Apply ref on OLD_PRODUCTS *header navigate)
+4. Edit Staff template fix for height condensation to view more results
+5. Fix on Header Styling to apply md-theme options on Pos infoAssocs and Excluded Entities
+6. Fix default value on hotelinfo.allHotels creation.
+7. 404 NOTFOUND page on missmatch of state 
+8. Change login Policy to upperlvl than app to handle auth on initiallization
+9. Created Configuration file of project initiallization
+10. Change resources on hotelinfo get departments and main ctrl for store.hotelinfo and department_mapping  initial hotelinfo get
+11. Order PageButtons by selection field from list
+12. Closing Year View under Manage Receipts
+13. Apply CardOnly  Accounts Management  (NEEDS UPDATE DATABASE)
+14. Apply New keyboard Enumerator on PosInfo && NFC Device
+
+
+-----------------------------
+Applied Features: v1.3.1.0 Publish : 15/5/2017 
+Min-WebApi version : 2.0.30.0
+-----------------------------
+1.New Ingredient Assoc View (added CreateCategory , Createingredient , append-clone ingredients modal).
+2.Apply new style to inner header main view and apply md-subheader entity to make available md-theme options.
+3.Apply custom-reusable-class-directive  <boHtd> with bind content to an md-toolbar container so theme can be applyied.
+4.Apply DefaulthotelId to pos info.
+5.Select page after save page edit.
+
+-----------------------------
+Applied Features: v1.3.0.0 Publish : 4/4/2017 
+Min-WebApi version : 2.0.24.70
+-----------------------------
+1.Policy over version 4 digits {Main Version} . {Features Develop } . { Bug-Minor } . { External Services }
+
+-----------------------------
+Applied Features: v1.3 d0
+-----------------------------
+1.Remote Access implementation from wapi xml queries
+2.Login Version policy over Resourse 
+3.Provide test view on Modules configuration
+
+
+-----------------------------
+Applied Features: v1.2 d9 
+-----------------------------
+1.Receipt Cancel view
+2.Filter Modifcations to apply date on payrole
+
+
+-----------------------------
+Applied Features: v1.2 d8 
+-----------------------------
+1.Apply Staff Identification Field (@Payrole handling)
+2.Apply Payrole management under Staff Options
+3.Apply Angular File saver from Bower
+4.Export By filename  on payroles (Autogrill setup)
+
+-----------------------------
+Applied Features: v1.2 d7
+-----------------------------
+1. Fix overflow on pages button property window *(24/2/17 v.1.2.d7)
+2. Fix single insert table on form not allow action button click *(24/2/17 v.1.2.d7)
+
+
+-----------------------------
+Applied Features: v1.2 d6
+-----------------------------
+1. Create External Produxt MApping Entity handling *(16/2/17 v.1.2.d6)
+2. Implement Directive of dynamic autocomplete in reusable-dynamic-components.js *(16/2/17 v.1.2.d6)
+3. Transfer mappings memory ref map bug on clickSelectContainerObject to a copy *(17/2/17 v.1.2.d6)
+
+-----------------------------
+Applied Features: v1.2 d5
+-----------------------------
+1. Pages: Copy pages Policy  *(9/2/17 v.1.2.d5)
+2. Pages: Special Buttons fail control and Display *(9/2/17 v.1.2.d5)
+
+-----------------------------
+Applied Features: v1.2 d4 
+-----------------------------
+1. Change Policy on hotelinfo to load pms departments without hotelinterface with new controller
+2. Form Validation on StoreProperties
+3. Implement new staff manage view
+4. Implement Tax on ProductPrices and ProductManagement/PricelistsTab
+5. Fix on Multi Cat and PCat ins over ProductPages
+6. Apply on menu selection close menu
+7. Apply material view on Pages
+8. Apply generic-enitity-manager
+9. Apply RestPromise dynamic functionality on DynamicSingleEntryForm 
+10. Apply material Ui to repeat-list-drop-down directive 
+11. change all views on materiallized overflowcontainers
+12. Apply lookups and management on RegionLockersProduct (developing)
+13. Correct Gurbudge collection on pages edit 
+
+-----------------------------
+Applied Features: v1.1 d2
+-----------------------------
+1. Manage Save on Products bug: not clean grid adds additional sub grid entities
+2. Manage Save on Pages To avoid doubles in PagePosAssoc
+3. Fix display on Tables to right-sidepanel of table actions
+4. Change on single grid edit  to correct name of remove Function from refactoring 
+5. Validation Check on Product - ingredient prices for VatId and prices
+6. Products On select product display popUP with details of unmapped pricelists and vat 
+7. Release Version display added on sidenav 
+8. Dictionary Corrected over loading bar (Edit 16/9/2016) 'devVersion': 2
+9. Description Corrected over PDA insert Form (Edit 16/9/2016) 'devVersion': 2
+10. Status Corrected over Account Mapping (Edit 19/9/2016) 'devVersion': 2
+11. Register on ClientPOS Account Mapping (Edit 19/9/2016) 'devVersion': 2
+
+-----------------------------
+Applied Features: v1.0
+-----------------------------
+1. Tables Multi Actions
+2. Graphical , Linear , Special Models added
+3. Pricelists Master added
+4. Single grid entities Material Add & Remove Modals
+5. View Prices fix on Mozilla Opera fixed
+6. User Img handle added
+
+-----------------------------
+Applied Features: v0.9
+-----------------------------
+1. New style in pages
+2. New menu
+3. Storeinfo added
+4. MultihotelConnection Depart
+5. Prices changed
+6. Tables added
+7. Single grid dirty managment
+8. Pages search Products enterKey 
+9. Prices search enterKey 
+10. Products Price on Prices auto update
+11. Department mapping change
+12. Fix Doublicates patches
+13.(extra on new Store info update 4:19pm)
+
+

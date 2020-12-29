@@ -1,0 +1,77 @@
+﻿<div ng-controller="RemoteControlCtrl" ng-init="init()" style="overflow:hidden;" layout="column" layout-align="start stretch" layout-fill>
+    <md-subheader class="wrappers-view-header md-whiteframe-7dp md-primary">Remote Actions</md-subheader>
+    <!--<div layout="row" layout-align="end center">
+        <md-button class="md-primary md-icon-button" arial-label="apply-receipt-filter" ng-click="applyQueries()">
+            <md-tooltip md-direction="top">Filter Queries</md-tooltip>
+            <md-icon md-svg-icon="content:filter_list"></md-icon>
+        </md-button>
+    </div>-->
+    <div flex></div>
+    <div layout="row" layout-align="start center" class="md-padding" style="font-variant:small-caps;">
+        <strong><md-button class="md-icon-button" aria-label="dummmy field"></md-button></strong>
+        <strong flex="20">Name</strong>
+        <strong flex="30">Description</strong>
+        <strong flex="15">Qtype</strong>
+        <strong flex="15">SecurityPolicy</strong>
+        <strong style="text-align:center;">Actions</strong>
+        <div flex></div>
+        <md-button class="md-primary md-icon-button" arial-label="refresh-data-with-receipt-filter" ng-click="reloadQueries();">
+            <md-tooltip md-direction="top">Reload actions from server</md-tooltip>
+            <md-icon md-svg-icon="navigation:refresh"></md-icon>
+        </md-button>
+    </div>
+    <md-divider></md-divider>
+    <div layout="row" layout-align="start stretch" style="overflow:hidden;" flex="grow">
+        <div layout="column" layout-align="start stretch" flex="grow" style="overflow:auto;">
+            <div ng-include src="'queries-list'" ng-if="busyloading != true && loadedQueries.length > 0"></div>
+
+            <div flex="grow" ng-if="busyloading == true" layout="column" layout-align="center center">
+                <md-progress-circular md-mode="indeterminate"></md-progress-circular><span>Loading Actions...</span>
+            </div>
+            <div flex="grow" ng-if="busyloading != true && loadedQueries.length == 0" layout="column" layout-align="center center">
+                <div layout="row" layout-align="center start" flex="80">
+                    <md-toolbar class="md-warn md-whiteframe-8dp md-margin md-padding" flex="grow" layout="row" layout-align="start center">
+                        <md-icon class="md-margin" md-svg-icon="action:info"></md-icon>No Actions found on specific installation.
+                    </md-toolbar>
+                </div>
+            </div>
+        </div>
+    </div>
+    <md-divider></md-divider>
+</div>
+
+<script id="queries-list" type="text/ng-template">
+    <md-list flex="grow">
+        <md-list-item class="md-whiteframe-4dp" ng-repeat="(key , q) in mapQueries" style="margin-bottom:10px; background-color:white;">
+            <div class="md-list-item-text" layout="column" layout-align="start stretch" flex="grow">
+                <div layout="row" layout-align="start center">
+                    <md-button class="md-icon-button md-primary" aria-label="Show Receipt Details">
+                        <md-tooltip md-direction="top">{{q.Information || 'No information Provided'}}</md-tooltip>
+                        <md-icon md-svg-icon="action:info"></md-icon>
+                    </md-button>
+                    <span class="cell-style" flex="20">{{q.Name}}<md-tooltip md-direction="top">{{q.Name}}</md-tooltip></span>
+                    <span class="cell-style" flex="30">{{q.Description}}<md-tooltip md-direction="top">{{q.Description}}</md-tooltip></span>
+                    <span class="cell-style" flex="15">{{q.Qtype}}<md-tooltip md-direction="top">{{q.Qtype}}</md-tooltip></span>
+                    <span class="cell-style" flex="15">{{q.SecurityPolicy}}<md-tooltip md-direction="top">{{q.SecurityPolicy}}</md-tooltip></span>
+                    <md-button class="md-icon-button" ng-disabled="q.State == 'busy'" ng-class="{'md-primary': (q.State =='success'), 'md-warn': (q.State =='fail')}" aria-label="execute query action button" ng-click="executeQuery(q.Id)">
+                        <md-tooltip md-direction="top">Query state</md-tooltip>
+                        <md-icon ng-if="q.State == 'busy'" md-svg-icon="action:lock"></md-icon>
+                        <md-icon ng-if="q.State == 'default'" md-svg-icon="action:settings_power"></md-icon>
+                        <md-icon ng-if="q.State == 'success'" md-svg-icon="navigation:check"></md-icon>
+                        <md-icon ng-if="q.State == 'fail'" md-svg-icon="navigation:cancel"></md-icon>
+                    </md-button>
+                    <md-button class="md-icon-button md-primary" aria-label="Show Result Details" ng-if="q.ReturnResults != undefined" ng-click="logResults(q)">
+                        <md-tooltip md-direction="top">show returned results</md-tooltip>
+                        <md-icon md-svg-icon="action:search"></md-icon>
+                    </md-button>
+                </div>
+            </div>
+        </md-list-item>
+    </md-list>
+</script>
+<style>
+    .cell-style {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>

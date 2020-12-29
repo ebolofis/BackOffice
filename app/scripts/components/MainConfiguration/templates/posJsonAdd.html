@@ -1,0 +1,12 @@
+﻿<div ng-controller="PosAddFileCtrl as MainConfig2" layout-fill layout="column" layout-align="start stretch">
+    <div class="modal-header">
+        <h1>Παρακαλώ Εισάγετε όνομα</h1>
+    </div>
+    <div class="modal-body">
+        <p><input placeholder="Enter Name" style="width:100%" ng-model="posName" autofocus/></p>
+    </div>
+    <div class="modal-footer">
+        <button ng-click="MainConfig2.savePosFile(posName)" class="btn btn-primary">Αποθήκευση</button>
+        <button ng-click="MainConfig2.closeModal()" class="btn">Ακύρωση</button>
+    </div>
+</div>

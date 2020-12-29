@@ -1,0 +1,77 @@
+﻿<div ng-controller="NewPageSetCtrl" ng-cloak layout="column" layout-align="start stretch" layout-fill>
+    <div layout="row" layout-align="space-between center">
+        <div ng-show="insertAction =='copy'" flex layout="row" layout-align="start center">
+            <md-autocomplete ng-disabled="false" md-no-cache="true" md-selected-item="selectedPageset" md-search-text="searchPagesetModalText.Description" md-search-text-change="" md-selected-item-change="pageSetDropDownChanged(selectedPageset)"
+                             md-items="item in pagesets | filter :searchPagesetModalText" md-item-text="item.Description" md-min-length="0" placeholder="Select a Pageset" flex style="margin: 6px 8px;">
+                <md-item-template><span md-highlight-text="searchPagesetText" md-highlight-flags="^i">{{item.Description}}</span></md-item-template>
+                <md-not-found>No pagesets matching "{{searchPagesetText}}" were found.</md-not-found>
+            </md-autocomplete>
+        </div>
+        <md-button ng-show="insertAction !='main' && disableViewopp != true" class="md-raised md-primary" ng-click="insertAction ='main'"><i class="fa fa-reply fa-fw"></i>&nbsp;Back</md-button>
+    </div>
+    <div layout="row" layout-align="center center" ng-show="insertAction =='main'">
+        <md-card class="optionContainer md-whiteframe-8dp" ng-click="insertAction = 'empty'">
+            <md-card-title>
+                <div>Insert new pageSet with no Pages. (default)</div>
+            </md-card-title>
+            <md-card-actions layout="row" layout-align="start center">
+                <md-toolbar class="md-hue-2">
+                    <div class="md-toolbar-tools">Empty</div>
+                </md-toolbar>
+            </md-card-actions>
+        </md-card>
+        <md-card class="optionContainer md-whiteframe-8dp" ng-click="insertAction = 'copy'">
+            <md-card-title>
+                <div>Insert new pageSet copying pages from an other Pagesets.</div>
+            </md-card-title>
+            <md-card-actions layout="row" layout-align="start center">
+                <md-toolbar class="md-hue-2"><div class="md-toolbar-tools">Copy Pages</div></md-toolbar>
+            </md-card-actions>
+        </md-card>
+        <!--<div class="optionContainer" ng-click="changeInsertType('pcat')">
+            <p>Insert new pageSet creating master page of references and pages from Product Categories selected.</p>
+            <h5>Product Categories</h5>
+        </div>-->
+    </div>
+
+    <div ng-show="insertAction =='empty'">
+        <div class="alert alert-info" style="margin-top:4%;"><i class="fa fa-xs fa-info-circle"></i>&nbsp; Your current pageset will have no pages. You can manage them by inserting new Page from the page insert modal.</div>
+    </div>
+    <div ng-show="insertAction =='copy'">
+        <div class="fixheight">
+            <div class="col-md-6 col-xs-6">
+                <div header="'Available Pages'" class="list-repeat-element" display-field="'Description'" mainlist="loadedpages" loop-item-class="'notice content-overflow-ellipsis noticeCustom'" loop-item-selected-class="'notice-info'" search-placeholder="'Search...'" action-fun="addSelected('pages')" action-icon="'fa fa-xs fa-plus'" extra-filter="availablesPagesFilter"></div>
+            </div>
+            <div class="col-md-6 col-xs-6">
+                <div header="'Selected Pages'" class="list-repeat-element" display-field="'Description'" mainlist="selectedpages" loop-item-class="'notice content-overflow-ellipsis noticeCustom'" loop-item-selected-class="'notice-warning'" search-placeholder="'Search...'" action-fun="removeSelected('pages')" action-icon="'fa fa-xs fa-minus'"></div>
+            </div>
+        </div>
+    </div>
+    <div ng-show="insertAction =='pcat'">
+        <div>
+            <div class="col-md-6 col-xs-6">
+                <div class="list-repeat-element" header="'Available Categories'" display-field="'Description'" mainlist="productCats" loop-item-class="'notice content-overflow-ellipsis noticeCustom'" loop-item-selected-class="'notice-info'" search-placeholder="'Search...'" action-fun="addSelected('pcats')" action-icon="'fa fa-xs fa-plus'" extra-filter="availablesPcatsFilter"></div>
+            </div>
+            <div class="col-md-6 col-xs-6">
+                <div class="list-repeat-element" header="'Selected Categories'" display-field="'Description'" mainlist="selectedproductCats" loop-item-class="'notice content-overflow-ellipsis noticeCustom'" loop-item-selected-class="'notice-warning'" search-placeholder="'Search...'" action-fun="removeSelected('pcats')" action-icon="'fa fa-xs fa-minus'"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<style>
+    .container-panel-content {
+        min-height: 0;
+    }
+
+    .optionContainer {
+        width: 250px;
+        height: 160px;
+        cursor: pointer;
+        position: relative;
+    }
+
+</style>

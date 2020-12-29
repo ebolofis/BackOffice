@@ -1,0 +1,37 @@
+﻿<div ng-controller="TradingHoursCompCTRL as TradMain" ng-init="TradMain.initView()" layout-fill layout="row" layout-align="start stretch">
+    <div>
+        <md-content>
+            <md-tabs md-dynamic-height md-border-bottom>
+                <md-tab label="Trading Hours">
+                    <md-content class="md-padding" layout="row" style="margin-bottom:-2%">
+                        <md-card>
+                            <md-card-title>
+                                <md-card-title-text layout-gt-sm="row">
+                                    <div flex-xs flex-gt-xs="60" layout-gt-sm="column">
+                                        <span class="md-headline">Trading Hours</span>
+                                    </div>
+                                </md-card-title-text>
+                            </md-card-title>
+                            <md-divider></md-divider>
+                            <md-card-content>
+                                <div layout-gt-sm="row">
+                                    <md-input-container class="md-block" style="font-size:18px;" flex-gt-sm>
+                                        <label style="color: black !important;">Opening Time</label>
+                                        <input ng-model="TradMain.TradingHoursModel.TimeFrom" disabled style="color: black !important;">
+                                    </md-input-container>
+                                    <md-input-container class="md-block" style="font-size:18px;" flex-gt-sm>
+                                        <label style="color: black !important;">Closing Time</label>
+                                        <input ng-model="TradMain.TradingHoursModel.TimeTo" disabled style="color: black !important;">
+                                    </md-input-container>
+                                </div>
+                            </md-card-content>
+                            <md-card-actions layout="row" layout-align="end center">
+                                <md-button class="md-fab md-mini md-primary  md-raised" ng-click="editTradingHours($event ,'TradingHours',TradMain.TradingHoursModel , 'edit')" aria-label="EditPosInfo"><i class="fa fa-pencil fa-fw"></i></md-button>
+                            </md-card-actions>
+                        </md-card>
+                    </md-content>
+                </md-tab>
+            </md-tabs>
+        </md-content>
+    </div>
+</div>

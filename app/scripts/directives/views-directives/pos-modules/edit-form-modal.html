@@ -1,0 +1,283 @@
+﻿<md-dialog ng-class="{'fullscreen-dialog' : fullscreenModal}" aria-label="EditPosInfo" ng-cloak style="min-width: 50vw;" id="EditPosInfoEntities" class="stickyDialog">
+    <form name="posinfoForm">
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>{{modalTitle}}</h2>
+                <span flex></span>
+                <toggle-fs-modal tvar="fullscreenModal"></toggle-fs-modal>
+                <md-button class="md-icon-button" aria-label="CloseModal" ng-click="cancel()">
+                    <md-icon md-svg-icon="navigation:close"></md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content>
+            <div class="md-dialog-content">
+                <div ng-cloak class="md-inline-form"><md-content><ng-include src="entityId"></ng-include></md-content></div>
+            </div>
+        </md-dialog-content>
+        <md-dialog-actions layout="row">
+            <md-button ng-click="cancel('cancel')" aria-label="CancelAction">Cancel</md-button>
+            <md-button ng-click="confirm('save')" class="md-primary" ng-disabled="posinfoForm.$invalid" style="margin-right:20px;" aria-label="ConfAction">Save</md-button>
+        </md-dialog-actions>
+    </form>
+</md-dialog>
+<script id="posinfodetail" type="text/ng-template">
+    <md-content>
+        <div layout="row" layout-align="center stretch" flex="grow">
+            <md-input-container class="md-block" flex="20">
+                <label>Id</label>
+                <input name="Id" ng-model="dataModel.Id" required disabled>
+            </md-input-container>
+            <md-input-container class="md-block" flex="50">
+                <label>Description</label>
+                <input name="Description" ng-model="dataModel.Description" required>
+                <div ng-messages="posinfoForm.Description.$error">
+                    <div ng-message="required">You need to specify a Description</div>
+                </div>
+            </md-input-container>
+            <md-input-container class="md-block" flex="30">
+                <label>Abbreviation</label>
+                <input name="Abbreviation" ng-model="dataModel.Abbreviation" required>
+                <div ng-messages="posinfoForm.Abbreviation.$error">
+                    <div ng-message="required">You need to specify an Abbreviation</div>
+                </div>
+            </md-input-container>
+        </div>
+        <div layout="row" layout-align="center stretch" flex="grow">
+            <md-input-container class="md-block" flex="50">
+                <label>Invoices Type</label>
+                <md-select name="InvoicesTypeId" ng-model="dataModel.InvoicesTypeId" required ng-change="constructPredifinedTemplate()">
+                    <md-option ng-repeat="ch in dropdownsLookup.InvoicesTypeId" value="{{ch.Key}}">{{ch.Value}}</md-option>
+                </md-select>
+                <div ng-messages="posinfoForm.InvoicesTypeId.$error">
+                    <div ng-message="required">Invoices Type selection is required.</div>
+                </div>
+            </md-input-container>
+            <md-input-container class="md-block" flex="50">
+                <label>Counter</label>
+                <input name="Counter" type="number" ng-model="dataModel.Counter" required>
+                <div ng-messages="posinfoForm.Counter.$error">
+                    <div ng-message="required">You need to specify a Counter</div>
+                </div>
+            </md-input-container>
+        </div>
+        <div layout="row" layout-align="center stretch" flex="grow">
+            <md-input-container class="md-block" flex="33">
+                <label>Fiscal Type</label>
+                <md-select name="FiscalType" ng-model="dataModel.FiscalType" required>
+                    <md-option ng-repeat="ch in dropdownsLookup.FiscalType" value="{{ch.Key}}">{{ch.Value}}</md-option>
+                </md-select>
+                <div ng-messages="posinfoForm.InvoiceId.$error">
+                    <div ng-message="required">Fiscal Slot selection is required.</div>
+                </div>
+            </md-input-container>
+            <md-input-container class="md-block" flex="33">
+                <label>Fiscal Slot</label>
+                <input name="InvoiceId" type="number" ng-model="dataModel.InvoiceId" required>
+                <div ng-messages="posinfoForm.InvoiceId.$error">
+                    <div ng-message="required">You need to specify a Fiscal Slot</div>
+                </div>
+            </md-input-container>
+            <md-input-container class="md-block" flex="33">
+                <label>Button Description</label>
+                <input name="ButtonDescription" ng-model="dfm.dataModel.ButtonDescription" required>
+                <div ng-messages="posinfoForm.ButtonDescription.$error">
+                    <div ng-message="required">You need to specify a Button Description</div>
+                </div>
+            </md-input-container>
+        </div>
+        <div layout="row" layout-align="start stretch" flex="grow">
+            <div layout="row" layout-align="start center" flex="25">
+                <md-checkbox name="posStatus" ng-model="dataModel.Status" class="md-primary">Active</md-checkbox>
+            </div>
+            <div layout="row" layout-align="start center" flex="25">
+                <md-checkbox name="posIsInvoice" ng-model="dataModel.IsInvoice" class="md-primary" value="insEntryData.IsInvoice">Is Invoice</md-checkbox>
+            </div>
+            <div layout="row" layout-align="start center" flex="25">
+                <md-checkbox name="posCreateTransaction" ng-model="dataModel.CreateTransaction" class="md-primary">Create Transaction</md-checkbox>
+            </div>
+            <div layout="row" layout-align="start center" flex="25">
+                <md-checkbox name="posIsCancel" ng-model="dataModel.IsCancel" class="md-primary">Is Cancel</md-checkbox>
+            </div>
+        </div>
+        <div layout="row" layout-align="start stretch" flex="grow">
+            <div layout="row" layout-align="start center" flex="25">
+                <md-checkbox name="posIsPdaHidden" ng-model="dataModel.IsPdaHidden" class="md-primary">Is Pda Hidden</md-checkbox>
+            </div>
+            <div layout="row" layout-align="start center" flex="25">
+                <md-checkbox name="posResetsAfterEod" ng-model="dataModel.ResetsAfterEod" class="md-primary">Resets After Eod</md-checkbox>
+            </div>
+            <div layout="row" layout-align="start center" flex="50">
+                <md-checkbox name="posSendsVoidToKitchen" ng-model="dataModel.SendsVoidToKitchen" class="md-primary">Sends Void To Kitchen</md-checkbox>
+            </div>
+        </div>
+    </md-content>
+
+    <!--//Id
+             //Abbreviation
+     // Description
+
+
+     //InvoicesTypeId:drop
+         //GroupId: num
+     //Counter:num
+
+     / FiscalType:drop
+     //InvoiceId: ( 'Fiscal Slot')
+     //ButtonDescription
+
+     //status : bool
+     //IsInvoice:bool
+     //CreateTransaction :bool
+
+     //IsCancel : bool,
+     //IsPdaHidden ,
+     //ResetsAfterEod:bool
+    SendsVoidToKitchen-->
+
+</script>
+
+<script id="posinfo" type="text/ng-template">
+    <md-content>
+        <div layout="row" layout-align="center stretch" flex="grow">
+            <md-input-container class="md-block" flex="50">
+                <label>Type</label>
+                <md-select name="FiscalType" ng-model="dataModel.Type" required>
+                    <md-option ng-repeat="ch in dropdownsLookup.Type" value="{{ch.Key}}">{{ch.Value}}</md-option>
+                </md-select>
+                <div ng-messages="posinfoForm.Type.$error">
+                    <div ng-message="required">Type selection is required.</div>
+                </div>
+            </md-input-container>
+            <md-input-container class="md-block" flex="50">
+                <label>DepartmentId</label>
+                <md-select name="DepartmentId" ng-model="dataModel.DepartmentId" required>
+                    <md-option ng-repeat="ch in dropdownsLookup.DepartmentId" value="{{ch.Key}}">{{ch.Value}}</md-option>
+                </md-select>
+                <div ng-messages="posinfoForm.DepartmentId.$error">
+                    <div ng-message="required">Department selection is required.</div>
+                </div>
+            </md-input-container>
+        </div>
+        <div layout="row" layout-align="center stretch" flex="grow">
+            <md-input-container class="md-block" flex="20">
+                <label>Id</label>
+                <input name="Id" ng-model="dataModel.Id" required disabled>
+            </md-input-container>
+            <md-input-container class="md-block" flex="60">
+                <label>Description</label>
+                <input name="Description" ng-model="dataModel.Description" required>
+                <div ng-messages="posinfoForm.Description.$error">
+                    <div ng-message="required">You need to specify a Description</div>
+                </div>
+            </md-input-container>
+            <md-input-container class="md-block" flex="20">
+                <label>Code</label>
+                <input name="Code" ng-model="dataModel.Code" required>
+                <div ng-messages="posinfoForm.Code.$error">
+                    <div ng-message="required">You need to specify a Code</div>
+                </div>
+            </md-input-container>
+        </div>
+
+        <div layout="row" layout-align="center stretch" flex="grow">
+            <md-input-container class="md-block" flex="33">
+                <label>IPAddress</label>
+                <input name="IPAddress" ng-model="dataModel.IPAddress" required>
+                <div ng-messages="posinfoForm.IPAddress.$error">
+                    <div ng-message="required">You need to specify a IPAddress</div>
+                </div>
+            </md-input-container>
+            <md-input-container class="md-block" flex="33">
+                <label>FiscalName</label>
+                <input name="WsIP" ng-model="dataModel.FiscalName" required>
+                <div ng-messages="posinfoForm.FiscalName.$error">
+                    <div ng-message="required">You need to specify a FiscalName</div>
+                </div>
+            </md-input-container>
+            <md-input-container class="md-block" flex="33">
+                <label>FiscalType</label>
+                <md-select name="FiscalType" ng-model="dataModel.FiscalType" required>
+                    <md-option ng-repeat="ch in dropdownsLookup.FiscalType" value="{{ch.Key}}">{{ch.Value}}</md-option>
+                </md-select>
+                <div ng-messages="posinfoForm.FiscalType.$error">
+                    <div ng-message="required">FiscalType selection is required.</div>
+                </div>
+            </md-input-container>
+        </div>
+
+        <div layout="row" layout-align="center stretch" flex="grow">
+            <md-input-container class="md-block" flex="33">
+                <label>CloseId</label>
+                <input name="CloseId" ng-model="dataModel.CloseId">
+            </md-input-container>
+            <md-input-container class="md-block" flex="33">
+                <label>ReceiptCount</label>
+                <input name="ReceiptCount" type="number" ng-model="dataModel.ReceiptCount" required>
+                <div ng-messages="posinfoForm.ReceiptCount.$error">
+                    <div ng-message="required">You need to specify a ReceiptCount</div>
+                </div>
+            </md-input-container>
+            <div layout="row" layout-align="start center" flex="33">
+                <md-checkbox md-no-ink aria-label="IsOpen" ng-model="insEntryData.ResetsReceiptCounter" class="md-primary">Resets Receipt Counter</md-checkbox>
+            </div>
+        </div>
+        <div layout="row" layout-align="start stretch" flex="grow">
+            <div layout="row" layout-align="start center" flex="66">
+                <label style="margin:auto 0;">FO Day</label>
+                <md-datepicker ng-model="insEntryData.FODay" md-placeholder="FODay" style="margin:auto 0;">
+                </md-datepicker>
+            </div>
+
+            <div layout="row" layout-align="start center" flex="33">
+                <md-checkbox md-no-ink aria-label="IsOpen" ng-model="insEntryData.IsOpen" class="md-primary">IsOpen</md-checkbox>
+            </div>
+        </div>
+        <div layout="row" layout-align="center stretch" flex="grow">
+            <md-input-container class="md-block" flex="33">
+                <label>Theme</label>
+                <md-select name="Theme" ng-model="dataModel.Theme">
+                    <md-option ng-repeat="ch in ['Light','Dark']" value="{{ch}}">{{ch}}</md-option>
+                </md-select>
+            </md-input-container>
+            <md-input-container class="md-block" flex="33">
+                <label>AccountId</label>
+                <md-select name="AccountId" ng-model="dataModel.AccountId" required>
+                    <md-option ng-repeat="ch in dropdownsLookup.AccountId" value="{{ch.Key}}">{{ch.Value}}</md-option>
+                </md-select>
+                <div ng-messages="posinfoForm.AccountId.$error">
+                    <div ng-message="required">AccountId selection is required.</div>
+                </div>
+            </md-input-container>
+            <div layout="row" layout-align="start center" flex="33">
+                <md-checkbox md-no-ink aria-label="ClearTableManually" ng-model="insEntryData.ClearTableManually" class="md-primary">Clear Table Manually</md-checkbox>
+            </div>
+        </div>
+        <div layout="row" layout-align="center stretch" flex="grow">
+            <md-input-container class="md-block" flex="40">
+                <label>KeyboardType</label>
+                <md-select name="KeyboardType" ng-model="dataModel.KeyboardType" required>
+                    <md-option ng-repeat="ch in dropdownsLookup.KeyboardType" value="{{ch.Key}}">{{ch.Value}}</md-option>
+                </md-select>
+                <div ng-messages="posinfoForm.KeyboardType.$error">
+                    <div ng-message="required">KeyboardType selection is required.</div>
+                </div>
+            </md-input-container>
+            <md-input-container class="md-block" flex="40">
+                <label>LoginToOrderMode</label>
+                <md-select name="LoginToOrderMode" ng-model="dataModel.LoginToOrderMode" required>
+                    <md-option ng-repeat="ch in dropdownsLookup.LoginToOrderMode" value="{{ch.Key}}">{{ch.Value}}</md-option>
+                </md-select>
+                <div ng-messages="posinfoForm.LoginToOrderMode.$error">
+                    <div ng-message="required">LoginToOrderMode selection is required.</div>
+                </div>
+            </md-input-container>
+            <div layout="row" layout-align="start center" flex="20">
+                <md-checkbox md-no-ink aria-label="ViewOnly" ng-model="insEntryData.ViewOnly" class="md-primary">View Only</md-checkbox>
+            </div>
+            <div layout="row" layout-align="start center" flex="20">
+                <md-checkbox md-no-ink aria-label="ViewOnly" ng-model="insEntryData.IsDeleted" class="md-primary">Is Deleted</md-checkbox>
+            </div>
+        </div>
+    </md-content>
+</script>

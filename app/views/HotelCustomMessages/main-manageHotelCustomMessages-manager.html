@@ -1,0 +1,69 @@
+﻿
+<div layout="column" layout-align="start stretch" ng-cloak ng-controller="HotelCustomMessagesCTRL as HotelCustomMessagesMain" ng-init="HotelCustomMessagesMain.initView()">
+
+    <md-header class="wrappers-view-header md-whiteframe-7dp md-primary" layout="row" layout-align="center center" flex="150" style="overflow:hidden;">
+
+        <div layout="row" flex="100" style="overflow:hidden;">
+            <!--  <img layout="row" flex="grow" style="overflow:hidden;"class="img-test" src="images/test.jpg" alt="my test" />-->
+            <div layout="column" flex="120">
+                <h5 layout-align="center center"> <span style="color:gold;font-weight:bold;" class="fa fa-envelope-o"></span> Manage Hotel Custom Messages <span style="color:gold;font-weight:bold;" class="fa fa-envelope-o"> </span></h5>
+
+            </div>
+            <div layout="column" flex="20" layout-align="end end">
+                <md-button class="md-raised md-primary" aria-label="save modified changes" flex="20" ng-click="addHotelCustomMessage($event ,'HotelCustomMessages',row,'add') ">Add&nbsp; <i class="fa fa-comments"></i> </md-button>
+                <!--background-image:url('../images/test.jpg')-->
+                <!--<p class="fa fa-comments"> </p>-->
+            </div>
+        </div>
+    </md-header>
+
+
+    <div layout="row" layout-align="start center" class="md-padding " style="font-variant:small-caps;background-color:rgb(61,81,181);">
+        <strong flex="17" style="cursor:pointer;color:white;" ng-model="HotelCustomMessages.sort" ng-click="HotelCustomMessages.sort='Param'">Param</strong>
+        <strong flex="17" style="cursor:pointer;color:white;" ng-click="HotelCustomMessages.sort='Value'">Value</strong>
+        <strong flex="15" style="cursor:pointer;color:white;" ng-click="HotelCustomMessages.sort='Message'">Message</strong>
+        <strong flex="17" style="cursor:pointer;color:white;" ng-click="HotelCustomMessages.sort='Priority'">Priority</strong>
+        <strong flex="17" style="cursor:pointer;color:white;" align="center">Edit Message</strong>
+        <strong flex="17" style="cursor:pointer;color:white;" align="center">Delete</strong>
+    </div>
+
+        <div ng-include src="'header-list'" ng-if="HotelCustomMessagesMain.messages.length > 0 "></div>
+
+</div>
+
+
+    <script id="header-list" type="text/ng-template">
+        <md-list flex="grow">
+            <md-list-item aria-label="Macros" class="md-whiteframe-4dp" ng-repeat="row in HotelCustomMessagesMain.messages|orderBy:HotelCustomMessagesMain.sort" style="margin-bottom:10px; background-color:white;" >
+                <div class="md-list-item-text" layout="column" layout-align="start stretch" flex="grow">
+                    <div layout="row" layout-align="start center">
+                        <span class="cell-style" flex="17" style="color:darkorange;font-weight:bold;  opacity:0.6;">{{row.Param}}<md-tooltip md-direction="top">{{row.Param}}</md-tooltip></span>
+                        <span class="cell-style" flex="17" style="color:rgb(76, 175, 80);font-weight:bold;"> Ο πελάτης είναι  {{row.Value}}<md-tooltip md-direction="top">{{row.Value}}</md-tooltip></span>
+                        <span class="cell-style" flex="17" style="color:rgb(61,81,181);font-weight:bold; opacity:0.7;">{{row.Message}}<md-tooltip md-direction="top">{{row.Message }}</md-tooltip></span>
+                        &nbsp;   <span class="cell-style" flex="17" style="color:rgb(76, 175, 80);font-weight:bold; opacity:0.7;">{{row.Priority}}<md-tooltip md-direction="top">{{row.Priority }}</md-tooltip></span>
+                        <span flex="17" align="center">
+                            <md-button class="md-fab md-mini md-primary  md-raised" ng-click="editHotelMacroMessage($event ,'HotelCustomMessages',row,'edit') " aria-label="EditPosInfo"><i class="fa fa-pencil fa-fw"></i>  <md-tooltip md-direction="top">Edit selected Hotel Custom Message</md-tooltip></md-button>
+                        </span>
+                        <span flex="17" align="center">
+                            <md-button aria-label="deleteMacro" class=" md-fab md-mini" ng-click="HotelCustomMessagesMain.removeEntry($event ,'Hotel Custom Message',row)"><i class="fa fa-trash fa-fw"></i>  </md-button>
+                        </span>
+                    </div>
+                </div>
+        </md-list>
+    </script>
+    <!---->
+    <!--<md-slider thumbLabel
+    [displayWith]="formatLabel"
+    style="width:300px;"
+    tickInterval="1000"
+    min="1"
+    max="100000"></md-slider>-->
+    <!--<md-switch>
+    </md-switch>-->
+    <!--<form oninput="x.value=parseInt(a.value)+parseInt(b.value)">
+        <output name="x" for="a b"></output> <input type="range" id="a" value="0"><input style="display: none;"type="number" id="b" value="0">
+    </form>-->
+
+
+
+

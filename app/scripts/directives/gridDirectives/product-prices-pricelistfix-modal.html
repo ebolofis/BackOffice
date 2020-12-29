@@ -1,0 +1,50 @@
+﻿<md-dialog ng-class="{'fullscreen-dialog' : fullscreenModal}" aria-label="nullvatmodaldialog" ng-cloak style="min-width: 70vw;">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>Unmapped Pricelists Vat</h2>
+            <span flex></span>
+            <toggle-fs-modal tvar="fullscreenModal"></toggle-fs-modal>
+            <md-button class="md-icon-button" aria-label="CloseModal" ng-click="confirm()">
+                <md-icon md-svg-icon="navigation:close"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-dialog-content ng-init="showDetails=false;">
+        <md-card>
+            <md-card-title>
+                <md-card-title-text md-theme="action-palette">
+                    <span class="md-subhead"><md-icon class="md-accent" md-svg-icon="alert:warning"></md-icon>&nbsp;Current product has unmapped vats in pricelists.Manage product from pricelists tab.</span>
+                    <span class="md-subhead"><md-icon class="md-primary" md-svg-icon="action:info"></md-icon>&nbsp;Consider saving products on Product Prices if you entered a new Pricelist.</span>
+                </md-card-title-text>
+            </md-card-title>
+            <md-card-actions layout="row" layout-align="end center">
+                <md-button class="md-icon-button" aria-label="show details" ng-click="showDetails =!showDetails">
+                    <md-icon ng-if="showDetails == true" md-svg-icon="navigation:expand_less"></md-icon>
+                    <md-icon ng-if="showDetails == false" md-svg-icon="navigation:expand_more"></md-icon>
+                </md-button>
+            </md-card-actions>
+            <div class="slideShowDetails" ng-hide="!showDetails" style="overflow:visible;" layout="row" layout-align="start stretch">
+                <md-list flex>
+                    <md-subheader class="md-no-sticky">Pricelists automapped</md-subheader>
+                    <md-list-item ng-repeat="entry in vatNullArray">
+                        <div flex="33">
+                            <span>Pricelist: </span>
+                            <strong> {{ pricelistEnum[entry.plId] }} </strong>
+                        </div>
+                        <div flex="33">
+                            <span>Depends from: </span>
+                            <strong> {{ pricelistEnum[entry.lookupPlId] || '--' }} </strong>
+                        </div>
+                        <div flex="33">
+                            <span>Selected Vat:</span>
+                            <strong> {{ vatEnum[entry.looupVatid] }} </strong>
+                        </div>
+                    </md-list-item>
+                </md-list>
+            </div>
+        </md-card>
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+        <md-button ng-click="confirm()" aria-label="ConfAction">Ok</md-button>
+    </md-dialog-actions>
+</md-dialog>

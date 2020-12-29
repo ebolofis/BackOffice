@@ -1,0 +1,170 @@
+﻿.wrappers-view-header {
+    background-color: rgb(250,250,250);
+    text-align: center;
+    font-variant: small-caps;
+    margin: 0.5em !important;
+    /*color: rgb(63, 81, 181);*/
+}
+
+.wrappers-view-header-forcepad {
+    background-color: rgb(250,250,250);
+    text-align: center;
+    font-variant: small-caps;
+    margin: 0.5em !important;
+}
+
+    .wrappers-view-header-forcepad > div.md-subheader-inner {
+        padding: 10px;
+    }
+
+.content-overflow-ellipsis {
+    white-space: nowrap;
+    overflow: hidden !important;
+    text-overflow: ellipsis;
+}
+
+/*Element container to give dots on overflow field*/
+.custom-justify-container {
+    text-align: justify;
+    -ms-text-justify: distribute-all-lines;
+    text-justify: distribute-all-lines;
+}
+
+.custom-justify-item {
+    vertical-align: top;
+    display: inline-block;
+}
+
+/* Panels like bootstrap with fixed height on vh 
+ * Used to Ingredient Assocs*/
+.container-panel {
+    max-height: 80vh;
+    min-height: 80vh;
+    overflow: auto;
+}
+
+.container-panel-header {
+    /*min-height: 10vh;*/
+}
+
+    .container-panel-header h4 {
+        background: rgb(63, 81, 181);
+        /*background: rgba(0, 0, 0, 0.7);*/
+        color: white;
+        font-weight: bolder;
+        text-align: center;
+        font-size: 15px;
+        padding: 12px;
+    }
+
+        .container-panel-header h4.default {
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        .container-panel-header h4.primary {
+            background: rgb(51, 122, 183);
+        }
+
+        .container-panel-header h4.warning {
+            background: #eb9316;
+        }
+
+        .container-panel-header h4.success {
+            background-color: #006017;
+        }
+
+        .container-panel-header h4.successSelected {
+            background-color: #00E537;
+        }
+
+
+
+.container-panel-header-toolbar {
+    display: flex;
+    line-height: 15px;
+}
+
+    .container-panel-header-toolbar div.input-group {
+        display: inline-flex;
+    }
+
+.container-panel-content {
+    max-height: 60vh;
+    min-height: 60vh;
+    /*overflow: overlay;*/
+    height: auto;
+    overflow-y: auto;
+}
+
+    .container-panel-content div.notice {
+        display: inline-flex;
+        cursor: pointer;
+        width: 100%;
+    }
+
+        .container-panel-content div.notice :hover { }
+
+.container-panel-footer {
+    max-height: 10vh;
+}
+
+.panel-notice-list-component {
+    width: 100%;
+    overflow-y: auto;
+    height: auto;
+    line-height: 22px;
+    display: inline-flex;
+}
+
+    .panel-notice-list-component a {
+        text-decoration: none;
+        border: none;
+        padding: 10px 0;
+        min-height: 40px;
+        width: 50px;
+        text-align: center;
+        background-color: transparent;
+    }
+
+
+/* On Pages index  page Buttons  Uses this styling on  Draggable-page-button.html directive */
+
+.drag-item-wrapper {
+    display: block;
+    height: 100%;
+    /*position: absolute;*/
+    cursor: pointer;
+    width: 100%;
+}
+
+.drag-item-action-header {
+    height: 20%;
+    line-height: 12px;
+    font-size: 12px;
+    padding: 4px 0;
+    margin: 0;
+    width: 100%;
+    opacity: 0;
+}
+
+.drag-item-desc-content {
+    height: 80%;
+    width: 100%;
+    line-height: 12px;
+    font-size: 10px;
+    padding: 2%;
+    text-align: center;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.drag-item-wrapper:hover, .drag-item-wrapper:active, .drag-item-wrapper:focus {
+    box-shadow: 0px 0px 10px 3px #337AB7;
+}
+
+    .drag-item-wrapper:hover .drag-item-action-header,
+    .drag-item-wrapper:active .drag-item-action-header,
+    .drag-item-wrapper:focus .drag-item-action-header {
+        opacity: 1;
+    }

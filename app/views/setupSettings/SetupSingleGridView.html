@@ -1,0 +1,130 @@
+﻿<div layout="column" layout-align="start stretch" ng-cloak ng-controller="SingleGridController">
+    <div layout="column" layout-align="start stretch">
+        <md-subheader class="wrappers-view-header md-whiteframe-7dp md-primary">{{gridTitle}}</md-subheader>
+        <div layout="row" layout-align="space-between center">
+            <div layout="row" layout-align="start center" ng-if="entityIdentifier == 'Ingredients'" flex="50">
+                <md-input-container class="md-block" flex><label>Description</label><input ng-model="externalDataFilter.Description"></md-input-container>
+                <md-button class="md-fab md-mini md-default" aria-label="clearSearchFilters" ng-click="clearSearchFilters()"><i class="fa fa-times fa-fw"></i> </md-button>
+                <md-button class="md-fab md-mini md-default" aria-label="doSearchExtendFilters" ng-click="filteredSearch()"><i class="fa fa-search fa-fw"></i> </md-button>
+            </div>
+            <div flex></div>
+            <span layout="row" layout-align="end center">
+                <md-button class="md-raised md-accent" aria-label="doSearchExtendFilters" ng-if="entityIdentifier == 'AccountMapping'" ng-disabled="savingProcess || lastSelectedRow == null || lastSelectedRow.entity == null" ng-click="cloneAccountMappings()">Clone&nbsp;<i class="fa fa-files-o fa-fw"></i> </md-button>
+                <md-button id="addData" aria-label="adddyngridentry" class="md-raised" style="line-height: 32px; min-height: 32px;" ng-disabled="savingProcess" ng-click="addData()">Add&nbsp;<i class="fa fa-plus-circle fa-fw"></i> </md-button>
+                <md-button class="md-raised" aria-label="rmdynamicgridentry" style="line-height: 32px; min-height: 32px;" ng-disabled="savingProcess" ng-click="removeModel()">Remove&nbsp;<i class="fa fa-trash fa-fw"></i> </md-button>
+                <md-button class="md-raised md-primary" aria-label="savedyngridchanges" style="line-height: 32px; min-height: 32px;" ng-disabled="savingProcess" ng-click="saveGridChanges()">Save&nbsp;<i class="fa fa-save fa-fw"></i> </md-button>
+            </span>
+        </div>
+    </div>
+    <div layout="column" layout-align="start stretch">
+        <div ui-grid="dynamicGrid" data-ng-init="initGrid()" external-scopes="editRows" ui-grid-auto-resize ui-grid-grouping ui-grid-edit ui-grid-validate ui-grid-cellnav ui-grid-row-edit ui-grid-pagination ui-grid-exporter ui-grid-selection ui-grid-resize-columns ui-grid-paging style="min-height:65vh;"></div>
+    </div>
+</div>
+
+<style>
+    .zavara {
+        z-index: 15000;
+        position: relative;
+        width: 100%;
+    }
+
+    .msDropdownCell {
+        position: absolute;
+        height: 100%;
+        min-width: inherit;
+        overflow: visible;
+    }
+
+        .msDropdownCell > * > span.multiSelect > button {
+            min-height: inherit !important;
+            font-size: 11px;
+            font-weight: bold;
+            min-width: inherit;
+        }
+</style>
+<script id="loadStaffImageModal" type="text/ng-template">
+    <form layout="column">
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>Current staff profile image</h2><span flex></span>
+                <md-button class="md-icon-button" aria-label="CloseModal" ng-click="hide()"><md-icon><i class="fa fa-times fa-fw"></i></md-icon></md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content layout="row" layout-align="center stretch" style="min-height: 29vh;">
+            <div layout="column" class="md-margin" style="margin-top:0;">
+                <md-content class="md-block md-padding" flex-gt-sm layout="column" layout-align="center center">
+                    <div ng-show="loadingImage != true" md-whiteframe="9">
+                        <div layout="column" layout-align="center center" ng-show="selectedImg.ImageUri != null && selectedImg.ImageUri!== undefined && selectedImg.ImageUri !=''" class="form-img-preview">
+                            <img ng-src="{{selectedImg.ImageUri}}" alt="Image not found" />
+                        </div>
+                        <div layout="column" layout-align="center center" ng-show="selectedImg.ImageUri == null || selectedImg.ImageUri == undefined && selectedImg ==''" class="form-img-preview">
+                            <img ng-src="Images/noImagePreview.png" alt="Image not found" />
+                        </div>
+                    </div>
+                    <div ng-show="loadingImage == true" flex="50" layout-align="center center">
+                        <md-subheader class="md-no-sticky">Uploading image ...</md-subheader>
+                        <md-progress-linear md-mode="indeterminate"></md-progress-linear>
+                    </div>
+                </md-content>
+                <div layout="row" layout-align="center center">
+                    <upload-image-file upload-model="uploadModel" data="selectedImg" datafield="ImageUri" loading-state="loadingImage"></upload-image-file>
+                    <md-button class="md-primary" aria-label="removeImg" ng-click="selectedImg.ImageUri=null">
+                        <md-tooltip md-direction="top">Remove Image</md-tooltip>
+                        <i class="fa fa-trash-o fa-fw"></i>
+                    </md-button>
+                </div>
+            </div>
+        </md-dialog-content>
+    </form>
+    <md-divider></md-divider>
+    <div flex></div>
+    <md-dialog-actions layout="row" style="border-top:0;">
+        <md-button ng-click="cancel('cancel')" aria-label="CancelAction">Cancel</md-button>
+        <md-button class="md-primary" ng-click="confirm('ok')" style="margin-right:20px;" aria-label="ConfAction">Select</md-button>
+    </md-dialog-actions>
+</script>
+
+<script id="colorEditIngrModal" type="text/ng-template">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>Ingredients Button Colour</h2><span flex></span>
+            <md-button class="md-icon-button" aria-label="CloseModal" ng-click="hide()"><md-icon><i class="fa fa-times fa-fw"></i></md-icon></md-button>
+        </div>
+    </md-toolbar>
+    <md-dialog-content>
+        <div layout="row" layout-align="center stretch" style="min-height: 29vh;">
+            <md-content class="md-block md-padding" layout="column" layout-align="center stretch" flex="grow">
+                <div layout="column" layout-align="start stretch">
+                    <form name="pageButtonForm" sf-schema="schema" sf-form="form" sf-model="entity" style="padding: 0 6%;"></form>
+                </div>
+                <div layout="row" layout-align="center center" flex="grow">
+                    <button type="button" class="btn" style="background-color:{{entity.Background || '#dae0e0'}}; color:{{entity.Color || 'black'}};">{{data.Description}}</button>
+                </div>
+            </md-content>
+        </div>
+    </md-dialog-content>
+    <div flex></div>
+    <md-dialog-actions layout="row" style="border-top:0;">
+        <md-button ng-click="cancel('cancel')" aria-label="CancelAction">Cancel</md-button>
+        <md-button class="md-primary" ng-click="confirm('ok')" style="margin-right:20px;" aria-label="ConfAction">Select</md-button>
+    </md-dialog-actions>
+</script>
+
+<style>
+    .extras-button {
+        width: 23%;
+        height: 30px;
+        margin: 1.5px 5px;
+        background: #dae0e0;
+        border-radius: 5px;
+    }
+    .inlineFormDisplay {
+        display: inline-flex;
+        width: 100%;
+    }
+
+        .inlineFormDisplay > sf-decorator {
+            width: 50%;
+            text-align:center;
+        }
+</style>

@@ -1,0 +1,607 @@
+﻿<md-dialog ng-class="{'fullscreen-dialog' : fullscreenModal}" aria-label="AddNewProductModal" ng-cloak style="min-width: 80vw;" ng-init="init();">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>Product Insertion</h2>
+            <span flex></span>
+            <toggle-fs-modal tvar="fullscreenModal"></toggle-fs-modal>
+            <md-button class="md-icon-button" aria-label="CloseModal" ng-click="cancel()">
+                <md-icon md-svg-icon="navigation:close"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-dialog-content layout="column" layout-align="start stretch" flex>
+        <div layout="row" layout-align="start stretch" style="height:100%; min-height:60vh; overflow:hidden;">
+            <div layout="column" layout-align="start stretch" flex ng-include src="templateOption"></div>
+        </div>
+    </md-dialog-content>
+    <md-dialog-actions layout="row" layout-align="space-between center">
+        <md-button ng-click="switchCreationPolicy('ins-option')" aria-label="start view return" style="left:0;">Switch creation policy</md-button>
+        <div>
+            <md-button ng-click="cancel('cancel')" aria-label="CancelAction">Close</md-button>
+            <md-button ng-if="viewState == 'csv-import' || viewState == 'multi-save'" class="md-warn  md-raised" ng-click="switchCreationPolicy('csv')" aria-label="devlogfileinserted">Import a File</md-button>
+            <md-button ng-if="viewState == 'multi-save'" class="" ng-click="switchCreationPolicy('csv-import')" aria-label="devlogfileinserted">Manage Imports</md-button>
+            <md-button ng-if="viewState == 'csv-import'" class="md-accent md-raised" ng-click="checkImportedToSave(fileImportedProds)" aria-label="devlogfileinserted">Check Imports</md-button>
+            <md-button ng-if="viewState == 'multi-save' && multiAdded != undefined  && multiAdded.length > 0" class="md-primary md-raised" ng-click="returnImports()" aria-label="devlogfileinserted">Done</md-button>
+            <!--<md-button ng-click="devlog(fileImportedProds)" aria-label="devlogfileinserted">Dev Log FIProducts</md-button>-->
+            <!--<md-button ng-if="viewState == 'csv-import'" class="" ng-click="devlog(fileImportedProds)" aria-label="devlogfileinserted">Log Imports</md-button>-->
+            <md-button ng-click="validateProd(newproduct)" ng-if="templateOption != 'validation-product-template' && viewState != 'csv-import' && viewState != 'csv' && viewState != 'multi-save'" ng-disabled="!newproduct['vmodel']['Overview']" class="md-primary md-raised" style="margin-right:20px;" aria-label="ConfAction">Validate</md-button>
+            <!--ins-option new clone editclone csv csv-import multi-save-->
+        </div>
+    </md-dialog-actions>
+</md-dialog>
+
+<!-- Template of validation action in save policy  -->
+<script id="validation-product-template" type="text/ng-template">
+    <md-toolbar class="md-primary md-whiteframe-8dp slim-material-toolbar" style="padding:0 10px;" layout="row" layout-align="center center">
+        <span>Product validation</span>
+    </md-toolbar>
+    <div class="md-padding">
+        <div layout="row" layout-align="space-between center">
+            <span style="font-variant:small-caps;" ng-repeat="(key , value) in checkErrorObj">{{key}}</span>
+        </div>
+        <div layout="row" layout-align="space-between center">
+            <md-button class="md-icon-button md-primary" aria-label="entity valid" ng-repeat="(key , value) in checkErrorObj">
+                <md-icon ng-if="value ==true" md-svg-icon="navigation:check"></md-icon>
+                <md-icon ng-if="value != true" md-svg-icon="navigation:close"></md-icon>
+            </md-button>
+        </div>
+    </div>
+    <div flex></div>
+    <md-divider></md-divider>
+    <div layout="row" layout-align="start center" class="md-margin">
+        <strong style="font-variant:small-caps;">Select save Policy:</strong>
+        <md-radio-group ng-model="savePolicy" class="md-primary" layout="row" layout-align="space-around center" flex ng-change="policyChange(savePolicy)">
+            <md-radio-button ng-repeat="(key , value) in savePolicyOptions" ng-value="key">{{ value.Description }}</md-radio-button>
+        </md-radio-group>
+    </div>
+    <md-divider></md-divider>
+    <div flex></div>
+    <div layout="row" layout-align="space-around center">
+        <md-button class="md-warn md-raised" flex="50" ng-click="backToEdit()">
+            <md-tooltip md-direction="top">Return to product management</md-tooltip>
+            modify
+        </md-button>
+        <md-button class="md-raised md-primary" flex="50" ng-click="confirm('save')" ng-disabled="valid2save!= true">
+            <md-tooltip md-direction="top">Proceed saving object and react as save Policy selected</md-tooltip>
+            save
+        </md-button>
+    </div>
+</script>
+
+<!-- Main Tabs Template -->
+<script id="ins-prodmodal-tabs" type="text/ng-template">
+    <md-tabs md-border-bottom flex>
+        <md-tab label="Overview  ({{(newproduct['vmodel']['Overview'] == true) ? 'V' :'I'}})" ng-click="showDivSelection='overview'">
+            <div layout="row" layout-align="start stretch" layout-fill>
+                <md-content class="md-padding" layout="column" layout-align="start stretch" flex="grow" ng-cloak>
+                    <product-entity-form layout="row" layout-align="start stretch" flex="grow" data="newproduct"
+                                         valid="newproduct['vmodel']['Overview']" is-edited="newproduct['emodel']['formEdited']" lookups="lookupdata.lookups" use-unique="lookupdata.useunique"></product-entity-form>
+                </md-content>
+            </div>
+        </md-tab>
+        <md-tab label="Recipes ({{newproduct.ProductRecipe.length || '-'}})" ng-click="showDivSelection='recipe'">
+            <div layout="row" layout-align="start stretch" layout-fill>
+                <md-content class="md-padding" layout="column" layout-align="start stretch" flex="grow" ng-cloak>
+                    <product-recipes-comp name="product-details-recipe" layout="row" layout-align="start stretch" flex="grow"
+                                          data="newproduct"
+                                          is-edited="newproduct['emodel']['recipesEdited']"
+                                          lookups="lookupdata.lookups">
+                    </product-recipes-comp>
+                    <!--<product-recipes-list layout="row" layout-align="start stretch" flex="grow" data="newproduct" is-edited="newproduct['emodel']['recipesEdited']" lookups="lookupdata.lookups"></product-recipes-list>-->
+                </md-content>
+            </div>
+        </md-tab>
+        <md-tab label="Extras ({{newproduct.ProductExtras.length || '-'}})" ng-click="showDivSelection='extras'">
+            <div layout="row" layout-align="start stretch" layout-fill>
+                <md-content class="md-padding" layout="column" layout-align="start stretch" flex="grow">
+                    <product-extras-comp name="product-details-extras" layout="row" layout-align="start stretch" flex="grow"
+                                         data="newproduct"
+                                         is-edited="newproduct['emodel']['extrasEdited']"
+                                         lookups="lookupdata.lookupExtras"
+                                         pcatmap="newproduct.ProductCategoryId">
+                    </product-extras-comp>
+                    <!--<product-extras-list layout="row" layout-align="start stretch" flex="grow" data="newproduct" is-edited="newproduct['emodel']['extrasEdited']" lookups="lookupdata.lookupExtras"></product-extras-list>-->
+                </md-content>
+            </div>
+        </md-tab>
+        <md-tab label="Barcodes ({{newproduct.ProductBarcodes.length || '-'}})" ng-click="showDivSelection='barcodes'">
+            <div layout="row" layout-align="start stretch" layout-fill>
+                <md-content class="md-padding" layout="column" layout-align="start stretch" flex="grow">
+                    <product-barcodes-list layout="row" layout-align="start stretch" flex="grow" data="newproduct" is-edited="newproduct['emodel']['barcodesEdited']" lookups="lookupdata.lookups"></product-barcodes-list>
+                </md-content>
+            </div>
+        </md-tab>
+        <md-tab label="Pricelists ({{newproduct.ProductPrices.length || '-'}})" ng-click="showDivSelection='pricelists'">
+            <div layout="row" layout-align="start stretch" layout-fill>
+                <md-content class="md-padding" layout="row" layout-align="start stretch" flex="grow">
+                    <product-prices-list layout="row" layout-align="start stretch" flex="grow" data="newproduct" is-edited="newproduct['emodel']['pricesEdited']" lookups="lookupdata.lookups" lookup-objects="lookupdata.lookupObjects"> </product-prices-list>
+                </md-content>
+            </div>
+        </md-tab>
+    </md-tabs>
+
+</script>
+<script id="ins-prodmodal-proccess" type="text/ng-template">
+    <div layout="column" layout-align="center center" flex="grow">
+        <md-progress-circular md-mode="indeterminate"></md-progress-circular><span>Loading...</span>
+    </div>
+
+</script>
+
+<!-- Initial default view Template  -->
+<!-- Navigate through insertion policy -->
+<script id="product-creation-choice-policy-template" type="text/ng-template">
+    <div layout="row" layout-align="center stretch" layout-wrap>
+        <md-card style="width:350px; height:100%;" class="md-whiteframe-8dp bo-hover-negative" ng-click="switchCreationPolicy('new')">
+            <md-card-header><md-card-header-text><span class="md-title bo-head-sc-center">Create new product</span></md-card-header-text></md-card-header>
+            <md-card-content><p>Create a product from scratch. Manage and apply all necessary and require fields to save a new product from an empty register.</p></md-card-content>
+            <div flex></div>
+        </md-card>
+        <md-card style="width:350px; height:100%;" class="md-whiteframe-8dp bo-hover-negative" ng-click="switchCreationPolicy('clone')">
+            <md-card-header><md-card-header-text><span class="md-title bo-head-sc-center">Clone a product</span></md-card-header-text></md-card-header>
+            <md-card-content><p>Select a product searching installation for Description and-or Code to provide a list of registered entries.</p></md-card-content>
+        </md-card>
+        <md-card style="width:350px; height:100%;" class="md-whiteframe-8dp bo-hover-negative" ng-click="switchCreationPolicy('csv')">
+            <md-card-header><md-card-header-text><span class="md-title bo-head-sc-center">Import from File</span></md-card-header-text></md-card-header>
+            <md-card-content><p>A file according to your pricelists with default product entity values will be downloaded. Manage and upload file with your imports.</p></md-card-content>
+        </md-card>
+        <md-card ng-if="fileImportedProds.length > 0 " style="width:350px; height:100%;" class="md-whiteframe-8dp bo-hover-negative" ng-click="switchCreationPolicy('csv-import')">
+            <md-card-header><md-card-header-text><span class="md-title bo-head-sc-center">Manage Imports</span></md-card-header-text></md-card-header>
+            <md-card-content><p>You have already inserted products from file to handle. Proceed to management List to continue with importing.</p></md-card-content>
+        </md-card>
+
+    </div>
+    <md-divider></md-divider>
+</script>
+
+<!-- Clone Selection Template -->
+<!-- Interpolation Template between Init and Create Policy to Provide Entity to copy-->
+<script id="clone-product-selection-template" type="text/ng-template">
+    <h4 class="bo-head-sc-center">Search and Select a product Clone</h4>
+    <div layout="row" layout-align="start center" layout-wrap class="md-margin">
+        <div layout="column" layout-align="start stretch" flex="50">
+            <product-search-autoc item-change="clonedProductChanged" selected-item="selectedClone"></product-search-autoc>
+        </div>
+        <md-button class="md-raised md-primary" ng-click="switchCreationPolicy('editclone')">clone</md-button>
+    </div>
+    <md-divider></md-divider>
+
+    <div layout="column" layout-align="start stretch" flex="60" ng-if="selectedClone!=undefined">
+        <div class="md-margin" layout="row" layout-align="center space-between">
+            <div layout="column" layout-align="start stretch" flex="33">
+                <label>Description</label>
+                <span>{{selectedClone.Description}}</span>
+            </div>
+            <div layout="column" layout-align="start stretch" flex="33">
+                <label>ExtraDescription</label>
+                <span>{{selectedClone.ExtraDescription}}</span>
+            </div>
+            <div layout="column" layout-align="start stretch" flex="33">
+                <label>SalesDescription</label>
+                <span>{{selectedClone.SalesDescription}}</span>
+            </div>
+        </div>
+        <md-divider></md-divider>
+        <div class="md-margin" layout="row" layout-align="center space-between">
+            <div layout="column" layout-align="start stretch" flex="22">
+                <label>Code</label>
+                <span>{{selectedClone.Code}}</span>
+            </div>
+            <div layout="column" layout-align="start stretch" flex="22">
+                <label>Product Category</label>
+                <span>{{lookupdata.lookupObjects.ProductCategories[selectedClone.ProductCategoryId].Description}}</span>
+            </div>
+            <div layout="column" layout-align="start stretch" flex="22">
+                <label>Unit</label>
+                <span>{{lookupdata.lookupObjects.Units[selectedClone.UnitId].Description}}</span>
+            </div>
+            <div layout="column" layout-align="start stretch" flex="22">
+                <label>Kds</label>
+                <span>{{lookupdata.lookupObjects.Kds[selectedClone.KdsId].Description}}</span>
+            </div>
+        </div>
+        <md-divider></md-divider>
+        <div class="md-margin" layout="row" layout-align="center space-between">
+            <div layout="column" layout-align="start stretch" flex="22">
+                <label>Kitchen</label>
+                <span>{{lookupdata.lookupObjects.Kitchen[selectedClone.KitchenId].Description}}</span>
+            </div>
+            <div layout="column" layout-align="start stretch" flex="22">
+                <label>PreparationTime</label>
+                <span>{{selectedClone.PreparationTime || '--'}}</span>
+            </div>
+            <div layout="column" layout-align="start stretch" flex="22">
+                <label>Kitchen Region</label>
+                <span>{{lookupdata.lookupObjects.KitchenRegion[selectedClone.KitchenRegionId].ItemRegion}}</span>
+            </div>
+            <div layout-gt-sm="column" layout-align="center start" flex="22">
+                <md-checkbox md-no-ink aria-label="Status" ng-model="data.IsReturnItem" class="md-primary" disabled="true">IsReturnItem</md-checkbox>
+            </div>
+            <div layout-gt-sm="column" layout-align="center start" flex="22">
+                <md-checkbox md-no-ink aria-label="Status" ng-model="data.IsCustom" class="md-primary" disabled="true">IsCustom</md-checkbox>
+            </div>
+        </div>
+        <md-divider></md-divider>
+    </div>
+    <div flex></div>
+    <div class="md-margin md-padding" layout="row" layout-align="center space-between" ng-if="selectedClone!=undefined">
+        <div flex="22">
+            <md-menu md-position-mode="target target">
+                <md-button md-menu-origin ng-click="$mdOpenMenu($event)" ng-disabled="crecstr.length <= 0 ">
+                    {{newproduct.ProductRecipe.length}} Product Recipe(s)
+                    <md-tooltip>Click to view details</md-tooltip>
+                </md-button>
+                <md-menu-content width="4" style="max-height:250px;">
+                    <md-content layout="column" layout-align="start stretch" flex="grow" class="md-padding" ng-bind-html="crecstr"></md-content>
+                </md-menu-content>
+            </md-menu>
+        </div>
+        <div flex="22">
+            <md-menu md-position-mode="target target">
+                <md-button md-menu-origin ng-click="$mdOpenMenu($event)" ng-disabled="cexstr.length <= 0">
+                    {{newproduct.ProductExtras.length}} Product Extras(s)
+                    <md-tooltip>Click to view details</md-tooltip>
+                </md-button>
+                <md-menu-content width="4" style="max-height:250px;">
+                    <md-content layout="column" layout-align="start stretch" flex="grow" class="md-padding" ng-bind-html="cexstr"></md-content>
+                </md-menu-content>
+            </md-menu>
+        </div>
+        <div flex="22">
+            <md-menu md-position-mode="target target">
+                <md-button md-menu-origin ng-click="$mdOpenMenu($event)" ng-disabled="cbarstr.length <= 0">
+                    {{newproduct.ProductBarcodes.length}} Product Barcode(s)
+                    <md-tooltip>Click to view details</md-tooltip>
+                </md-button>
+                <md-menu-content width="4" style="max-height:250px;">
+                    <md-content layout="column" layout-align="start stretch" flex="grow" class="md-padding" ng-bind-html="cbarstr"></md-content>
+                </md-menu-content>
+            </md-menu>
+        </div>
+        <div flex="22">
+            <md-menu md-position-mode="target target">
+                <md-button md-menu-origin ng-click="$mdOpenMenu($event)" ng-disabled="cprstr.length <= 0">
+                    {{newproduct.ProductPrices.length}} Product Prices
+                    <md-tooltip>Click to view details</md-tooltip>
+                </md-button>
+                <md-menu-content width="4" style="max-height:250px;">
+                    <md-content layout="column" layout-align="start stretch" flex="grow" class="md-padding" ng-bind-html="cprstr">
+                    </md-content>
+                </md-menu-content>
+            </md-menu>
+        </div>
+    </div>
+    <small>*Search term will provide a filter by description and/or Code entries that contains your query.</small>
+    <md-divider></md-divider>
+</script>
+
+<!-- Inserted From File Products -->
+<script id="file-imported-products-template" type="text/ng-template">
+    <md-tabs md-border-bottom flex>
+        <!-- Entities marked to Update -->
+        <md-tab label="FormEntities">
+            <div layout="column" layout-align="start stretch" flex>
+                <md-subheader class="md-no-sticky">
+                    <div layout="row" layou-align="start center">
+                        <div flex="5">Valid</div>
+                        <div flex="15">Description</div>
+                        <div flex="10">Code</div>
+                        <div flex="20" layout="column" layout-align="start stretch">
+                            <label>ProductCategory</label>
+                            <div layout="row" layout-align="start center">
+                                <md-select name="MultiProductCategoryId" aria-label="csv-multi-cat" ng-model="multiapply.ProductCategoryId" required class="fix-input-display" flex><md-option ng-repeat="ch in lookupdata.lookupObjects.ProductCategories" value="{{ch.Id}}">{{ch.Description}}</md-option></md-select>
+                                <md-button class="md-mini md-icon-button" ng-click="applyMultiVar('ProductCategoryId', multiapply)" ng-disabled="(multiapply.ProductCategoryId == undefined || multiapply.ProductCategoryId == 'null')"><md-tooltip md-direction="top">Apply selected Category to all incerted</md-tooltip><md-icon md-svg-icon="action:done"></md-icon></md-button>
+                            </div>
+                        </div>
+                        <div flex="10">
+                            <label>Unit</label>
+                            <div layout="row" layout-align="start center">
+                                <md-select name="MultiUnitId" aria-label="csv-multi-cat" ng-model="multiapply.UnitId" required class="fix-input-display" flex><md-option value="null">---</md-option><md-option ng-repeat="ch in lookupdata.lookupObjects.Units" value="{{ch.Id}}">{{ch.Description}}</md-option></md-select>
+                                <md-button class="md-mini md-icon-button" ng-click="applyMultiVar('UnitId', multiapply)" ng-disabled="(multiapply.UnitId == undefined)"><md-tooltip md-direction="top">Apply Unit to all incerted</md-tooltip><md-icon md-svg-icon="action:done"></md-icon></md-button>
+                            </div>
+                        </div>
+                        <div flex="10">
+                            <label>Kds</label>
+                            <div layout="row" layout-align="start center">
+                                <md-select name="MultiKdsId" aria-label="csv-multi-cat" ng-model="multiapply.KdsId" required class="fix-input-display" flex><md-option value="null">---</md-option><md-option ng-repeat="ch in lookupdata.lookupObjects.Kds" value="{{ch.Id}}">{{ch.Description}}</md-option></md-select>
+                                <md-button class="md-mini md-icon-button" ng-click="applyMultiVar('KdsId', multiapply)" ng-disabled="(multiapply.KdsId == undefined)"><md-tooltip md-direction="top">Apply Kds to all incerted</md-tooltip><md-icon md-svg-icon="action:done"></md-icon></md-button>
+                            </div>
+                        </div>
+                        <div flex="10">
+                            <label>Kitchen</label>
+                            <div layout="row" layout-align="start center">
+                                <md-select name="MultiKitchen" aria-label="csv-multi-cat" ng-model="multiapply.KitchenId" required class="fix-input-display" flex><md-option value="null">---</md-option><md-option ng-repeat="ch in lookupdata.lookupObjects.Kitchen" value="{{ch.Id}}">{{ch.Description}}</md-option></md-select>
+                                <md-button class="md-mini md-icon-button" ng-click="applyMultiVar('KitchenId', multiapply)" ng-disabled="(multiapply.KitchenId == undefined)"><md-tooltip md-direction="top">Apply KitchenId to all incerted</md-tooltip><md-icon md-svg-icon="action:done"></md-icon></md-button>
+                            </div>
+                        </div>
+                        <div flex="10">
+                            <label>KitchenRegion</label>
+                            <div layout="row" layout-align="start center">
+                                <md-select name="MultiKitchenRegionId" aria-label="csv-multi-cat" ng-model="multiapply.KitchenRegionId" required class="fix-input-display" flex><md-option value="null">---</md-option><md-option ng-repeat="ch in lookupdata.lookupObjects.KitchenRegion" value="{{ch.Id}}">{{ch.Description}}</md-option></md-select>
+                                <md-button class="md-mini md-icon-button" ng-click="applyMultiVar('KitchenRegionId', multiapply)" ng-disabled="(multiapply.KitchenRegionId == undefined)"><md-tooltip md-direction="top">Apply KitchenId to all incerted</md-tooltip><md-icon md-svg-icon="action:done"></md-icon></md-button>
+                            </div>
+                        </div>
+                        <div flex="10">
+                            Prep.Time
+                        </div>
+                    </div>
+                </md-subheader>
+                <md-divider></md-divider>
+                <md-list>
+                    <md-list-item ng-repeat="ip in fileImportedProds" ng-click="$event.preventDefault()">
+                        <div layout="row" layout-align="start center" flex="grow">
+                            <div flex="5">
+                                <md-icon ng-if="isProdTValid(ip) == true" md-svg-icon="navigation:check"></md-icon>
+                                <md-icon ng-if="isProdTValid(ip) != true" md-svg-icon="navigation:close"></md-icon>
+                            </div>
+                            <md-input-container flex="15" class="fix-input-display">
+                                <input name="Desc" aria-label="Desc" ng-model="ip.Description" min-length="1" ng-change="revalidate(ip)">
+                                <md-tooltip><div layout="column"><span>ExtraDescription : {{ip.ExtraDescription}} -- SalesDescription : {{ip.SalesDescription}}</span></div></md-tooltip>
+                            </md-input-container>
+                            <md-input-container flex="10" class="fix-input-display">
+                                <input name="Code" aria-label="Code" ng-model="ip.Code" min-length="1" ng-change="revalidate(ip)">
+                            </md-input-container>
+                            <md-input-container class="fix-input-display" flex="20">
+                                <md-select name="ProductCategoryId" aria-label="csv-multi-cat" ng-model="ip.ProductCategoryId" ng-change="revalidate(ip)">
+                                    <md-option ng-repeat="ch in lookupdata.lookupObjects.ProductCategories" value="{{ch.Id}}">{{ch.Description}}</md-option>
+                                </md-select>
+                            </md-input-container>
+                            <md-input-container class="fix-input-display" flex="10">
+                                <md-select name="units" aria-label="csv-multi-unit" ng-model="ip.UnitId">
+                                    <md-option value="null">---</md-option>
+                                    <md-option ng-repeat="ch in lookupdata.lookupObjects.Units" value="{{ch.Id}}">{{ch.Description}}</md-option>
+                                </md-select>
+                            </md-input-container>
+                            <md-input-container class="fix-input-display" flex="10">
+                                <md-select name="kds" aria-label="csv-multi-kds" ng-model="ip.KdsId">
+                                    <md-option value="null">---</md-option>
+                                    <md-option ng-repeat="ch in lookupdata.lookupObjects.Kds" value="{{ch.Id}}">{{ch.Description}}</md-option>
+                                </md-select>
+                            </md-input-container>
+                            <md-input-container class="fix-input-display" flex="10">
+                                <md-select name="Kitchen" aria-label="csv-multi-kitchen" ng-model="ip.KitchenId">
+                                    <md-option value="null">---</md-option>
+                                    <md-option ng-repeat="ch in lookupdata.lookupObjects.Kitchen" value="{{ch.Id}}">{{ch.Description}}</md-option>
+                                </md-select>
+                            </md-input-container>
+                            <md-input-container class="fix-input-display" flex="10">
+                                <md-select name="KitchenRegionId" aria-label="csv-multi-kitchenregion" ng-model="ip.KitchenRegionId">
+                                    <md-option value="null">---</md-option>
+                                    <md-option ng-repeat="ch in lookupdata.lookupObjects.KitchenRegion" value="{{ch.Id}}">{{ch.Description}}</md-option>
+                                </md-select>
+                            </md-input-container>
+                            <md-input-container flex="10" class="fix-input-display">
+                                <input name="PreparationTime" aria-label="PreparationTime" ng-model="ip.PreparationTime" type="number" string-to-number min="0" step="1">
+                            </md-input-container>
+                        </div>
+                    </md-list-item>
+                </md-list>
+            </div>
+        </md-tab>
+        <md-tab label="Prices">
+            <div layout="column" layout-align="start stretch" flex>
+                <div layout="row" layout-align="start center" style="margin-top:5px;">
+                    <div class="input-group" flex="40">
+                        <span class="input-group-btn">
+                            <md-icon md-svg-icon="action:search"></md-icon>
+                        </span>
+                        <span style="position:relative;" class="add-clear-span">
+                            <input class="form-control" type="text" style="border-radius: 150px;" placeholder="Search Description" ng-model="filepricesSearchString.Description">
+                        </span>
+                        <span class="input-group-btn">
+                            <a class="btn" style="color: rgb(204, 204, 204); text-decoration: none; position: absolute; right: 0px; top: 0px; z-index: 50;" ng-click="filepricesSearchString.Description = ''"><i class="fa fa-times"></i></a>
+                        </span>
+                    </div>
+                </div>
+                <md-list>
+                    <md-list-item layout="row" layout-align="start start" ng-repeat="ip in fileImportedProds | filter :filepricesSearchString " ng-class="{'hover-content' : (hovered == true)}" ng-mouseover="hovered = true" ng-mouseleave="hovered = false">
+                        <div flex="20" class="md-padding" ng-click="(ip.insfppd != true) ? ip.insfppd= true : ip.insfppd= false"><a flex="grow" style="text-align:center">{{ip.Description}}</a></div>
+                        <product-prices-list ng-if="ip.insfppd == true" layout="row" layout-align="start stretch" data="ip" is-edited="ip['emodel']['pricesEdited']" lookups="lookupdata.lookups" lookup-objects="lookupdata.lookupObjects" flex> </product-prices-list>
+                    </md-list-item>
+                </md-list>
+            </div>
+        </md-tab>
+    </md-tabs>
+</script>
+
+<!-- Template for Import Export Functionality-->
+<script id="generate-product-csv-template" type="text/ng-template">
+    <div layout="row" layout-align="center space-between">
+        <!-- Generate File From Installation Card -->
+        <div layout="column" layout-align="start stretch" flex="50" class="md-padding">
+            <md-card>
+                <md-card-header>
+                    <md-card-header-text>
+                        <span class="md-title">Csv import file generation</span>
+                        <span class="md-subhead">Select your fields and filename</span>
+                    </md-card-header-text>
+                </md-card-header>
+                <md-card-content>
+                    <div layout="row" layout-align="start center">
+                        <div layout="column" layout-align="center stretch" flex="50">
+                            <md-input-container class="md-block" flex="33"><label>Filename</label><input name="Filename" ng-model="filename" ng-init="filename='ProductsImport'" ng-change="provideFullFilename(filename)"></md-input-container>
+                            <md-input-container class="md-block" flex="33" ng-show="false"><label>Field separator</label><input name="separator" ng-model="separator" ng-init="separator=','"></md-input-container>
+                            <md-input-container class="md-block" flex="33" ng-show="false"><label>Decimal separator</label><input name="decimal-separator" ng-model="decimalSeparator" ng-init="decimalSeparator='.'"></md-input-container>
+                        </div>
+                        <!-- Multi dropdown selection for Entities as Headers on export file -->
+                        <div layout="column" layout-align="center stretch" flex="50">
+                            <md-input-container>
+                                <label>Export Properties</label>
+                                <md-select ng-model="selectedExportEntities" multiple="true">
+                                    <md-optgroup label="Export Properties">
+                                        <md-option value="Description">Description</md-option>
+                                        <md-option value="ExtraDescription">ExtraDescription</md-option>
+                                        <md-option value="SalesDescription">SalesDescription</md-option>
+                                        <md-option value="Code">Code</md-option>
+                                        <md-option value="Qty">Qty</md-option>
+                                        <md-option value="PreparationTime">PreparationTime</md-option>
+                                        <md-option value="ImageUri">ImageUri</md-option>
+                                    </md-optgroup>
+                                </md-select>
+                            </md-input-container>
+                        </div>
+                    </div>
+                    <div layout="column" layout-align="center stretch" flex class="md-padding">
+                        <small>*Select Entities to Include on your generated file. Description and Code will be auto generated either you select them.</small>
+                        <small>*Product Prices will produce columns by Id:Name.</small>
+                        <br />
+                        <small>*Entities with DropDowns such 'Category' , 'Unit' , 'KDS' ,'Kitchen' and 'KitchenRegion' will be edited after insertion.</small>
+                    </div>
+                    <span name="FullFilename" ng-init="provideFullFilename(filename)">Filename: <strong>{{FullFilename}}</strong></span>
+                </md-card-content>
+                <md-card-actions layout="column" layout-align="center stretch" class="md-padding">
+                    <md-button aria-label="export-generated-import-file" class="md-primary md-raised"
+                               ng-csv="[]" csv-header="getHeader(selectedExportEntities)" filename="{{ FullFilename }}" field-separator="{{separator}}" decimal-separator="{{decimalSeparator}}" lazy-load="true">
+                        Generate Import File
+                    </md-button>
+                </md-card-actions>
+            </md-card>
+        </div>
+        <md-divider></md-divider>
+        <!-- Import File Card -->
+        <div layout="column" layout-align="start stretch" flex="50" class="md-padding">
+            <md-card>
+                <md-card-header>
+                    <md-card-header-text>
+                        <span class="md-title">Import generated file</span>
+                        <span class="md-subhead">Upload your file to import Products</span>
+                    </md-card-header-text>
+                </md-card-header>
+                <md-card-content>
+                    <div layout="column" layout-align="center stretch" flex class="md-padding">
+                        <p>Select your modified file that you wish to upload and generate products through csv.</p>
+                        <div flex></div>
+                        <!-- Import File Container -->
+                        <ng-csv-import content="csv.content" material md-button-class="md-icon-button md-raised md-accent" aria-label="downloadcsvimportfile" md-svg-icon="file:file_upload" header="csv.header" separator="csv.separator" result="csv.result" accept="csv.accept"></ng-csv-import>
+                    </div>
+                    <div layout="row" layout-align="start center" class="md-margin md-padding">
+                        <md-checkbox md-no-ink aria-label="predef-dropdowns" ng-model="predefineDropDowns" class="md-primary" ng-change="chpredef(predefineDropDowns)">Predefine Fields</md-checkbox>
+                    </div>
+                    <div layout="row" layou-align="start center" ng-if="predefineDropDowns == true">
+                        <div flex="60" layout="column" layout-align="start stretch">
+                            <label>ProductCategory</label>
+                            <div layout="row" layout-align="start center">
+                                <md-select name="MultiProductCategoryId" aria-label="csv-multi-cat" ng-model="multiapply.ProductCategoryId" required class="fix-input-display" flex><md-option ng-repeat="ch in lookupdata.lookupObjects.ProductCategories" value="{{ch.Id}}">{{ch.Description}}</md-option></md-select>
+                            </div>
+                        </div>
+                        <div flex="40">
+                            <label>Unit</label>
+                            <div layout="row" layout-align="start center">
+                                <md-select name="MultiUnitId" aria-label="csv-multi-cat" ng-model="multiapply.UnitId" required class="fix-input-display" flex><md-option value="null">---</md-option><md-option ng-repeat="ch in lookupdata.lookupObjects.Units" value="{{ch.Id}}">{{ch.Description}}</md-option></md-select>
+                            </div>
+                        </div>
+                    </div>
+                    <div layout="row" layou-align="start center" ng-if="predefineDropDowns == true">
+                        <div flex="33">
+                            <label>Kds</label>
+                            <div layout="row" layout-align="start center">
+                                <md-select name="MultiKdsId" aria-label="csv-multi-cat" ng-model="multiapply.KdsId" required class="fix-input-display" flex><md-option value="null">---</md-option><md-option ng-repeat="ch in lookupdata.lookupObjects.Kds" value="{{ch.Id}}">{{ch.Description}}</md-option></md-select>
+                            </div>
+                        </div>
+                        <div flex="33">
+                            <label>Kitchen</label>
+                            <div layout="row" layout-align="start center">
+                                <md-select name="MultiKitchen" aria-label="csv-multi-cat" ng-model="multiapply.KitchenId" required class="fix-input-display" flex><md-option value="null">---</md-option><md-option ng-repeat="ch in lookupdata.lookupObjects.Kitchen" value="{{ch.Id}}">{{ch.Description}}</md-option></md-select>
+                            </div>
+                        </div>
+                        <div flex="33">
+                            <label>KitchenRegion</label>
+                            <div layout="row" layout-align="start center">
+                                <md-select name="MultiKitchenRegionId" aria-label="csv-multi-cat" ng-model="multiapply.KitchenRegionId" required class="fix-input-display" flex><md-option value="null">---</md-option><md-option ng-repeat="ch in lookupdata.lookupObjects.KitchenRegion" value="{{ch.Id}}">{{ch.Description}}</md-option></md-select>
+                            </div>
+                        </div>
+                    </div>
+                </md-card-content>
+
+                <md-card-actions layout="column" layout-align="start stretch" class="md-padding">
+                    <md-button class="md-primary" ng-click="createProductObjects(csv)" aria-label="gen-prods-from-file">Generate Products</md-button>
+                </md-card-actions>
+            </md-card>
+
+        </div>
+    </div>
+    <!-- Insertion Sector on file chosen -->
+    <md-divider></md-divider>
+</script>
+
+<!-- Multi Products Check And save Template -->
+<script id="multi-add-products-template" type="text/ng-template">
+    <div layout="row" layout-align="start stretch" layout-fill>
+        <div layout="column" layout-align="start stretch" flex="grow">
+            <md-subheader class="md-no-sticky">
+                <div layout="row" layou-align="start center">
+                    <div flex="6"><md-checkbox aria-label="toggle-edit-multi-selection" ng-checked="selectAllEdit == true" ng-click="selectAllEdit = !selectAllEdit; toggle(selectAllEdit);" class="md-primary" style="margin: auto;"></md-checkbox></div>
+                    <div flex="10">Id</div>
+                    <div flex="20">Description</div>
+                    <div flex="14">Code</div>
+                    <div flex="14">Category</div>
+                    <div flex="6">Overview</div>
+                    <div flex="6">Recipes</div>
+                    <div flex="6">Extras</div>
+                    <div flex="6">Barcodes</div>
+                    <div flex="6">Prices</div>
+                    <!--<div flex="6"></div>-->
+                </div>
+            </md-subheader>
+            <md-divider></md-divider>
+            <div layout="row" layout-align="center center" ng-if="fileImportedProds.length == 0" flex>
+                <md-toolbar class="md-warn md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="start center">
+                    <md-icon class="md-margin" md-svg-icon="action:info"></md-icon>Your products have no changes.
+                </md-toolbar>
+            </div>
+            <div style="overflow:auto;" flex="grow" ng-if="fileImportedProds.length > 0">
+                <md-list>
+                    <md-list-item ng-repeat="epr in fileImportedProds">
+                        <div layout="row" layout-align="start center" flex="grow">
+                            <div flex="6">
+                                <md-checkbox aria-label="stosave-{{epr.Id}}" ng-checked="epr.selected == true" ng-if="isProdTValid(epr) && epr.Id == 0" ng-click="(epr.selected != true ) ? epr.selected = true : epr.selected = false" class="md-primary" style="margin: auto;"></md-checkbox>
+                                <md-icon ng-if="!isProdTValid(epr)" md-svg-icon="content:block" style="margin: auto;"></md-icon>
+                                <span ng-if="epr.Id != 0" flex layout-align="center center">---</span>
+                            </div>
+                            <div flex="10">{{epr.Id}}</div>
+                            <div flex="20">{{epr.Description}}</div>
+                            <div flex="14">{{epr.Code}}</div>
+                            <div flex="14">{{lookupdata.lookupObjects.ProductCategories[epr.ProductCategoryId]['Description'] || '--'}}</div>
+                            <div flex="6">
+                                <md-icon ng-if="epr.vmodel.Overview == true" md-svg-icon="navigation:check"></md-icon>
+                                <md-icon ng-if="epr.vmodel.Overview != true" md-svg-icon="navigation:close"></md-icon>
+                                <md-tooltip md-direction="top" ng-if="epr.vmodel.Overview != true"> <span ng-repeat="sc in epr.vmodel.SameCodes">{{sc.Id}}:{{sc.Description}},</span></md-tooltip>
+                            </div>
+                            <div flex="6">
+                                <md-icon ng-if="epr.vmodel.Recipes == true" md-svg-icon="navigation:check"></md-icon>
+                                <md-icon ng-if="epr.vmodel.Recipes != true" md-svg-icon="navigation:close"></md-icon>
+                            </div>
+                            <div flex="6">
+                                <md-icon ng-if="epr.vmodel.Extras == true" md-svg-icon="navigation:check"></md-icon>
+                                <md-icon ng-if="epr.vmodel.Extras != true" md-svg-icon="navigation:close"></md-icon>
+                            </div>
+                            <div flex="6">
+                                <md-icon ng-if="epr.vmodel.Barcodes == true" md-svg-icon="navigation:check"></md-icon>
+                                <md-icon ng-if="epr.vmodel.Barcodes != true" md-svg-icon="navigation:close"></md-icon>
+                            </div>
+                            <div flex="6">
+                                <md-icon ng-if="epr.vmodel.Prices == true" md-svg-icon="navigation:check"></md-icon>
+                                <md-icon ng-if="epr.vmodel.Prices != true" md-svg-icon="navigation:close"></md-icon>
+                            </div>
+                            <!--<div flex="6">
+                                <md-button class="md-icon-button md-primary" ng-click="saveSingleProduct(epr)" ng-disabled="!isProdTValid(epr)">
+                                    <md-tooltip md-direction="top">Single save current product</md-tooltip>
+                                    <md-icon ng-if="isProdTValid(epr)" md-svg-icon="content:save"></md-icon>
+                                    <md-icon ng-if="!isProdTValid(epr)" md-svg-icon="content:block"></md-icon>
+                                </md-button>
+                            </div>-->
+                        </div>
+                    </md-list-item>
+                </md-list>
+            </div>
+            <md-divider></md-divider>
+            <md-button ng-click="saveMultipleProducts()" ng-disabled="fileImportedProds.length <= 0 || busyupdating == true || processing==true" class="md-primary md-raised" aria-label="ConfAction">Save Imports</md-button>
+        </div>
+    </div>
+
+</script>
+<style>
+    .hover-content {
+        background-color: rgba(158,158,158,0.2);
+    }
+</style>

@@ -1,0 +1,156 @@
+﻿    .md-icon-rotate-ontoggle.toggled {
+        transform: rotateZ(180deg);
+        -webkit-transform: rotateZ(180deg);
+        -moz-transform: rotateZ(180deg);
+        -ms-transform: rotateZ(180deg);
+        -o-transform: rotateZ(180deg);
+    }
+    .md-icon-rotate-on-toggle {
+        background-size: 100% auto;
+        display: inline-block;
+        margin: auto 0 auto auto;
+        width: 21px;
+        /*color: darkgray;*/
+        transition: transform 1.3s ease-in-out;
+        -webkit-transition: -webkit-transform 1.3s ease-in-out;
+        -moz-transition: -moz-transform 1.3s ease-in-out;
+        -o-transition: -o-transform 1.3s ease-in-out;
+
+    }
+
+
+.tab-animation > .tab-content {
+    position: relative;
+}
+    /*.the-thing.ng-enter {
+  transition: all ease 1s;
+  opacity: 0;
+}
+.the-thing.ng-enter.ng-enter-active {
+  opacity: 1;
+}*/
+    .tab-animation > .tab-content > .tab-pane {
+        transition: 0.2s linear opacity;
+    }
+
+        .tab-animation > .tab-content > .tab-pane.active-remove {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            display: block;
+        }
+
+        .tab-animation > .tab-content > .tab-pane.active-remove-active {
+            opacity: 0;
+        }
+
+        .tab-animation > .tab-content > .tab-pane.active-add {
+            opacity: 0;
+        }
+
+
+.animate-enter, .animate-leave {
+    -webkit-transition: 400ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+    -moz-transition: 400ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+    -ms-transition: 400ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+    -o-transition: 400ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+    transition: 400ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+    position: relative;
+    display: block;
+    overflow: hidden;
+    text-overflow: clip;
+    white-space: nowrap;
+}
+
+    .animate-leave.animate-leave-active,
+    .animate-enter {
+        opacity: 0;
+        width: 0px;
+        height: 0px;
+    }
+
+        .animate-enter.animate-enter-active,
+        .animate-leave {
+            opacity: 1;
+            /*width: 150px;*/
+            /*height: 30px;*/
+        }
+
+/*On ng-show if statement smooth set opacity*/
+.smooth-opacity-showhide {
+    opacity: 1;
+}
+
+    .smooth-opacity-showhide.ng-hide {
+        opacity: 0;
+    }
+
+    .smooth-opacity-showhide.ng-hide-add,
+    .smooth-opacity-showhide.ng-hide-remove {
+        -webkit-transition: 0.05s linear all;
+        -moz-transition: 0.05s linear all;
+        -ms-transition: 0.05s linear all;
+        -o-transition: 0.05s linear all;
+        transition: 0.05s linear all;
+    }
+/*Used on drop downs in ng repeat to smooth push and del objects*/
+.animate-repeat {
+    -webkit-transition: .5s linear all;
+    -moz-transition: .5s linear all;
+    -ms-transition: .5s linear all;
+    -o-transition: .5s linear all;
+    transition: .5s linear all;
+}
+
+    .animate-repeat.ng-move,
+    .animate-repeat.ng-enter,
+    .animate-repeat.ng-leave {
+        -webkit-transition: all linear 0.2s;
+        -moz-transition: all linear 0.2s;
+        -ms-transition: all linear 0.2s;
+        -o-transition: all linear 0.2s;
+        transition: all linear 0.2s;
+    }
+
+        .animate-repeat.ng-leave.ng-leave-active,
+        .animate-repeat.ng-move,
+        .animate-repeat.ng-enter {
+            opacity: 0;
+            max-height: 0;
+        }
+
+            .animate-repeat.ng-leave,
+            .animate-repeat.ng-move.ng-move-active,
+            .animate-repeat.ng-enter.ng-enter-active {
+                opacity: 1;
+                max-height: 40px;
+            }
+
+    /* Stagger Leave (hide) animation*/
+    .animate-repeat.ng-leave-stagger {
+        /* this will have a 100ms delay between each successive leave animation */
+        -webkit-transition-delay: 0.05s;
+        -moz-transition-delay: 0.05s;
+        -ms-transition-delay: 0.05s;
+        -o-transition-delay: 0.05s;
+        transition-delay: 0.05s;
+        /* in case the stagger doesn't work then these two values must be set to 0 to avoid an accidental CSS inheritance */
+        -webkit-transition-duration: 0s;
+        transition-duration: 0s;
+    }
+
+    /*Stagger ENTER ANIMATION*/
+    .animate-repeat.ng-enter-stagger {
+        /* this will have a 100ms delay between each successive enter animation */
+        -webkit-transition-delay: 0.05s;
+        -moz-transition-delay: 0.05s;
+        -ms-transition-delay: 0.05s;
+        -o-transition-delay: 0.05s;
+        transition-delay: 0.05s;
+        /* in case the stagger doesn't work then these two values must be set to 0 to avoid an accidental CSS inheritance */
+        -webkit-transition-duration: 0s;
+        -moz-transition-duration: 0s;
+        -ms-transition-duration: 0s;
+        -o-transition-duration: 0s;
+        transition-duration: 0s;
+    }

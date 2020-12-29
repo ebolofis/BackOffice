@@ -1,0 +1,153 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title> </title>
+
+    <style>
+        .cell-style {
+            overflow: hidden;
+            padding: 4px;
+            text-overflow: ellipsis;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 15px 25px;
+            font-size: 20px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            outline: none;
+            color: #fff;
+            background-color: lightcoral;
+            border: none;
+            border-radius: 20px;
+        }
+
+            .button:hover {
+                background-color: red;
+            }
+
+            .button:active {
+                background-color: red;
+                transform: translateY(4px);
+            }
+
+        .buttonCancel {
+            display: inline-block;
+            padding: 15px 25px;
+            font-size: 20px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            outline: none;
+            color: #fff;
+            background-color: lightblue;
+            border: none;
+            border-radius: 20px;
+        }
+
+            .buttonCancel:hover {
+                background-color: blue;
+            }
+
+            .buttonCancel:active {
+                background-color: blue;
+                transform: translateY(4px);
+            }
+
+        .btn {
+            background-color: darkred;
+            border: none;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div ng-controller="EmailConfigCompCTRL as EmailMain" ng-init="EmailMain.initView()" layout-fill layout="column" layout-align="start stretch">
+        <div flex="7">
+            <md-subheader class="wrappers-view-header md-whiteframe-7dp md-primary">Email Configuration</md-subheader>
+        </div>
+        <div flex="90" layout="column">
+            <md-content>
+                <md-tabs md-dynamic-height md-border-bottom>
+                    <md-tab label="Email Configuration">
+                        <md-content class="md-padding" layout="row">
+                            <md-card>
+                                <md-card-title>
+                                    <md-card-title-text layout-gt-sm="row">
+                                        <div style="align-items: center;" flex-xs flex-gt-xs="60" layout-gt-sm="row">
+                                            <span class="md-headline">Email Configuration</span>
+                                            <md-button class="md-fab md-mini md-primary md-raised" ng-click="addEmailConfig($event ,'EmailConfig',{} , 'add')" ng-disabled="savingProcess" aria-label="EditEmailConfig"><i class="fa fa-plus fa-fw"></i></md-button>
+                                        </div>
+                                    </md-card-title-text>
+                                </md-card-title>
+                                <md-divider></md-divider>
+                                <md-card-content>
+                                    <div layout="row">
+                                        <md-input-container class="md-block" flex>
+                                            <label style="color: black !important;">Smtp</label>
+                                            <input style="color: black !important;" ng-model="EmailMain.EmailConfigModel.Smtp" disabled>
+                                        </md-input-container>
+                                        <md-input-container class="md-block" flex>
+                                            <label style="color: black !important;">Port</label>
+                                            <input style="color: black !important;" ng-model="EmailMain.EmailConfigModel.Port" disabled>
+                                        </md-input-container>
+                                        <md-input-container class="md-block" flex>
+                                            <label style="color: black !important;">Ssl</label>
+                                            <input style="color: black !important;" ng-model="EmailMain.EmailConfigModel.Ssl" disabled>
+                                        </md-input-container>
+                                    </div>
+                                    <div layout="row">
+                                        <md-input-container class="md-block" flex>
+                                            <label style="color: black !important;">Username</label>
+                                            <input style="color: black !important;" ng-model="EmailMain.EmailConfigModel.Username" disabled>
+                                        </md-input-container>
+                                        <md-input-container class="md-block" flex>
+                                            <label style="color: black !important;">Sender</label>
+                                            <input style="color: black !important;" ng-model="EmailMain.EmailConfigModel.Sender" disabled>
+                                        </md-input-container>
+                                        <md-input-container class="md-block" flex>
+                                            <label style="color: black !important;">Password</label>
+                                            <input type="password" style="color: black !important;" ng-model="EmailMain.EmailConfigModel.Password" disabled>
+                                        </md-input-container>
+                                    </div>
+                                    <div layout="row">
+                                        <md-input-container class="md-block" flex>
+                                            <label style="color: black !important;">Is Active</label>
+                                            <input style="color: black !important;" ng-model="EmailMain.EmailConfigModel.IsActive" disabled>
+                                        </md-input-container>
+                                    </div>
+                                </md-card-content>
+                                <md-card-actions layout="row" layout-align="end center">
+                                    <md-button class="md-fab md-mini md-raised" ng-click="open(EmailMain.EmailConfigModel)" ng-disabled="deleteProcess" aria-label="removeEmailConfig"><i class="fa fa-trash fa-fw"></i></md-button>
+                                    <md-button class="md-fab md-mini md-primary  md-raised" ng-click="editEmailConfig($event ,'EmailConfig', EmailMain.EmailConfigModel , 'edit')" aria-label="EditEmailConfig"><i class="fa fa-pencil fa-fw"></i></md-button>
+                                </md-card-actions>
+                            </md-card>
+                        </md-content>
+                    </md-tab>
+                </md-tabs>
+            </md-content>
+
+            <!--Confirmation Modal For Delete Payroll-->
+            <modal title="Delete Email Config" visible="showModal" style="position: absolute; top: 20%;">
+                <form role="form"></form>
+                <div class="modal-body">
+                    Are you sure you want to delete Email Config?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" style="margin-right:20px;" class="buttonCancel" data-dismiss="modal" ng-click="cancel()">Cancel</button>
+                    <button type="button" class="button" ng-click="DeleteEmailConfig(shortRow)">Delete</button>
+                </div>
+            </modal>
+
+        </div>
+    </div>
+</body>
+</html>

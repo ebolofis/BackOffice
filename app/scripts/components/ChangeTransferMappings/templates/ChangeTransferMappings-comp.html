@@ -1,0 +1,86 @@
+﻿
+<!DOCTYPE html>
+<html ng-app="app">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div ng-include src="header-list" ng-controller="ChangeTransferMappingsCTRL as ChTransMapCtrl" ng-init="ChTransMapCtrl.initView()" layout-fill layout="column" layout-align="start stretch">
+    </div>
+</body>
+</html>
+
+<script id="header-list" type="text/ng-template">
+    <div flex="10">
+        <md-subheader class="wrappers-view-header md-whiteframe-7dp md-primary">Update Transfer Mappings </md-subheader>
+    </div>
+    <div class="mybox" flex="90" layout="column">
+        <h3 style="text-align:center;"><i>Select and Update the desired Vat Value of selected Transfer Mapping </i></h3>
+        <md-divider></md-divider>
+        <div layout="row" layout-align="start" class="md-padding" style="font-variant:small-caps;">
+
+
+            <md-divider></md-divider>
+            <md-divider></md-divider>
+            <div flex="40" layout="column">
+                <md-input-container flex="30" class=" flex-30">
+                    <label class="md-placeholder">Please Select Product Category</label>
+                    <md-select ng-model="ChTransMapCtrl.SelectedProdCat">
+                        <md-option style="height:20px;" ng-repeat="ch in ChTransMapCtrl.ProdCat" value="{{ch.Id}}"> {{ch.Description}}</md-option>
+                        <md-select-value class="md-select-value md-select-placeholder"><span>Product Category</span><span class="md-select-icon"></span></md-select-value>
+                    </md-select>
+
+                </md-input-container>
+                <md-input-container flex="30" class="flex-30">
+                    <label class="md-placeholder">Please Select Hotel Info</label>
+                    <md-select ng-model="ChTransMapCtrl.selectedHotelInfo">
+                        <md-option ng-repeat="x in ChTransMapCtrl.HotelInf" value="{{x}} "> #Hotel : {{ChTransMapCtrl.HotelId = x.HotelId}} - HotelName: {{x.HotelName}}</md-option>
+                        <md-select-value class="md-select-value md-select-placeholder"><span>HotelInfo</span></md-select-value>
+                    </md-select>
+                </md-input-container>
+                <div flex="10" class="flex-10" layout-align="end" layout="row" style="height:50px; position:fixed; ">
+                    <md-button style="background-color:lightblue; position:fixed; top :450px;bottom :250px; left:400px;" ng-click="GetDepartments()">Get Departments</md-button>
+                </div>
+            </div>
+            <div flex="40" layout="column">
+
+                <md-input-container flex="30" class="flex-30">
+                    <label class="md-placeholder">Please Select Pms Department</label>
+                    <md-select ng-model="ChTransMapCtrl.selectedPmsDepartments">
+                        <md-option style="height:20px;" ng-repeat="y in ChTransMapCtrl.getpmsDepartments" value="{{ChTransMapCtrl.newPmsDepId = y.DepartmentId}}"> {{ChTransMapCtrl.newPmsDepDesc = y.Description}}</md-option>
+                        <md-select-value class="md-select-value md-select-placeholder"><span>Pms Departments</span></md-select-value>
+                    </md-select>
+                </md-input-container>
+                <md-input-container flex="30" class="flex-30">
+                    <label class="md-placeholder">Please Select Transfer Mapping</label>
+                    <md-select ng-model="ChTransMapCtrl.selectedTransferMappings">
+                        <md-option style="height:20px;" ng-repeat="d in ChTransMapCtrl.TransferMappings" value="{{d.PmsDepartmentId}}"> {{d.PmsDepDescription}}</md-option>
+                        <md-select-value class="md-select-value md-select-placeholder"><span>TransferMappings</span><span class="md-select-icon"></span></md-select-value>
+                    </md-select>
+                </md-input-container>
+                <div flex="10" class="flex-10" layout-align="end" layout="row" style="height:50px; position:fixed; ">
+                    <md-button style="background-color:lightblue; position:fixed; top :450px; left 450px;right:500px;" ng-click="GetTransferMappings()">Get Transfer Mappings</md-button>
+                </div>
+            </div>
+            <md-divider></md-divider>
+            <div flex="20" class="flex-20" layout-align="end" layout="row" style="height:50px;position:fixed;  ">
+                <md-button style="background-color:lightblue; position:fixed; right :100px;" ng-click="UpdateTransferMappings()">Update Transfer Mappings</md-button>
+            </div>
+        </div>
+
+    </div>
+</script>
+<style>
+    .mybox {
+        width: 1800px;
+        border: 20px solid lightblue;
+        padding: 50px;
+        margin: 20px;
+        height: 3000px;
+    }
+
+    input .ng-dirty.ng-invalid {
+        color: red
+    }
+</style>

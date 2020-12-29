@@ -1,0 +1,107 @@
+﻿<md-dialog  ng-class="{'fullscreen-dialog' : fullscreenModal}" aria-label="EditPosInfo" ng-cloak style="min-width: 50vw;">
+    <form>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2 ng-show="templateOption == 'Hotel'">Connection with HotelInfo</h2>
+                <h2 ng-show="templateOption == 'Api'">Connection with WebApi</h2>
+                <span flex></span>
+                <toggle-fs-modal tvar="fullscreenModal"></toggle-fs-modal>
+                <md-button class="md-icon-button" aria-label="CloseModal" ng-click="hide()">
+                    <md-icon md-svg-icon="navigation:close"></md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content>
+            <div class="md-dialog-content">
+                <div ng-cloak class="md-inline-form">
+                    <md-content>
+                        <div ng-show="templateOption == 'Hotel'" ng-include src="'HotelForm'"></div>
+                        <div ng-show="templateOption == 'Api'" ng-include src="'ApiForm'"></div>
+                    </md-content>
+                </div>
+            </div>
+        </md-dialog-content>
+        <md-dialog-actions layout="row">
+            <md-button ng-click="hide()" aria-label="buttonDialog">
+                Close
+            </md-button>
+            <!--<md-button ng-click="confirm('save')" style="margin-right:20px;" aria-label="ConfAction">
+                Save
+            </md-button>-->
+        </md-dialog-actions>
+    </form>
+</md-dialog>
+<script type="text/ng-template" id="ApiForm">
+    <md-list ng-cloak="">
+        <md-list-item class="md-margin" ng-repeat="item in result.data" style="background-color:red; border:3px solid black;">
+            <div layout="row" flex="grow" layout-align="start center" class="md-padding listComponent">
+                <div layout="column" layout-align="start stretch">
+                    <div layout="row" layout-align="space-between stretch">
+                        <md-input-container class="md-block" flex-gt-sm>
+                            <label>FirstName</label>
+                            <input ng-model="item.FirstName" disabled>
+                        </md-input-container>
+                        <md-input-container class="md-block">
+                            <label>LastName</label>
+                            <textarea ng-model="item.LastName" disabled></textarea>
+                        </md-input-container>
+                        <md-input-container class="md-block" flex-gt-sm>
+                            <label>Room</label>
+                            <input ng-model="item.Room" disabled>
+                        </md-input-container>
+                    </div>
+                    <div layout="row" layout-align="space-between stretch">
+                        <md-input-container class="md-block">
+                            <label>ProfileNo</label>
+                            <textarea ng-model="item.ProfileNo" disabled></textarea>
+                        </md-input-container>
+                        <md-input-container class="md-block" flex-gt-sm>
+                            <label>ReservationCode</label>
+                            <input ng-model="item.ReservationCode" disabled>
+                        </md-input-container>
+                    </div>
+                    <div layout="row" layout-align="space-between stretch">
+                        <div class="md-block" flex-gt-sm>
+                            <label>Arrival</label>
+                            <md-datepicker ng-show="item.Arrival!=null" ng-model="item.DPArrival" md-placeholder="From date" ng-change="item.Arrival = item.DPArrival.toISOString()" disabled></md-datepicker>
+                            <span ng-show="item.Arrival ==null">--</span>
+                        </div>
+                        <div class="md-block" flex-gt-sm>
+                            <label>Departure</label>
+                            <md-datepicker ng-show="item.Departure!=null" ng-model="item.DPDeparture" md-placeholder="From date" ng-change="item.Departure = item.DPDeparture.toISOString()" disabled></md-datepicker>
+                            <span ng-show="item.Departure ==null">--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </md-list-item>
+        <md-divider></md-divider>
+    </md-list>
+    <style>
+        .listComponent {
+            background-color: #F1F1F1;
+            border: 3px solid black;
+            font-weight: 800 !important;
+            color: black !important;
+        }
+
+            .listComponent > * {
+                color: black !important;
+            }
+    </style>
+</script>
+<script type="text/ng-template" id="HotelForm">
+    <form name="apiresForm">
+        <div layout-gt-sm="column">
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>HotelForm</label>
+            </md-input-container>
+            <md-input-container class="md-block">
+                <label>Message</label>
+            </md-input-container>
+        </div>
+    </form>
+</script>
+<!--templateOption: function () { return type; },
+ promise: function () { return restPromise; },
+ result: function () { return restResult;}-->

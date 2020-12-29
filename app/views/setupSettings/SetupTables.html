@@ -1,0 +1,900 @@
+﻿<div layout="column" layout-align="start stretch" ng-cloak ng-controller="TablesController" ng-init="initView()">
+    <widget-choice-menu widget="rightClickedTable.widget" options="menuOptions" action-choices="actionChoices" choice-selected="choiceSelected"></widget-choice-menu>
+
+    <md-subheader class="wrappers-view-header md-whiteframe-7dp md-primary">Manage your Region tables</md-subheader>
+    <div layout="row" layout-align="space-between center">
+        <!-- Search Region Bar -->
+        <div layout="row" layout-align="start center" flex="50">
+            <md-autocomplete style="min-width:250px;" ng-disabled="selectedRegion.isEdited" md-no-cache="noCache" md-selected-item="selectedRegion" md-search-text-change="searchTextChange(searchText)" md-search-text="searchText" md-selected-item-change="selectedItemChange(item)" md-items="item in querySearch(searchText)" md-item-text="item.Description" md-min-length="0" placeholder="Select Region to manage tables">
+                <md-item-template><span md-highlight-text="searchText" md-highlight-flags="^i">{{item.Description}}</span></md-item-template>
+                <md-not-found>No Regions matching "{{searchText}}" were found.</md-not-found>
+            </md-autocomplete>
+            <md-button class="md-icon-button" aria-label="EditRegion" ng-class="(selectedRegion === null) ? '' :'md-primary'" ng-click="openRegionModal('edit')">
+                <i class="fa fa-edit fa-fw"><md-tooltip md-direction="top">Edit selected Region</md-tooltip></i>
+            </md-button>
+            <md-button class="md-icon-button" aria-label="removeRegion" ng-class="(selectedRegion === null) ? '' :'md-primary'" ng-click="deleteRegion()">
+                <i class="fa fa-trash-o fa-fw"><md-tooltip md-direction="top">Remove selected Region</md-tooltip></i>
+            </md-button>
+            <md-button class="md-icon-button" aria-label="addNewRegion" ng-class="(selectedRegion.isEdited != true) ? 'md-primary' :''" ng-click="openRegionModal('add')">
+                <i class="fa fa-plus fa-fw"><md-tooltip md-direction="top">Add new Region</md-tooltip></i>
+            </md-button>
+        </div>
+        <!-- Action Button Bar -->
+        <div layout="row" layout-align="end center" flex="50">
+            <!--<md-button class="md-raised md-warn" aria-label="display" ng-click="display('tables')"><i class="fa fa-plus fa-fw"></i></md-button>-->
+            <md-button class="md-raised" ng-disabled="selectedRegion.isEdited != true" ng-click="initView()">Discard&nbsp;<i class="fa fa-trash fa-fw"></i></md-button>
+            <md-button class="md-raised md-primary" ng-click="saveChanges()">Save&nbsp; <i class="fa fa-save fa-fw"></i> </md-button>
+        </div>
+    </div>
+    <div layout="row" layout-align="end start" flex="grow">
+        <md-button class="md-icon-button md-primary" ng-click="togglePanelSettings()">
+            <md-icon md-svg-icon="action:settings"><md-tooltip md-direction="left">Open table settings panel</md-tooltip></md-icon>
+        </md-button>
+    </div>
+    <div layout="row" layout-fill>
+        <!-- container of Left Side -->
+        <div style="overflow:hidden; width:{{containerDisplaySize.width}}px; background:rgba(0, 0, 0, 0.33);" layout="column" layout-align="start center" flex="grow">
+            <div class="fixed-bg" style="background-image: url({{selectedRegion.BluePrintPath}}); background-color:rgba(0, 0, 25,0.33); max-height:768px; min-height:768px;  max-width:1024px; min-width:1024px; overflow:auto;">
+                <ul id="gridster" gridster="gridsterOpts" layout-fill>
+                    <li class="cwidget" gridster-item="table.widget" id="{{table.Code}}" ng-repeat="table in selectedRegion.Table  | filter: containerfilter" ng-right-click="containerRightClick($event,table)" ng-click="containerLeftClick($event,table)">
+                        <div class="widget-display-content" style="background-image : url({{table.widget.ImageUri}});">
+                            <md-content layout="row" layout-align="center center" flex style="height:100%; background: rgba(0, 0, 0, 0);" ng-class="(table.multiselected == true && enableMultiSelect == true)? 'multiselected' : ''">
+                                <span class="badge ng-binding">
+                                    {{table.widget.Code}}
+                                    <md-tooltip ng-show="table.widget.isMenuOpen == false" md-direction="right"> row:{{table.widget.row}} , col:{{table.widget.col}}  sizeX:{{table.widget.sizeX}} , sizeY:{{table.widget.sizeY}} </md-tooltip>
+                                </span>
+                            </md-content>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <md-sidenav class="md-sidenav-right" md-component-id="tableSettingsPanel" md-disable-backdrop="lockSettingsBar" md-whiteframe="4">
+            <md-toolbar class="md-primary">
+                <div class="md-toolbar-tools">
+                    <md-select ng-model="panelOption" flex aria-label="Setting Panel Option">
+                        <md-select-header>
+                            <md-subheader class="md-no-sticky">{{panelOption}}</md-subheader>
+                            <md-divider></md-divider>
+                        </md-select-header>
+                        <md-option ng-value="opt" ng-repeat="opt in ['Table Settings','Container Settings','Multiselect Settings']">{{ opt }}</md-option>
+                    </md-select>
+                </div>
+            </md-toolbar>
+            <md-content>
+                <div layout="column">
+                    <md-content class="md-margin" layout="row" ng-show="panelOption == 'Table Settings'">
+                        <md-content>
+                            <!-- widget Form -->
+                            <div ng-include src="'widgetSidePanelForm'"></div>
+                        </md-content>
+                    </md-content>
+                    <md-content class="md-margin" layout="row" ng-show="panelOption == 'Container Settings'">
+                        <md-content layout="column" flex="grow">
+                            <md-list>
+                                <md-subheader class="md-no-sticky">General Settings</md-subheader>
+                                <md-list-item>
+                                    <div><md-icon><i class="fa fa-desktop fa-fw"></i></md-icon> </div>
+                                    <div layout="column" layout-align="space-between center">
+                                        <span>Monitor Display Settings</span>
+                                        <span>{{containerDisplaySize.width}} x {{containerDisplaySize.height}}</span>
+                                    </div>
+                                </md-list-item>
+                                <md-list-item>
+                                    <div><md-icon><i class="fa fa-barcode fa-fw"></i></md-icon></div>
+                                    <div>Columns: #{{gridsterOpts.columns}}</div>
+                                </md-list-item>
+                                <md-list-item>
+                                    <div><md-icon><i class="fa fa-th fa-fw"></i></md-icon></div>
+                                    <div>Cell Size: ({{gridsterOpts.colWidth}} , {{gridsterOpts.rowHeight}}) px</div>
+                                </md-list-item>
+                                <md-divider></md-divider>
+                            </md-list>
+                            <md-subheader class="md-no-sticky">Action Settings</md-subheader>
+                            <md-switch class="md-primary" md-no-ink aria-label="SwitchPushing" ng-model="gridsterOpts.pushing">
+                                Pushing
+                                <i class="fa fa-info-circle fa-fw" style="color:#3F51B5;">
+                                    <md-tooltip md-direction="top">Disable Pushing will keep contents stable</md-tooltip>
+                                </i>
+                            </md-switch>
+                            <md-switch class="md-primary" md-no-ink aria-label="SwitchFloating" ng-model="gridsterOpts.floating">
+                                Floating (Suggested : OFF)
+                                <i class="fa fa-info-circle fa-fw" style="color:#3F51B5;">
+                                    <md-tooltip md-direction="top">Disabling Floating you can place wherever on grid</md-tooltip>
+                                </i>
+                            </md-switch>
+                            <md-switch class="md-primary" md-no-ink aria-label="SwitchDraggable" ng-model="gridsterOpts.draggable.enabled">
+                                Draggable
+                                <i class="fa fa-info-circle fa-fw" style="color:#3F51B5;">
+                                    <md-tooltip md-direction="top">Disable Dragging will keep contents frozen</md-tooltip>
+                                </i>
+                            </md-switch>
+                            <md-switch ng-disabled="false" aria-label="SwitchResizable" ng-model="gridsterOpts.resizable.enabled">
+                                Resizable
+                                <i class="fa fa-info-circle fa-fw" style="color:#3F51B5;">
+                                    <md-tooltip md-direction="top">Custom size (allowed on advance)</md-tooltip>
+                                </i>
+                            </md-switch>
+                            <md-divider></md-divider>
+                            <md-button class="md-mini md-primary md-raised" ng-click="clear($event)" aria-label="clearContainer">Clear Container</md-button>
+                        </md-content>
+                    </md-content>
+                    <md-content class="md-margin" layout="row" ng-show="panelOption == 'Multiselect Settings'">
+                        <md-content layout="column" flex="grow">
+                            <md-subheader class="md-no-sticky">Drag & Select options</md-subheader>
+                            <div class="md-padding">
+                                <div layout="row" layout-align="start center">
+                                    <span>MultiDragging&nbsp;</span>
+                                    <md-switch class="md-primary" md-no-ink aria-label="SwitchPushing" ng-model="allowMultiSelectionCheck"></md-switch>
+                                    <span>&nbsp;MultiSelect</span>
+                                </div>
+                                <div layout="row" layout-align="start center">
+                                    <md-checkbox aria-label="Apply multi drag after stop" ng-model="stickyMultiDrag" class="md-primary">Apply drag after stop</md-checkbox>
+                                </div>
+                            </div>
+                            <md-divider></md-divider>
+                            <form aria-label="MultiResizeForm" name="multiresizeForm">
+                                <md-subheader class="md-no-sticky">Resize Selections</md-subheader>
+                                <div layout="column" layout-align="center stretch">
+                                    <div id="resizeMOptions">
+                                        <div layout="row" layout-align="space-between center" class="md-padding">
+                                            <md-input-container class="md-block" flex-gt-sm flex="40">
+                                                <label>Width</label>
+                                                <input name="sizeX" ng-model="multiVar.sizeX" type="number" step="1" required min="1">
+                                                <div ng-messages="multiresizeForm.sizeX.$error">
+                                                    <div ng-message="required">You need to specify width of the object</div>
+                                                    <div ng-message="min">Minimum width can not be less than 1</div>
+                                                </div>
+                                            </md-input-container>
+                                            <md-input-container class="md-block" flex-gt-sm flex="40">
+                                                <label>Height</label>
+                                                <input name="sizeY" ng-model="multiVar.sizeY" type="number" step="1" required min="1">
+                                                <div ng-messages="multiresizeForm.sizeY.$error">
+                                                    <div ng-message="required">You need to specify height of the object</div>
+                                                    <div ng-message="min">Minimum height can not be less than 1</div>
+                                                </div>
+                                            </md-input-container>
+                                            <md-button class="md-primary md-fab md-mini" ng-disabled="multiresizeForm.$invalid" ng-click="multiAction('resize',multiVar)" style="margin-right:20px;" aria-label="multiresizeForm">
+                                                <i class="fa fa-arrows fa-fw"></i><md-tooltip md-direction="top">Resize</md-tooltip>
+                                            </md-button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                            <md-divider></md-divider>
+                            <!--<md-subheader class="md-no-sticky" slide-toggle="#spaceMOptions">Space Selections</md-subheader>
+                        <form aria-label="MultiAlignForm" name="multialignForm">
+                            <div id="spaceMOptions" class="slideable">
+                                <div layout="row" layout-align="start center">
+                                    <md-input-container class="md-block" flex-gt-sm flex="40">
+                                        <label>(Left/Right)</label>
+                                        <input name="sizeY" ng-model="multiVar.spaceX" type="number" step="1" min="0">
+                                    </md-input-container>
+                                    <md-input-container class="md-block" flex-gt-sm flex="40">
+                                        <label>(Below/Above)</label>
+                                        <input name="vertical" ng-model="multiVar.spaceY" type="number" step="1" min="0">
+                                    </md-input-container>
+                                    <md-button class="md-primary md-fab md-mini" ng-click="multiAction('space',multiVar)" style="margin-right:20px;" aria-label="multialignForm">
+                                        <i class="fa fa-expand fa-fw"></i><md-tooltip md-direction="top">Align</md-tooltip>
+                                    </md-button>
+                                </div>
+                            </div>
+                        </form>
+                        <md-divider></md-divider>-->
+                            <div layout="row" layout-align="start center">
+                                <md-subheader class="md-no-sticky">Image Change</md-subheader>
+                                <div flex></div>
+                                <md-button class="md-primary md-icon-button md-secondary" ng-click="multiAction('image')" style="margin-right:20px;" aria-label="multiImgChangeForm">
+                                    <md-tooltip>Select new Image</md-tooltip>
+                                    <i class="fa fa-photo fa-fw"></i>
+                                </md-button>
+                                <md-button class="md-icon-button md-secondary" ng-click="multiAction('image-clear')" style="margin-right:20px;" aria-label="multiImgChangeClear">
+                                    <md-tooltip>Clear selection Image</md-tooltip>
+                                    <i class="fa fa-trash-o fa-fw"></i>
+                                </md-button>
+                            </div>
+                            <md-divider></md-divider>
+
+                            <div layout="row" layout-align="start center">
+                                <md-subheader class="md-no-sticky">Multi Delete</md-subheader>
+                                <div flex></div>
+                                <md-button class="md-warn md-raised md-secondary" ng-click="multiAction('delete')" style="margin-right:20px;" aria-label="multiDeleteAction"><i class="fa fa-trash-o fa-fw"></i></md-button>
+                            </div>
+                            <md-divider></md-divider>
+
+                            <md-button class="md-mini md-primary md-raised" ng-click="multiAction('toggle', false)" aria-label="clearContainer">Clear Selection</md-button>
+                            <md-button class="md-mini md-primary md-raised" ng-click="multiAction('toggle', true)" aria-label="clearContainer">Select All</md-button>
+                            <md-button class="md-mini md-primary md-raised" ng-click="multiAction('rearrange', true)" aria-label="rearrangeContainer">Rearrange</md-button>
+                        </md-content>
+                    </md-content>
+                </div>
+            </md-content>
+        </md-sidenav>
+    </div>
+  
+
+</div>
+<script id="loadImageModal" type="text/ng-template">
+    <form>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>Choose from Default Tables</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" aria-label="CloseModal" ng-click="hide()">
+                    <md-icon md-svg-icon="navigation:close"></md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>        
+        <md-dialog-content>
+            <div class="md-padding" layout="row" layout-align="center start" flex="grow" style="max-height: 67vh; min-height: 67vh;overflow-y: hidden;">
+                <div layout="column" layout-align="start stretch" flex="70">
+                    <md-content>
+                        <h4>Upload Custom Image</h4>
+                        <md-divider></md-divider>
+                        <div layout="column" layout-align="center stretch">
+                            <div layout="row" flex="grow" layout-align="space-between center">
+                                <div layout-gt-sm="column" layout-align="center strech">
+                                    <md-input-container class="md-block" flex-gt-sm>
+                                        <label>ImageUri</label>
+                                        <md-icon><i class="fa fa-image fa-fw"></i></md-icon>
+                                        <input ng-model="selectedImg.uploadedImageUri" disabled>
+                                    </md-input-container>
+                                </div>
+                                <div flex layout="row" layout-align="end center">
+                                    <upload-image-file upload-model="uploadModel" data="selectedImg" datafield="uploadedImageUri" loading-state="loadingImage" ng-click="choiceUse = 'uploaded'"></upload-image-file>
+                                    <md-button class="md-primary" aria-label="removeImg" ng-click="selectedImg.uploadedImageUri=null">
+                                        <md-tooltip md-direction="top">Remove Image</md-tooltip>
+                                        <i class="fa fa-trash-o fa-fw"></i>
+                                    </md-button>
+                                </div>
+                            </div>
+                        </div>
+                    </md-content>
+                    <div>
+                        <h4>Sample Pictures</h4>
+                        <div layout="row" md-whiteframe="9" style="margin-bottom:4px;" class="md-padding">
+                            <md-input-container class="md-block" flex style="margin-bottom:0;"><label>Name</label><input ng-model="samplefilter.name"></md-input-container>
+                            <md-input-container class="md-block" flex style="margin-bottom:0;"><label>SizeX</label><input ng-model="samplefilter.sizeX" type="number" step="1" min="1"></md-input-container>
+                            <md-input-container class="md-block" flex style="margin-bottom:0;"><label>SizeY</label><input ng-model="samplefilter.sizeY" type="number" step="1" min="1"></md-input-container>
+                            <md-input-container class="md-block" flex style="margin-bottom:0;"><label>Capacity</label><input ng-model="samplefilter.Capacity" type="number" step="1" min="1"></md-input-container>
+                            <md-input-container class="md-block" flex style="margin-bottom:0;">
+                                <label>Type</label><md-select name="typeFilter" ng-model="samplefilter.imgType">
+                                    <md-option ng-repeat="ch in ['Graphics','Linear','Special','All']" value="{{ch}}">{{ch}}</md-option>
+                                </md-select>
+                            </md-input-container>
+                            <div layout="column" layout-align="center center">
+                                <md-button class="md-warn md-fab md-mini" aria-label="clearsampleimgfilters" ng-click="clearsamplefilter()"><i class="fa fa-times fa-fw"><md-tooltip md-direction="top">Clear Filters</md-tooltip></i></md-button>
+                            </div>
+                        </div>
+                        <div style="max-height:35vh;overflow-y:auto;">
+                            <md-content ng-repeat="type in modelTypes | filter: imgTypeDropFilter" style="width:100%;">
+                                <md-subheader class="md-no-sticky">{{type}}</md-subheader>
+                                <div class="imgcontainer">
+                                    <div ng-class="(selectedImg.sampleImageUri == img.ImageUri) ? 'selectedCompEffect': ''" class="imgitem" ng-repeat="img in tableModels[type] |filter:imgPropFilter" ng-click="imageSelectionAction('sample',img)">
+                                        <p style="margin-bottom:0;" class="thumbnail"><img ng-class="(img.sizeX > img.sizeY)?'portrait':'landscape'" ng-src="{{img.ImageUri}}" alt="{{img.ImageUri}}"></p>
+                                    </div>
+                                </div>
+                            </md-content>
+                        </div>
+                    </div>
+                </div>
+                <div layout="column" flex="30" class="md-margin" style="margin-top:0;">
+                    <h4>Image Preview</h4>
+                    <md-divider></md-divider>
+                    <br />
+                    <md-radio-group ng-model="choiceUse">
+                        <md-radio-button value="uploaded" checked="(choiceUse == 'uploaded')" class="md-primary">Custom Upload</md-radio-button>
+                        <md-radio-button value="sample" checked="(choiceUse == 'sample')" class="md-primary">Sample Image</md-radio-button>
+                    </md-radio-group>
+                    <md-content ng-if="choiceUse == 'uploaded'" class="md-block md-padding" flex-gt-sm layout="column" layout-align="center center">
+                        <div ng-show="loadingImage != true" md-whiteframe="9">
+                            <div layout="column" layout-align="center center" ng-show="selectedImg.uploadedImageUri != null && selectedImg.uploadedImageUri!== undefined && selectedImg.uploadedImageUri !=''" class="form-img-preview">
+                                <img ng-src="{{selectedImg.uploadedImageUri}}" />
+                            </div>
+                            <div layout="column" layout-align="center center" ng-show="selectedImg.sampleImageUri == null || selectedImg.sampleImageUri == undefined && selectedImg.sampleImageUri ==''" class="form-img-preview">
+                                <img ng-src="Images/noImagePreview.png" />
+                            </div>
+                        </div>
+                        <div ng-show="loadingImage==true" flex="50" layout-align="center center">
+                            <md-subheader class="md-no-sticky">Uploading image ...</md-subheader>
+                            <md-progress-linear md-mode="indeterminate"></md-progress-linear>
+                        </div>
+                    </md-content>
+                    <md-content ng-if="choiceUse == 'sample'" class="md-block  md-padding" flex-gt-sm layout="column" layout-align="center center">
+                        <div ng-show="loadingImage != true" md-whiteframe="9">
+                            <div layout="column" layout-align="center center" ng-show="selectedImg.sampleImageUri != null && selectedImg.sampleImageUri!== undefined && selectedImg.sampleImageUri !=''" class="form-img-preview">
+                                <img ng-src="{{selectedImg.sampleImageUri}}" />
+                            </div>
+                            <div layout="column" layout-align="center center" ng-show="selectedImg.sampleImageUri == null || selectedImg.sampleImageUri == undefined && selectedImg.sampleImageUri ==''" class="form-img-preview">
+                                <img ng-src="Images/noImagePreview.png" />
+                            </div>
+                        </div>
+                    </md-content>
+                </div>
+            </div>
+        </md-dialog-content>
+        <span flex></span>
+        <md-dialog-actions layout="row" style="border-top:0;">
+            <md-button ng-click="cancel('cancel')" aria-label="CancelAction">Cancel</md-button>
+            <md-button class="md-primary" ng-click="confirm('no-image')" style="margin-right:20px;" aria-label="ClearAction">No Image</md-button>
+            <md-button class="md-primary" ng-click="confirm('ok')" style="margin-right:20px;" aria-label="ConfAction">Select</md-button>
+        </md-dialog-actions>
+    </form>
+</script>
+<script id="widgetSidePanelForm" type="text/ng-template">
+    <form name="tsForm" ng-submit="addWidget()">
+        <md-content layout="column">
+            <div flex layout="column">
+                <md-content layout="column" layout-align="start stretch" flex>
+                    <div layout-gt-sm="row">
+                        <md-input-container class="md-block" flex-gt-sm>
+                            <label>#Inserts</label>
+                            <input name="numInsTables" ng-model="numInsTables" type="number" required min="1" ng-change="manageMultiaddVars(numInsTables,'numInsTables')">
+                            <div ng-messages="tsForm.numInsTables.$error">
+                                <div ng-message="required">You need to Provide number of inserts</div>
+                                <div ng-message="min">You need at least one insert</div>
+                            </div>
+                        </md-input-container>
+                        <!-- choose Predifined models -->
+                        <md-input-container class="md-block" flex-gt-sm layout="row" layout-align="end center">
+                            <md-button class="md-raised md-primary" ng-click="openTableModelsModal()" aria-label="tableModel">
+                                <i class="fa fa-folder-open-o fa-fw">
+                                    <md-tooltip md-direction="top">Select Sample Tables</md-tooltip>
+                                </i>
+                            </md-button>
+                        </md-input-container>
+                    </div>
+                </md-content>
+                <md-content layout="column" layout-align="start stretch" flex>
+                    <div ng-show="numInsTables > 1" layout-gt-sm="row">
+                        <md-input-container class="md-block" flex-gt-sm>
+                            <label>Prefix</label>
+                            <input name="prefixNameIns" ng-model="prefixNameIns" ng-change="manageMultiaddVars(prefixNameIns,'prefixNameIns')">
+                        </md-input-container>
+                        <md-input-container class="md-block" flex-gt-sm ng-init="manageMultiaddVars(0,'fromCodeIns')" > 
+                            <label>From Code</label>
+                            <input name="fromCodeIns" ng-model="fromCodeIns" type="Number" min="0" required ng-change="manageMultiaddVars(fromCodeIns,'fromCodeIns')">
+                            <div ng-messages="tsForm.fromCodeIns.$error">
+                                <div ng-message="required">Provide Starting Code</div>
+                                <div ng-message="min">Minimum number is 0</div>
+                            </div>
+                        </md-input-container>
+                        <md-input-container class="md-block" flex-gt-sm>
+                            <label>To Code</label>
+                            <input name="toCodeIns" ng-model="toCodeIns" type="Number" min="" required disabled>
+                            <!--<div ng-messages="tsForm.toCodeIns.$error">
+                                <div ng-message="required">Provide ending Code</div>
+                                <div ng-message="min">Minimum number is {{fromCodeIns+numIns}}</div>
+                            </div>-->
+                        </md-input-container>
+                    </div>
+                    <div ng-if="numInsTables == 1" layout-gt-sm="row">
+                        <md-input-container class="md-block" flex-gt-sm>
+                            <label>Name</label>
+                            <input name="name" ng-model="selectedWidget.name" required>
+                            <div ng-messages="tsForm.name.$error">
+                                <div ng-message="required">Object or Table must have a name.</div>
+                            </div>
+                        </md-input-container>
+                        <md-input-container class="md-block" flex-gt-sm>
+                            <label>Code</label>
+                            <input name="Code" ng-model="selectedWidget.Code" required>
+                            <div ng-messages="tsForm.Code.$error">
+                                <div ng-message="required">Code field is required to define a table.</div>
+                            </div>
+                        </md-input-container>
+                    </div>
+                </md-content>
+                <md-content layout="column" layout-align="start stretch" flex>
+                    <div layout-gt-sm="row">
+                        <md-input-container class="md-block" flex-gt-sm>
+                            <label>Width</label>
+                            <input name="sizeX" ng-model="selectedWidget.sizeX" type="number" step="1" required min="1" max="gridsterOpts.columns">
+                            <div ng-messages="tsForm.sizeX.$error">
+                                <div ng-message="required">You need to specify width of the object</div>
+                                <div ng-message="min">Minimum default size will be set automatically to 1</div>
+                                <div ng-message="max">Maximum feet will auto set according to MaxCapacity{{selectedWidget.people}}</div>
+                            </div>
+                        </md-input-container>
+                        <md-input-container class="md-block" flex-gt-sm>
+                            <label>Height</label>
+                            <input name="sizeY" ng-model="selectedWidget.sizeY" type="number" step="1" required min="1" max="gridsterOpts.columns">
+                            <div ng-messages="tsForm.sizeY.$error">
+                                <div ng-message="required">You need to specify height of the object</div>
+                                <div ng-message="min">Minimum default size will be set automatically to 1</div>
+                                <div ng-message="max">Maximum feet will auto set according to MaxCapacity{{selectedWidget.people}}</div>
+                            </div>
+                        </md-input-container>
+                        <md-input-container class="md-block" flex-gt-sm>
+                            <label>Capacity</label>
+                            <input name="Capacity" ng-model="selectedWidget.Capacity" required type="number" step="1" min="1">
+                            <div ng-messages="tsForm.Capacity.$error">
+                                <div ng-message="required">Please define max capacity.</div>
+                                <div ng-message="min">Minimum default size  1</div>
+                            </div>
+                        </md-input-container>
+                    </div>
+                    <div layout="row" layout-align="center center" flex="grow">
+                        <md-content layout="column" layout-align="center strech" style="width:100%;">
+                            <div layout="row" layout-align="center center" flex="grow">
+                                <md-input-container class="md-block" flex="50">
+                                    <label>ImageUri</label>
+                                    <md-icon><i class="fa fa-image fa-fw"></i></md-icon>
+                                    <input ng-model="selectedWidget.ImageUri" disabled>
+                                </md-input-container>
+                                <md-input-container flex="50">
+                                    <div layout="column" layout-align="center center" flex="grow">
+                                        <div>
+                                            Square&nbsp;/&nbsp;Rounded <i class="fa fa-info-circle fa-fw" style="color:#3F51B5;"><md-tooltip md-direction="right">Default shape loadout</md-tooltip></i>
+                                        </div>
+                                        <md-switch class="md-primary" md-no-ink aria-label="SwitchPushing" ng-model="selectedWidget.Shape"></md-switch>
+                                    </div>
+                                </md-input-container>
+                            </div>
+                            <div flex-xs layout="row" layout-align="center center" flex="grow" sstyle="" min-height:100px;">
+                                <div ng-show="loadingImage != true">
+                                    <div ng-show="selectedWidget.ImageUri != null && selectedWidget.ImageUri!== undefined && selectedWidget.ImageUri !=''" class="modal-table-img">
+                                        <img ng-src="{{selectedWidget.ImageUri}}" />
+                                    </div>
+                                    <div ng-show="selectedWidget.ImageUri == null || selectedWidget.ImageUri == undefined && selectedWidget.ImageUri ==''" class="modal-table-img" style="background-image: url('Images/noImagePreview.png');"></div>
+                                </div>
+                                <div ng-show="loadingImage==true" flex="50" layout-align="center center">
+                                    <md-subheader class="md-no-sticky">Uploading image ...</md-subheader>
+                                    <md-progress-linear md-mode="indeterminate"></md-progress-linear>
+                                </div>
+                            </div>
+                            <div flex-xs layout="row" layout-align="center center" flex="grow">
+                                <md-button class="md-primary  md-raised md-secondary" ng-click="selectImageForWidget()" style="margin-right:20px;" aria-label="imgselectsidepanel"><i class="fa fa-photo fa-fw"></i></md-button>
+                                <md-button class="md-primary" aria-label="removeImg" ng-click="selectedWidget.ImageUri=null">
+                                    <md-tooltip md-direction="top">Remove Image</md-tooltip>
+                                    <i class="fa fa-trash-o fa-fw"></i>
+                                </md-button>
+                            </div>
+                        </md-content>
+                    </div>
+                </md-content>
+            </div>
+        </md-content>
+        <br />
+        <md-divider></md-divider>
+        <md-content layout="column" layout-align="start stretch" flex>
+            <md-button class="md-mini md-primary md-raised" ng-disabled="tsForm.$invalid" ng-click="addWidget()" aria-label="addWidget">Add Widget</md-button>
+        </md-content>
+    </form>
+</script>
+
+<script type="text/ng-template" id="regionFormModal">
+    <form aria-label="RegionForm" name="regionEditForm">
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>Manage Region Properties</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" aria-label="CloseModal" ng-click="hide()">
+                    <md-icon md-svg-icon="navigation:close"></md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content>
+            <div ng-cloak class="md-inline-form">
+                <div class="md-dialog-content">
+                    <md-content layout="column" layout-align="start stretch" flex>
+                        <div layout-gt-sm="row">
+                            <md-input-container class="md-block" flex-gt-sm>
+                                <label>Description</label>
+                                <input name="Description" ng-model="region.Description" required>
+                                <div ng-messages="regionEditForm.Description.$error">
+                                    <div ng-message="required">Description field can't be empty </div>
+                                </div>
+                            </md-input-container>
+
+                            <md-input-container class="md-block" flex-gt-sm>
+                                <label>Max Capacity</label>
+                                <input name="MaxCapacity" ng-model="region.MaxCapacity" type="number" step="1" required min="1">
+                                <div ng-messages="regionEditForm.MaxCapacity.$error">
+                                    <div ng-message="required">You need to specify region's Capacity</div>
+                                    <div ng-message="min">Provide a min region Capacity of 1</div>
+                                </div>
+                            </md-input-container>
+                        </div>
+                        <div layout-gt-sm="row">
+                            <div layout-gt-sm="column" flex="50" layout-align="center strech">
+                                <md-input-container class="md-block" flex-gt-sm>
+                                    <label>BluePrintPath</label>
+                                    <md-icon><i class="fa fa-image fa-fw"></i></md-icon>
+                                    <input ng-model="region.BluePrintPath" disabled>
+                                </md-input-container>
+                                <div flex-xs layout="row" layout-align="center center">
+                                    <upload-image-file upload-model="uploadModel" data="region" datafield="BluePrintPath" loading-state="loadingImage"></upload-image-file>
+                                    <md-button class="md-primary" aria-label="removeImg" ng-click="region.BluePrintPath=null">
+                                        <md-tooltip md-direction="top">Remove Image</md-tooltip>
+                                        <i class="fa fa-trash-o fa-fw"></i>
+                                    </md-button>
+                                </div>
+                            </div>
+                            <md-content class="md-block" flex-gt-sm layout="column" layout-align="center center">
+                                <div ng-show="loadingImage ==false">
+                                    <div ng-show="region.BluePrintPath != null && region.BluePrintPath!== undefined && region.BluePrintPath !=''" class="form-img-preview" style="background-image: url({{region.BluePrintPath}});"></div>
+                                    <div ng-show="region.BluePrintPath == null || region.BluePrintPath == undefined && region.BluePrintPath ==''" class="form-img-preview" style="background-image: url('Images/noImagePreview.png');"></div>
+                                </div>
+                                <div ng-show="loadingImage==true" flex="50" layout-align="center center">
+                                    <md-subheader class="md-no-sticky">Uploading image ...</md-subheader>
+                                    <md-progress-linear md-mode="indeterminate"></md-progress-linear>
+                                </div>
+                                <!--  <md-progress-circular ng-show="loadingImage==true" class="md-hue-2" md-mode="determinate" value="percentProccess" md-diameter="60px"></md-progress-circular>-->
+                            </md-content>
+                        </div>
+                    </md-content>
+                </div>
+            </div>
+        </md-dialog-content>
+        <md-dialog-actions layout="row">
+            <md-button ng-click="cancel('cancel')" aria-label="CancelAction">
+                Cancel
+            </md-button>
+            <md-button class="md-primary" ng-disabled="regionEditForm.$invalid" ng-click="confirm('ok')" style="margin-right:20px;" aria-label="RegionForm">
+                OK
+            </md-button>
+        </md-dialog-actions>
+    </form>
+</script>
+<script type="text/ng-template" id="predifinedTablesModal">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>Choose from Default Tables</h2><span flex></span>
+            <md-button class="md-icon-button" aria-label="CloseModal" ng-click="hide()">
+            <md-icon md-svg-icon="navigation:close"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <div layout="row" md-whiteframe="9" style="margin-bottom:4px;" class="md-padding">
+        <md-input-container class="md-block" flex style="margin-bottom:0;"><label>Name</label><input ng-model="samplefilter.name"></md-input-container>
+        <md-input-container class="md-block" flex style="margin-bottom:0;"><label>SizeX</label><input ng-model="samplefilter.sizeX" type="number" step="1" min="1"></md-input-container>
+        <md-input-container class="md-block" flex style="margin-bottom:0;"><label>SizeY</label><input ng-model="samplefilter.sizeY" type="number" step="1" min="1"></md-input-container>
+        <md-input-container class="md-block" flex style="margin-bottom:0;"><label>Capacity</label><input ng-model="samplefilter.Capacity" type="number" step="1" min="1"></md-input-container>
+        <md-input-container class="md-block" flex style="margin-bottom:0;">
+            <label>Type</label><md-select name="typeFilter" ng-model="samplefilter.imgType">
+                <md-option ng-repeat="ch in ['Graphics','Linear','Special','All']" value="{{ch}}">{{ch}}</md-option>
+            </md-select>
+        </md-input-container>
+        <div layout="column" layout-align="center center">
+            <md-button class="md-warn md-fab md-mini" aria-label="clearsampleimgfilters" ng-click="clearsamplefilter()"><i class="fa fa-times fa-fw"><md-tooltip md-direction="top">Clear Filters</md-tooltip></i></md-button>
+        </div>
+    </div>
+    <br />
+    <div layout="row" flex="grow">
+        <div layout="column" flex="75" style="max-height:75vh; overflow-y:auto; overflow-x:hidden;">
+            <div ng-repeat="type in modelTypes | filter: imgTypeDropFilter" style="width:100%;" class="imgcontainer">
+                <md-subheader class="md-no-sticky">{{type}}</md-subheader>
+                <md-card flex="35" ng-repeat="tbl in tableModels[type] |filter:imgPropFilter" class="imgitem"
+                         style="min-width:250px; max-width:250px; width:250px; cursor:pointer;"
+                         ng-style="(selectedImg.selected == true) ?{'background-color':'blue'} : {}" ng-click="selectModel(tbl)">
+                    <md-card-title>
+                        <md-card-title-text>
+                            <strong>{{tbl.name}}</strong>
+                            <span class="md-subhead">Size:&nbsp;({{tbl.sizeX}}&nbsp;x&nbsp;{{tbl.sizeY}})</span>
+                            <span class="md-subhead">Chairs:&nbsp;{{tbl.Capacity}}</span>
+                        </md-card-title-text>
+                        <md-card-title-media>
+                            <div class="md-media-sm card-media">
+                                <div class="thumbnail" ng-class="(selectedImg.sampleImageUri == tbl.ImageUri) ? 'selectedCompEffect': ''" style="margin:auto;">
+                                    <img ng-class="(tbl.sizeX > tbl.sizeY)?'portrait':'landscape'" ng-src="{{tbl.ImageUri}}" alt="{{tbl.ImageUri}}">
+                                </div>
+                            </div>
+                        </md-card-title-media>
+                    </md-card-title>
+                    <md-card-content layout="row" layout-align="space-between">
+                        <span class="md-subhead" style="font-size: 12px;">Img:&nbsp;{{tbl.ImageName}}</span>
+                    </md-card-content>
+                </md-card>
+            </div>
+        </div>
+        <div layout="column" flex="25" class="md-margin" style="margin-top:0;">
+            <h4 class="md-primary">Selected Model</h4>
+            <div style="margin:auto;" layout="column" layout-align="center center" flex="grow" md-whiteframe="5" ng-show="modelToIns.ImageUri != null && modelToIns.ImageUri!== undefined && modelToIns.ImageUri !=''" class="form-img-preview">
+                <img ng-src="{{modelToIns.ImageUri}}" alt="Image not found" />
+            </div>
+            <strong>{{modelToIns.name}}</strong>
+            <span class="md-subhead">Size:&nbsp;({{modelToIns.sizeX}}&nbsp;x&nbsp;{{modelToIns.sizeY}})&nbsp;&nbsp;Chairs:&nbsp;{{modelToIns.Capacity}}</span>
+            <span class="md-subhead">Img:&nbsp;{{modelToIns.ImageName}}</span>
+            <md-divider></md-divider>
+            <br />
+        </div>
+    </div>
+
+    <md-dialog-actions layout="row" style="border-top:0;">
+        <md-button ng-click="cancel('cancel')" aria-label="CancelAction">Cancel</md-button>
+        <md-button class="md-primary" ng-click="confirm('no-image')" style="margin-right:20px;" aria-label="ClearAction">No Image</md-button>
+        <md-button class="md-primary" ng-click="confirm('ok')" style="margin-right:20px;" aria-label="ConfAction">Select</md-button>
+    </md-dialog-actions>
+</script>
+<!--Modal Form of table options -->
+<script type="text/ng-template" id="tableModal">
+    <form aria-label="tableEditModalForm" name="tableEditModalForm">
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>Manage Table Properties</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" aria-label="CloseModal" ng-click="hide()">
+                    <md-icon md-svg-icon="navigation:close"></md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content>
+            <div ng-cloak class="md-inline-form">
+                <div class="md-dialog-content">
+                    <md-content layout="column" layout-align="start stretch" flex>
+                        <div layout-gt-sm="row">
+                            <!--<md-input-container class="md-block" flex-gt-sm>
+                                <label>Description</label>
+                                <input ng-model="ctable.Description" name="Description">
+                            </md-input-container>
+                            <md-input-container class="md-block" flex-gt-sm>
+                                <label>Sales Description</label>
+                                <input ng-model="ctable.SalesDescription">
+                            </md-input-container>-->
+                            <div layout="row" layout-align="center center" flex="grow">
+                                <md-input-container class="md-block" flex-gt-sm>
+                                    <label>Code</label>
+                                    <input ng-model="ctable.Code" name="Code" required min="1">
+                                    <div ng-messages="tableEditModalForm.Code.$error">
+                                        <div ng-message="required">You need to specify a Table unique code</div>
+                                    </div>
+                                </md-input-container>
+                                <md-input-container flex="50">
+                                    <div layout="row" layout-align="center center" flex="grow">
+                                        Square&nbsp;
+                                        <md-switch class="md-primary" md-no-ink aria-label="SwitchPushing" ng-model="ctable.Shape"></md-switch>
+                                        &nbsp;Rounded
+                                        <i class="fa fa-info-circle fa-fw" style="color:#3F51B5;">
+                                            <md-tooltip md-direction="right">Default shape loadout</md-tooltip>
+                                        </i>
+                                    </div>
+                                </md-input-container>
+                            </div>
+                        </div>
+                        <div layout-gt-sm="row">
+                            <md-input-container class="md-block" flex-gt-sm>
+                                <label>Min Capacity</label>
+                                <md-icon><i class="fa fa-users fa-fw"></i></md-icon>
+                                <input type="number" step="1" name="MinCapacity" ng-model="ctable.MinCapacity" required min="1">
+                                <div ng-messages="tableEditModalForm.MinCapacity.$error">
+                                    <div ng-message="required">You need to specify a minimum capacity</div>
+                                    <div ng-message="min">Minimum default must be atleast 1</div>
+                                </div>
+                            </md-input-container>
+                            <md-input-container class="md-block" flex-gt-sm>
+                                <label>Max Capacity</label>
+                                <md-icon><i class="fa fa-users fa-fw"></i></md-icon>
+                                <input type="number" step="1" ng-model="ctable.MaxCapacity" name="MaxCapacity" required min="1">
+                                <div ng-messages="tableEditModalForm.MaxCapacity.$error">
+                                    <div ng-message="required">You need to specify a maximum capacity</div>
+                                    <div ng-message="min">Maximum default must be atleast 1</div>
+                                </div>
+                            </md-input-container>
+                            <md-input-container class="md-block" flex-gt-sm>
+                                <label>Turnover Time</label>
+                                <md-icon><i class="fa fa-clock-o fa-fw"></i></md-icon>
+                                <input ng-model="ctable.TurnoverTime">
+                            </md-input-container>
+                        </div>
+                        <div layout-gt-sm="row">
+                            <div layout-gt-sm="column" flex="50">
+                                <md-input-container class="md-block" flex-gt-sm>
+                                    <label>ImageUri</label>
+                                    <md-icon><i class="fa fa-image fa-fw"></i></md-icon>
+                                    <input ng-model="ctable.ImageUri" disabled>
+                                </md-input-container>
+                                <div flex-xs layout="row" layout-align="center center">
+                                    <upload-image-file upload-model="uploadModel" data="ctable" datafield="ImageUri" loading-state="loadingImage"></upload-image-file>
+                                    <md-button class="md-primary" aria-label="removeImg" ng-click="ctable.ImageUri=null">
+                                        <md-tooltip md-direction="top">Remove Image</md-tooltip>
+                                        <i class="fa fa-trash-o fa-fw"></i>
+                                    </md-button>
+                                </div>
+                                <md-input-container class="md-block" flex-gt-sm>
+                                    <label>Angle</label>
+                                    <md-icon><i class="fa fa-rotate-right fa-fw"></i></md-icon>
+                                    <input type="number" step="1" ng-model="ctable.Angle">
+                                </md-input-container>
+                            </div>
+                            <md-content class="md-block" flex-gt-sm layout="column" layout-align="center center">
+                                <div ng-show="loadingImage != true">
+                                    <div ng-show="ctable.ImageUri != null && ctable.ImageUri!== undefined && ctable.ImageUri !=''" class="form-img-preview">
+                                        <img ng-src="{{ctable.ImageUri}}" />
+                                    </div>
+                                    <div ng-show="ctable.ImageUri == null || ctable.ImageUri == undefined && ctable.ImageUri ==''" class="form-img-preview" style="background-image: url('Images/noImagePreview.png');"></div>
+                                </div>
+                                <div ng-show="loadingImage==true" flex="50" layout-align="center center">
+                                    <md-subheader class="md-no-sticky">Uploading image ...</md-subheader>
+                                    <md-progress-linear md-mode="indeterminate"></md-progress-linear>
+                                </div>
+                            </md-content>
+                        </div>
+
+                    </md-content>
+                </div>
+            </div>
+        </md-dialog-content>
+        <md-dialog-actions layout="row">
+            <md-button ng-click="cancel('cancel')" aria-label="CancelAction">Cancel</md-button>
+            <md-button class="md-primary" ng-disabled="tableEditModalForm.$invalid" ng-click="confirm('ok')" style="margin-right:20px;" aria-label="ConfAction">OK</md-button>
+        </md-dialog-actions>
+    </form>
+</script>
+
+
+
+
+
+<style>
+    .selectedCompEffect {
+        border: 3px solid red;
+    }
+
+    .imgcontainer {
+        text-align: justify;
+        -ms-text-justify: distribute-all-lines;
+        text-justify: distribute-all-lines;
+    }
+
+    .imgitem {
+        vertical-align: top;
+        display: inline-block;
+    }
+
+    .thumbnail {
+        position: relative;
+        width: 50px;
+        height: 50px;
+        max-width: 50px;
+        max-height: 50px;
+        overflow: hidden;
+    }
+
+        .thumbnail img {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            height: 100%;
+            width: auto;
+            -webkit-transform: translate(-50%,-50%);
+            -ms-transform: translate(-50%,-50%);
+            transform: translate(-50%,-50%);
+        }
+
+            .thumbnail img.portrait {
+                width: 100%;
+                height: auto;
+            }
+
+            .thumbnail img.landscape {
+                width: auto;
+                height: 100%;
+            }
+
+    .multiselected {
+        border: 4px solid orange;
+    }
+
+    .md-button.md-fab.rcmofab:hover, .md-button.md-fab.rcmofab.md-focused {
+        background-color: #000 !important;
+        color: white;
+    }
+
+    .lock-size {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .table-model-image-thumb {
+        width: 50px;
+        height: 50px;
+        max-width: 50px;
+        max-height: 50px;
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+    }
+
+    .widget-display-content {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(250, 250, 250, 0.3);
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+    }
+
+    .modal-table-img {
+        max-height: 100px;
+        max-width: 200px;
+        height: 100px;
+        width: 100px;
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+    }
+
+        .modal-table-img > img {
+            max-width: 100%;
+            max-height: 100px;
+        }
+
+    .custom-widget-header {
+        cursor: move;
+    }
+
+    .md-toolbar-tools > md-button.md-icon-button {
+        cursor: pointer;
+    }
+
+    .tables-widget-toolbar {
+        min-height: 10px;
+        font-size: 10px;
+        opacity: 0;
+    }
+
+        .tables-widget-toolbar > .md-toolbar-tools {
+            opacity: 0;
+        }
+
+        .tables-widget-toolbar:hover > .md-toolbar-tools, .tables-widget-toolbar:hover {
+            opacity: 1;
+        }
+
+    .fixed-bg {
+        min-height: 75vh;
+        max-height: 75vh;
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+    }
+
+    .controls {
+        margin-bottom: 20px;
+    }
+
+    .page-header {
+        margin-top: 20px;
+    }
+
+    ul {
+        list-style: none;
+    }
+
+    .box {
+        height: 100%;
+        border: 1px solid #ccc;
+        background-color: #fff;
+    }
+
+    .box-header {
+        background-color: #eee;
+        border-bottom: 1px solid #ccc;
+        cursor: move;
+        position: relative;
+    }
+
+        .box-header h5 {
+            margin-top: 0px;
+            display: inline-block;
+        }
+
+    .box-content {
+    }
+
+    .box-header-btns {
+        cursor: pointer;
+        position: absolute;
+    }
+
+    a {
+        color: #ccc;
+    }
+
+    form {
+        margin-bottom: 0;
+    }
+
+    .gridster {
+        border: 1px solid #ccc;
+    }
+</style>
+

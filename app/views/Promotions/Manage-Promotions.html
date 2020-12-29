@@ -1,0 +1,169 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+        .cell-style {
+            overflow: hidden;
+            padding: 4px;
+            text-overflow: ellipsis;
+        }
+
+        .selected-whiteframe {
+            box-shadow: 0px 5px 5px -3px rgba(63, 81, 181, 0.2), 0px 8px 10px 1px rgba(63, 81, 181, 0.14), 0px 3px 14px 2px rgba(63, 81, 181, 0.12);
+            border-left: 4px solid #3f51b5;
+        }
+
+        .btn {
+            background-color: darkred;
+            border: none;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 50%;
+        }
+
+        .editbtn {
+            background-color: #4165f4; /*navy blue*/
+            border: none;
+            color: white;
+            padding: 12px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 22px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 90%;
+        }
+
+        .RedCross {
+            background-color: #ff0000; /*red*/
+            border: none;
+            color: white;
+            padding: 6px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 10px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 90%;
+        }
+
+        .cell-style {
+            overflow: hidden;
+            padding: 4px;
+            text-overflow: ellipsis;
+        }
+
+        .selected-whiteframe {
+            box-shadow: 0px 5px 5px -3px rgba(63, 81, 181, 0.2), 0px 8px 10px 1px rgba(63, 81, 181, 0.14), 0px 3px 14px 2px rgba(63, 81, 181, 0.12);
+            border-left: 4px solid #3f51b5;
+        }
+    </style>
+</head>
+<body>
+    <div ng-controller="PromotionsMainCTRL as PromotionsMain" ng-init="PromotionsMain.initView()" layout-fill layout="column" layout-align="start stretch">
+        <div flex="7">
+            <md-subheader class="wrappers-view-header md-whiteframe-7dp md-primary">Manage Promotions </md-subheader>
+        </div>
+        <div flex="100" layout="row" style="height:100%;">
+            <div flex="70">
+                <div layout="row">
+                    <div flex="40">
+                        <div class="input-group">
+                            <span style="position:relative;" class="add-clear-span">
+                                <input class="form-control" type="text" style="border-radius: 150px; width: 300px;" placeholder="Search ..." ng-model="searchText" ng-change="searchText">
+                            </span>
+                            <span class="input-group-btn">
+                                <a class="btn" style="color: rgb(204, 204, 204); text-decoration: none; position: absolute; right: 0px; top: 0px; z-index: 50;" ng-click="searchText = ''"><i class="fa fa-times"></i></a>
+                            </span>
+                        </div>
+                    </div>
+                    <div flex="60" style="text-align: end;">
+                        <md-button aria-label="savedyngridchanges" id="addData" class="md-raised md-primary" style="line-height: 32px; min-height: 32px;" align="right" ng-click="addPromotion($event ,'Promotions',row,'add')">Add&nbsp;<i class="fa fa-plus-circle fa-fw"></i> </md-button>
+                    </div>
+                </div>
+                <div layout="row" layout-align="start center" class="md-padding" style="font-variant:small-caps;">
+                    <strong flex="15">Description</strong>
+                    <strong flex="10">Code</strong>
+                    <strong flex="10">Discount</strong>
+                    <strong flex="10">AskOperator</strong>
+                    <strong flex="10">ReceiptNote</strong>
+                    <strong flex="15">DiscountType</strong>
+                    <strong flex="10">AskCode</strong>
+                    <strong flex="10" align="center"></strong>
+                    <strong flex="10" align="center"></strong>
+                </div>
+                <div layout="row">
+                    <md-divider></md-divider>
+                </div>
+                <div layout="row" style="overflow: auto; height: 85%;">
+                    <md-list flex="grow">
+                        <md-list-item class="md-whiteframe-4dp" ng-repeat="row in PromotionsMain.promos |filter: searchText" style="margin-bottom:10px; background-color:white;">
+                            <div class="md-list-item-text" layout="column" layout-align="start stretch" flex="grow">
+                                <div layout="row" layout-align="start center">
+                                    <span class="cell-style" flex="15" ng-click="viewPromotionDetails(row,'SetupProductandProductCategories')" style="cursor:pointer;">{{row.Description}}</span>
+                                    <span class="cell-style" flex="10">{{row.Code}}</span>
+                                    <span class="cell-style" flex="10">{{row.Discount}}</span>
+                                    <span class="cell-style" flex="10">{{row.AskOperator}}</span>
+                                    <span class="cell-style" flex="10">{{row.ReceiptNote}}</span>
+                                    <span ng-if=" row.DiscountType == 0" class="cell-style" flex="15">All Discount</span>
+                                    <span ng-if=" row.DiscountType == 1" class="cell-style" flex="15">Cheapest Only</span>
+                                    <span ng-if=" row.DiscountType == 2" class="cell-style" flex="15">Most Expensive Only</span>
+                                    <span ng-if=" row.DiscountType == 3" class="cell-style" flex="15">User Decision</span>
+                                    <span class="cell-style" flex="10">{{row.AskCode}}</span>
+                                    <span flex="10" align="center">
+                                        <md-button class="md-fab md-mini md-primary  md-raised" ng-click="editPromotion($event ,'Promotions',row,'edit') " aria-label="EditPosInfo"><i class="fa fa-pencil fa-fw"></i><md-tooltip md-direction="top">Edit selected Promotion</md-tooltip></md-button>
+                                    </span>
+                                    <span flex="10" align="center">
+                                        <md-button class=" md-fab md-mini" ng-disabled="processingUser" ng-click='removeHeader(row)'><i class="fa fa-trash fa-fw"></i><md-tooltip md-direction="top">Delete selected Promotion</md-tooltip></md-button>
+                                    </span>
+                                </div>
+                            </div>
+                    </md-list>
+                </div>
+            </div>
+            <div flex="30" style="margin-left:5px;">
+                <div layout="row" style="max-height: 44px;">
+                    <div flex="40">
+                        <md-select placeholder="Pricelists" ng-model="selectedPricelist" ng-change="PromotionsMain.addSelectedPricelist(selectedPricelist)">
+                            <md-option ng-repeat="pricelist in PromotionsMain.promotionsLookUps.LookUpPriceListId" value="{{pricelist}}">{{pricelist.Value}}</md-option>
+                        </md-select>
+                    </div>
+                    <div flex="60" style="text-align: end;">
+                        <md-button aria-label="savedyngridchanges" id="addData" class="md-raised md-primary" style="line-height: 32px; min-height: 32px;" align="right" ng-click="PromotionsMain.SavePricelists()">Save&nbsp;<i class="fa fa-save fa-fw"></i> </md-button>
+                    </div>
+                </div>
+                <div layout="row" layout-align="start center" class="md-padding" style="font-variant:small-caps;">
+                    <strong flex="50">Pricelist</strong>
+                    <strong flex="50"></strong>
+                </div>
+                <div layout="row">
+                    <md-divider></md-divider>
+                </div>
+                <div layout="row" style="overflow: auto; height: 85%;">
+                    <!-- Spinner -->
+                    <div layout="column" layout-align="center center" style="overflow:auto;" ng-if="PromotionsMain.restbusy == true" flex="grow">
+                        <md-progress-circular md-diameter="70"></md-progress-circular>
+                    </div>
+                    <md-list flex="grow">
+                        <md-list-item class="md-whiteframe-4dp" ng-repeat="row in PromotionsMain.promosPricelists" style="margin-bottom:10px; background-color:white;">
+                            <div class="md-list-item-text" layout="column" layout-align="start stretch" flex="grow">
+                                <div layout="row" layout-align="start center">
+                                    <span class="cell-style" flex="50">{{row.PricelistDescr}}</span>
+                                    <span flex="50" align="center">
+                                        <md-button class=" md-fab md-mini" ng-disabled="processingUser" ng-click='PromotionsMain.removePricelist(row)'><i class="fa fa-trash fa-fw"></i><md-tooltip md-direction="top">Delete selected Pricelist</md-tooltip></md-button>
+                                    </span>
+                                </div>
+                            </div>
+                    </md-list>
+                </div>
+            </div>
+    </div>
+</body>
+</html>

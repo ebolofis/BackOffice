@@ -1,0 +1,29 @@
+﻿<div ng-controller="testController">
+    <h4>Hello snake</h4>
+    <span>I am a single template2 and my value of desc is : {{model.exdesc}}</span>
+</div>
+
+
+<script id="testinnertemplate" type="text/ng-template">
+    <md-content>
+        <div layout="row" layout-align="center stretch" flex="grow">
+            <md-input-container class="md-block" flex="20">
+                <label>Id</label>
+                <input name="Id" ng-model="dataModel.Id" required disabled>
+            </md-input-container>
+            <md-input-container class="md-block" flex="60">
+                <label>Description</label>
+                <input name="Description" ng-model="dataModel.Description" required>
+                <div ng-messages="dynFormEdit.Description.$error">
+                    <div ng-message="required">You need to specify a Description</div>
+                </div>
+            </md-input-container>
+            <md-input-container class="md-block" flex="20">
+                <label>Code</label>
+                <input name="Code" ng-model="dataModel.Code" required>
+                <div ng-messages="dynFormEdit.Code.$error">
+                    <div ng-message="required">You need to specify a Code</div>
+                </div>
+            </md-input-container>
+        </div>
+</script>

@@ -1,0 +1,126 @@
+﻿<md-dialog ng-class="{'fullscreen-dialog' : fullscreenModal}" aria-label="EditPosInfo" ng-cloak style="min-width:50vw; min-height: 80vh;">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2 style="text-align:center;">{{header.Description}} : #{{header.Id}}</h2>
+            <span flex></span>
+            <toggle-fs-modal tvar="fullscreenModal"></toggle-fs-modal>
+            <md-button class="md-icon-button" aria-label="CloseModal" ng-click="cancel()">
+                <md-icon md-svg-icon="navigation:close"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <div align="center">
+        <hr>
+        <h5 align="center"> <strong>  Manage PromoCombos and PromoDiscounts </strong></h5>
+        <md-button aria-label="addDataRow" id="addDetail" class="md-raised" style="line-height: 32px; min-height: 32px; background-color:lightgray;" align="center" ng-disabled="savingProcess" ng-click="addComboDetail($event ,'PromotionCombos',header,'add'); cancel()">Add New Combo Product &nbsp;<i class="fa fa-plus-circle fa-fw"></i> </md-button>
+    </div>
+    <md-dialog-content layout="column" layout-align="start stretch" flex="grow">
+        <div layout="column" class="md-padding" flex="grow">
+            <div layout="column" layout-align="start stretch" style="overflow:hidden;">
+                <md-toolbar style="min-height:50px;">
+                    <h4 class="detail-header-info">Promotion Combos</h4>
+                </md-toolbar>
+                <div layout="column" layout-align="start stretch" flex="grow" style="overflow:auto;">
+                    <div layout="row" layout-align="start center" class="md-padding" style="font-variant:small-caps; padding:1%;">
+                        <!--<strong flex="20">HeaderId</strong>-->
+                        <strong flex="15">Category</strong>
+                        <strong flex="15">Product</strong>
+                        <strong flex="20">ItemQuantity</strong>
+                        <strong flex="20">ItemIsProduct</strong>
+                        <strong flex="20" align="center">Edit</strong>
+                        <strong flex="20" align="center">Delete</strong>
+                    </div>
+                    <hr>
+                    <div>
+                        <md-list-item class="md-whiteframe-4dp" ng-repeat="detail in details.PromoCombo">
+                            <div class="md-list-item-text" layout="column" layout-align="start stretch" flex="grow">
+                                <div layout="row" layout-align="start center">
+                                    <!--<span class="cell-style" flex="20">{{detail.HeaderId}}<md-tooltip md-direction="top">{{detail.HeaderId}}</md-tooltip></span>-->
+                                    <span ngIf="detail.ItemIsProduct==0" class="cell-style" flex="15">{{detail.ProductCatDescr}}<md-tooltip md-direction="top">{{detail.ProductCatDescr}}</md-tooltip></span>
+                                    <span ngIf="detail.ItemIsProduct==true" class="cell-style" flex="15">{{detail.ProductDescr}}<md-tooltip md-direction="top">{{detail.ProductDescr}}</md-tooltip></span>
+                                    <span class="cell-style" flex="20">{{detail.ItemQuantity}}<md-tooltip md-direction="top">{{detail.ItemQuantity}}</md-tooltip></span>
+                                    <span class="cell-style" flex="20">{{detail.ItemIsProduct}}<md-tooltip md-direction="top">{{detail.ItemIsProduct}}</md-tooltip></span>
+                                    <span flex="20" align="center">
+                                        <md-button class="md-fab md-mini md-primary  md-raised" ng-click="editPromoCombos($event ,'PromotionCombos',detail,'edit'); cancel()" aria-label="EditPosInfo"><i class="fa fa-pencil fa-fw"></i>  <md-tooltip md-direction="top">Edit selected Promotion Combo</md-tooltip></md-button>
+                                    </span>
+                                    <span flex="20" align="center">
+                                        <md-button class=" md-fab md-mini" ng-disabled="processingUser" ng-click='DeleteCombo(detail); cancel()'><i class="fa fa-trash fa-fw"></i>  <md-tooltip md-direction="top">Delete selected Combo</md-tooltip></md-button>
+                                    </span>
+                                </div>
+                            </div>
+                        </md-list-item>
+                    </div>
+                    <hr>
+                </div>
+            </div>
+        </div>
+        <div align="center">
+            <md-button aria-label="addDataRow" id="addDetail" class="md-raised" style="line-height: 32px; min-height: 32px; background-color:lightgray;" align="center" ng-disabled="savingProcess" ng-click="addPromoDiscount($event ,'PromotionDiscounts',header,'add'); cancel()">Add New Product Discount &nbsp;<i class="fa fa-plus-circle fa-fw"></i> </md-button>
+            </div>
+            <div layout="column" class="md-padding" flex="grow">
+                <div layout="column" layout-align="start stretch" style="overflow:hidden;">
+                    <md-toolbar style="min-height:50px;">
+                        <h4 class="detail-header-info">Promotion Discounts</h4>
+                    </md-toolbar>
+                    <div layout="column" layout-align="start stretch" flex="grow" style="overflow:auto;">
+                        <div layout="row" layout-align="start center" class="md-padding" style="font-variant:small-caps; padding:1%;">
+                            <!--<strong flex="20">HeaderId</strong>-->
+                            <strong flex="15">Category</strong>
+                            <strong flex="15">Product</strong>
+                            <strong flex="20">ItemQuantity</strong>
+                            <strong flex="20">ItemIsProduct</strong>
+                            <strong flex="20" align="center">Edit</strong>
+                            <strong flex="20" align="center">Delete</strong>
+                        </div>
+                        <hr>
+                        <div>
+                            <md-list-item class="md-whiteframe-4dp" ng-repeat="detail in details.PromoDiscounts">
+                                <div class="md-list-item-text" layout="column" layout-align="start stretch" flex="grow">
+                                    <div layout="row" layout-align="start center">
+                                        <!--<span class="cell-style" flex="20">{{detail.HeaderId}}<md-tooltip md-direction="top">{{detail.HeaderId}}</md-tooltip></span>-->
+                                        <span ngIf="detail.ItemIsProduct==false" class="cell-style" flex="15">{{detail.ProductCatDescr}}<md-tooltip md-direction="top">{{detail.ProductCatDescr}}</md-tooltip></span>
+                                        <span ngIf="detail.ItemIsProduct==true" class="cell-style" flex="15">{{detail.ProductDescr}}<md-tooltip md-direction="top">{{detail.ProductDescr}}</md-tooltip></span>
+                                        <span class="cell-style" flex="20">{{detail.ItemQuantity}}<md-tooltip md-direction="top">{{detail.ItemQuantity}}</md-tooltip></span>
+                                        <span class="cell-style" flex="20">{{detail.ItemIsProduct}}<md-tooltip md-direction="top">{{detail.ItemIsProduct}}</md-tooltip></span>
+                                        <span flex="20" align="center">
+                                            <md-button class="md-fab md-mini md-primary  md-raised" ng-click="editDiscount($event ,'PromotionDiscounts',detail,'edit'); cancel()" aria-label="EditPosInfo"><i class="fa fa-pencil fa-fw"></i>  <md-tooltip md-direction="top">Edit selected Promotion Discount</md-tooltip></md-button>
+                                        </span>
+                                        <span flex="20" align="center">
+                                            <md-button class=" md-fab md-mini" ng-disabled="processingUser" ng-click='DeleteDiscount(detail); cancel()'><i class="fa fa-trash fa-fw"></i>  <md-tooltip md-direction="top">Delete selected Combo</md-tooltip></md-button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </md-list-item>
+                        </div>
+                        <hr>
+                    </div>
+                </div>
+            </div>
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+        <md-button class="md-raised" ng-click="cancel()" aria-label="CancelAction">Close</md-button>
+    </md-dialog-actions>
+</md-dialog>
+<style>
+    .list-item {
+        min-height: 30px;
+        border-bottom: 1px solid dashed;
+    }
+
+    .detail-isextra {
+        background-color: rgba(255, 152, 0, 0.34);
+        margin-left: 5%;
+    }
+
+    .property-ref {
+        font-variant: small-caps;
+    }
+
+    .detail-header-info {
+        font-variant: small-caps;
+        color: white;
+        text-align: center;
+        padding: 5px;
+        margin-bottom: 0;
+    }
+</style>

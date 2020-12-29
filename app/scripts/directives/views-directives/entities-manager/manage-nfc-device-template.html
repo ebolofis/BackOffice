@@ -1,0 +1,90 @@
+﻿<div layout="row" layout-align="start stretch" ng-controller="NFCDeviceManagerCtrl" ng-init="init()">
+    <div ng-if="busyProcess == true" layout="column" layout-align="center center" flex="grow"><md-progress-circular md-mode="indeterminate"></md-progress-circular><span>Processing Nfc configuration...</span></div>
+    <div layout="column" layout-align="center stretch" flex="50" ng-if="busyProcess != true">
+        <form name="dynSGIForm">
+            <md-card>
+                <md-card-header>
+                        <md-icon class="md-margin" md-svg-icon="hardware:sim_card"></md-icon>
+                    <md-card-header-text>
+                        <span class="md-title">Edit nfc device configuration</span>
+                        <span class="md-subhead">NFC device ID : {{nfc.Id || '--'}}</span>
+                    </md-card-header-text>
+                </md-card-header>
+                <!--<img ng-src="'card-image.png'" class="md-card-image" alt="image caption">-->
+                <md-card-title>
+                    <md-card-title-text>
+                        <div layout="row" layout-align="start center">
+                            <!-- Enum characterises type of nfc device //public Enums.NFCEnums-->
+                            <md-input-container class="md-block" required flex>
+                                <label>Type</label>
+                                <md-select name="Type" ng-model="nfc.Type" required>
+                                    <md-option ng-repeat="ch in lookups.NFCType" value="{{ch.Key}}">{{ch.Value}}</md-option>
+                                </md-select>
+                                <div class="hint">Selected Type bounds RoomSelector & DateSector values between {{minval}} - {{maxval}}</div>
+                                <div ng-messages="dynSGIForm.Type.$error">
+                                    <div ng-message="required">Nfc device has to be defined by a typee.</div>
+                                </div>
+                            </md-input-container>
+                        </div>
+                        <div layout="row" layout-align="start space-between">
+                            <!-- Room Selector Field -->
+                            <md-input-container class="md-block" required flex="34">
+                                <label>Room Sector</label>
+                                <input name="RoomSector" ng-model="nfc.RoomSector" required type="number" min="{{minval}}" max="{{maxval}}" step="1" ng-change="checkValidModel(nfc,dynSGIForm)">
+                                <div ng-messages="dynSGIForm.RoomSector.$error" multiple md-auto-hide="false">
+                                    <div ng-message="required">You need to specify a Room Sector</div>
+                                    <div ng-message="min">Min Room Sector value is {{minval}} </div>
+                                    <div ng-message="max">Min Room Sector value is {{maxval}} </div>
+                                    <div ng-message="notsame">Room Sector & Date Sector can't be the same</div>
+                                </div>
+                            </md-input-container>
+                            <!-- Date Selector Field -->
+                            <md-input-container class="md-block" required flex="33" ng-if="nfc.ValidateDate == true">
+                                <label>First Date Sector</label>
+                                <input name="FirstDateSector" ng-disabled="nfc.ValidateDate != true" ng-model="nfc.FirstDateSector" required type="number" min="{{minval}}" max="{{maxval}}" step="1" ng-change="checkValidModel(nfc,dynSGIForm)">
+                                <div ng-messages="dynSGIForm.FirstDateSector.$error" multiple md-auto-hide="false">
+                                    <div ng-message="required">You need to specify a DateSector</div>
+                                    <div ng-message="min">Min Date Sector value is {{minval}} </div>
+                                    <div ng-message="max">Max Date Sector value is {{maxval}} </div>
+                                    <div ng-message="notsame">Room Sector & Date Sector can't be the same</div>
+                                </div>
+                            </md-input-container>
+                            <md-input-container class="md-block" required flex="33" ng-if="nfc.ValidateDate == true">
+                                <label>Second Date Sector</label>
+                                <input name="SecondDateSector" ng-disabled="nfc.ValidateDate != true" ng-model="nfc.SecondDateSector" required type="number" min="{{minval}}" max="{{maxval}}" step="1" ng-change="checkValidModel(nfc,dynSGIForm)">
+                                <div ng-messages="dynSGIForm.SecondDateSector.$error" multiple md-auto-hide="false">
+                                    <div ng-message="required">You need to specify a DateSector</div>
+                                    <div ng-message="min">Min Date Sector value is {{minval}} </div>
+                                    <div ng-message="max">Max Date Sector value is {{maxval}} </div>
+                                    <div ng-message="notsame">Room Sector & Date Sector can't be the same</div>
+                                </div>
+                            </md-input-container>
+                        </div>
+                        <div layout="row" layout-align="start stretch">
+                            <div layout-gt-sm="column" flex>
+                                <md-checkbox md-no-ink aria-label="Status" ng-model="nfc.ValidateDate" class="md-primary" ng-change="checkValidModel(nfc)">Use Validate Date</md-checkbox>
+                                <div class="hint">Activating Validate Date will allow you to process DataSector of nfc.</div>
+                                <div class="hint">Unchecking this will auto bind DateSector to -1 on save process.</div>
+                            </div>
+                        </div>
+                    </md-card-title-text>
+                </md-card-title>
+                <!--<md-card-content>Hi i am a content</md-card-content>-->
+                <md-card-actions layout="row" layout-align="end center">
+                    <!--<md-button ng-click="savenfc()">Save</md-button>-->
+                    <md-button ng-disabled="dynSGIForm.$invalid ||  busyProcess ==true " ng-click="savenfc()">Save</md-button>
+                </md-card-actions>
+            </md-card>
+        </form>
+    </div>
+</div>
+<style>
+    .hint {
+        /* Copy styles from ng-messages */
+        font-size: 12px;
+        line-height: 14px;
+        transition: all 0.3s cubic-bezier(0.55, 0, 0.55, 0.2);
+        /* Set our own color */
+        color: grey;
+    }
+</style>

@@ -1,0 +1,236 @@
+﻿<div ng-controller="PosModulesCtrl" ng-init="initView()" ng-cloak style="height: 100%; overflow: hidden;">
+    <md-subheader class="wrappers-view-header md-whiteframe-7dp md-primary">Modules Management</md-subheader>
+    <div layout="column">
+        <!--<div layout="row" layout-align="end center" flex="50">
+            <div class="collapsible-search-box">
+                <form class="searchbox">
+                    <input type="search" placeholder="Search......" name="search" class="searchbox-input" onkeyup="buttonUp();" required>
+                    <input type="submit" class="searchbox-submit" value="GO">
+                    <span class="searchbox-icon">GO</span>
+                </form>
+            </div>
+        </div>-->
+        <div layout="row" layout-align="end center" flex="50">
+            <md-button class="md-raised" ng-click="setupNewPos()">Setup POS&nbsp;<i class="fa fa-tablet fa-fw"></i></md-button>
+        </div>
+        <div layout="row" layout-align="start start" flex="grow">
+            <div layout="column" layout-align="start stretch" flex="grow" style="max-height: 85vh;overflow: hidden;">
+                <md-tabs class="posinfotabs" md-dynamic-height md-border-bottom>
+                    <md-tab label="{{ctype.Value}}" ng-repeat="ctype in  lookupEntities.Type">
+                        <div ng-show="loadingPosInfo==true" layout-align="center center">
+                            <md-subheader class="md-no-sticky">
+                                Loading Modules details <md-subheader>
+                                    <md-progress-linear md-mode="indeterminate"></md-progress-linear>
+                        </div>
+                        <div ng-show="loadingPosInfo !=true && ctype.Key != 1" class="custom-justify-container">
+                            <br />
+                            <div class="custom-justify-item" style="min-width:33%;" ng-repeat="pi in groupedPosInfo[ctype.Key]">
+                                <div ng-include src="'posInfoCard'"></div>
+                            </div>
+                        </div>
+                        <div ng-if="loadingPosInfo !=true && ctype.Key == 1 && (selectedPosInfo == null || selectedPosInfo.Type != 1)" class="custom-justify-container">
+                            <br />
+                            <div class="custom-justify-item" style="min-width:33%;" ng-repeat="pi in groupedPosInfo[ctype.Key]">
+                                <div ng-include src="'posInfoCard'"></div>
+                            </div>
+                        </div>
+                        <div ng-show="loadingPosInfo != true && ctype.Key == 1 && selectedPosInfo != null && selectedPosInfo.Type == 1" flex="grow">
+                            <div layout="row" layout-align="start stretch" flex="grow">
+                                <div class="md-padding" flex="40">
+                                    <md-toolbar style="margin-top:8px;">
+                                        <div class="md-toolbar-tools">
+                                            <h2>Pos Modules</h2>
+                                            <span flex></span>
+
+                                            <!--<md-button class="md-icon-button" aria-label="insDetail">
+                                                <i class="fa fa-search fa-fw"><md-tooltip md-direction="top">Insert new detail</md-tooltip></i>
+                                            </md-button>-->
+                                        </div>
+                                    </md-toolbar>
+                                    <div style="max-height:65vh; overflow-y:auto;">
+                                        <div layout="column" layout-align="start stretch" ng-repeat="pi in groupedPosInfo[ctype.Key]">
+                                            <div ng-include src="'posInfoCard'"></div>
+                                        </div>
+                                        <md-divider></md-divider>
+                                    </div>
+                                </div>
+                                <div class="md-padding" layout="column" layout-align="start stretch" flex="60">
+                                    <div ng-include src="'posInfoDetailItem'"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </md-tab>
+                </md-tabs>
+            </div>
+            <!-- http://embed.plnkr.co/NMvyXBL3FYf2b2XsAlz9 -->
+        </div>
+    </div>
+</div>
+<script id="posInfoCard" type="text/ng-template">
+    <md-card ng-click="selectPosInfo(pi)" class="md-whiteframe-8dp" ng-class="(selectedPosInfo.Id == pi.Id) ? 'selected-whiteframe' : ''" style="min-width:436px;">
+        <md-card-header style="padding:8px;">
+            <md-card-header-text>
+                <div layout="row" layout-align="space-between center">
+                    <div layout="column" layout-align="start start">
+                        <span class="md-subhead">{{lookupEntitiesEnum.DepartmentId[pi.DepartmentId]}}</span>
+                        <h5 class="md-title">{{pi.Description}}</h5>
+                    </div>
+                    <div>
+                        <md-button class="md-icon-button" aria-label="removeRegion" ng-click="deletePosInfo('posinfo' , pi)">
+                            <i class="fa fa-trash-o fa-fw"><md-tooltip md-direction="top">Remove Pos Info</md-tooltip></i>
+                        </md-button>
+                        <md-button class="md-icon-button md-primary" aria-label="EditPosInfo" ng-click="openEditPosInfoModal('posinfo' , pi)">
+                            <i class="fa fa-edit fa-fw"><md-tooltip md-direction="top">Edit Pos Info</md-tooltip></i>
+                        </md-button>
+                    </div>
+                </div>
+                <span class="md-subhead" layout="row" layout-align="start start">
+                    <span layout="row" layout-align="start center" flex="50">
+                        <strong>Code:&nbsp;</strong>"{{pi.Code}}"
+                        <strong style="margin-left:15px;">IP:&nbsp;</strong>"{{pi.IPAddress}}"
+                    </span>
+                    <span layout="row" layout-align="start center" flex="50">
+                        <md-datepicker ng-model="pi.viewFODay" ng-disabled="true" md-placeholder="viewFODay"></md-datepicker>
+                    </span>
+                </span>
+            </md-card-header-text>
+        </md-card-header>
+        <md-card-content style="padding:8px; padding-top:0;">
+            <div layout="row" layout-align="start center" flex="grow">
+                <div layout="row" layout-align="start center" flex="50">
+                    <span style="font-variant:small-caps">F.Name:&nbsp;</span>"{{pi.FiscalName}}"
+                </div>
+                <div layout="row" layout-align="start center" flex="50">
+                    <span style="font-variant:small-caps">F.Type:&nbsp;</span>"{{lookupEntitiesEnum.FiscalType[pi.FiscalType]}}"
+                </div>
+            </div>
+            <div layout="row" layout-align="start center" flex="grow">
+                <div layout="row" layout-align="start center" flex="50">
+                    <span style="font-variant:small-caps">CloseId:&nbsp;</span>"{{pi.CloseId}}"
+                </div>
+                <div layout="row" layout-align="start center" flex="50">
+                    <span style="font-variant:small-caps">Receipt Count:&nbsp;</span>"{{pi.ReceiptCount}}"
+                </div>
+            </div>
+        </md-card-content>
+    </md-card>
+</script>
+
+<script id="posInfoDetailItem" type="text/ng-template">
+    <md-toolbar style="margin-top:8px;">
+        <div class="md-toolbar-tools">
+            <h2><span>{{selectedPosInfo.Description}} details</span></h2>
+            <span flex></span>
+        </div>
+    </md-toolbar>
+    <div ng-if="loadingPosInfoDetails==true" flex="grow" layout-align="center center">
+        <md-subheader class="md-no-sticky">
+            Loading  {{selectedPosInfo.Description}} details <md-subheader>
+                <md-progress-linear md-mode="indeterminate"></md-progress-linear>
+    </div>
+    <div ng-show="loadingPosInfoDetails != true" style="max-height:65vh; overflow-y:auto;">
+        <md-content ng-repeat="(key, value) in groupedPosInfoDetail" style="overflow:visible">
+            <md-toolbar  class="md-primary" ng-class="(myCheck[key] != true) ? 'md-hue-3' : 'md-hue-1'" ng-model="myCheck[key]" ng-click="(myCheck[key] != true) ? myCheck[key] = true: myCheck[key] =false">
+                <div class="md-toolbar-tools" layout="row" layout-align="space-between center">
+                    <h5>{{lookupEntitiesEnum.InvoicesTypeByType[key]}}&nbsp;({{value.length}})</h5>
+                    <div flex></div>
+                    <md-icon md-svg-icon="hardware:keyboard_arrow_up" style="margin-right:5px;"class="md-icon-rotate-ontoggle" ng-class="{'toggled' : myCheck[key]}"><md-tooltip md-direction="left">Open table settings panel</md-tooltip></md-icon>
+                </div>
+            </md-toolbar>
+            <div class="slideShowDetails" layout-padding="1%" ng-hide="myCheck[key]" style="overflow:visible;" layout="row" layout-align="start stretch">
+                <md-list flex="grow">
+                    <md-list-item class="md-3-line md-whiteframe-4dp" ng-repeat="dt in value" style="padding:4px; margin-bottom:10px; background-color:white;">
+                        <div class="md-list-item-text" layout="column" flex="85" style="">
+                            <div layout="row" layout-align="start center" style="margin:3px;">
+                                <div layout="row" layout-align="start center" flex="60">
+                                    <span flex="30"><strong>Abbr:&nbsp;</strong>"{{dt.Abbreviation}}"</span>
+                                    <span flex="70" class="content-overflow-ellipsis"><strong>Desc:&nbsp;</strong>"{{dt.Description}}"<md-tooltip md-direction="top">{{dt.Description}}</md-tooltip></span>
+                                </div>
+                                <div flex="40" layout="row" layout-align="center center" md-theme="buttonIndicator">
+                                    <div ng-class="(dt.Status == true) ? 'led-green':'led-grey'"><i class="fa fa-power-off fa-fw"><md-tooltip md-direction="top">Active / Disabled</md-tooltip></i></div>
+                                    <div ng-class="(dt.IsInvoice == true) ? 'led-green':'led-grey'"><i class="fa fa-ticket fa-fw"><md-tooltip md-direction="top">Is Invoice</md-tooltip></i></div>
+                                    <div ng-class="(dt.CreateTransaction == true) ? 'led-green':'led-grey'"><i class="fa fa-money fa-fw"><md-tooltip md-direction="top">Creates Transaction</md-tooltip></i></div>
+                                    <div ng-class="(dt.IsCancel == true) ? 'led-green':'led-grey'"><i class="fa fa-ban fa-fw"><md-tooltip md-direction="top">Is Cancel</md-tooltip></i></div>
+                                    <div ng-class="(dt.IsPdaHidden == true) ? 'led-green':'led-grey'"><i class="fa fa-fax fa-fw"><md-tooltip md-direction="top">Pda Hidden</md-tooltip></i></div>
+                                    <div ng-class="(dt.ResetsAfterEod == true) ? 'led-green':'led-grey'"><i class="fa fa-recycle fa-fw"><md-tooltip md-direction="top">Resets After Eod</md-tooltip></i></div>
+                                    <div ng-class="(dt.SendsVoidToKitchen == true) ? 'led-green':'led-grey'"><i class="fa fa-print fa-fw"><md-tooltip md-direction="top">Sends Void To Kitchen</md-tooltip></i></div>
+                                </div>
+                            </div>
+                            <div layout="row" layout-align="start center" style="margin:3px;">
+                                <div flex="33"><strong>Counter:&nbsp;</strong>"{{dt.Counter}}"</div>
+                                <span flex="33"><strong>FiscalType:&nbsp;</strong>"{{lookupEntitiesEnum.FiscalType[dt.FiscalType]}}"</span>
+                                <span flex="33"><strong>Fiscal Slot:&nbsp;</strong>"{{dt.InvoiceId}}"</span>
+                            </div>
+                            <div layout="row" layout-align="start center" style="margin:3px;">
+                                <span flex="grow"><strong>Invoice:&nbsp;</strong>"{{lookupEntitiesEnum.InvoicesTypeId[dt.InvoicesTypeId]}}"</span>
+                            </div>
+                        </div>
+                        <div class="md-list-item-text" layout="row" layout-align="center center" flex="15">
+                            <md-button class="md-icon-button" aria-label="EditPosInfo" ng-click="deletePosInfo('posinfodetail' , dt)">
+                                <i class="fa fa-trash fa-fw"><md-tooltip md-direction="top">Remove</md-tooltip></i>
+                            </md-button>
+                            <md-button class="md-icon-button md-primary" aria-label="EditPosInfo" ng-click="openEditPosInfoModal('posinfodetail' , dt)">
+                                <i class="fa fa-edit fa-fw"><md-tooltip md-direction="top">Edit</md-tooltip></i>
+                            </md-button>
+                        </div>
+                    </md-list-item>
+                </md-list>
+            </div>
+        </md-content>
+    </div>
+    <md-divider></md-divider>
+
+</script>
+
+<style>
+    div.slideShowDetails {
+        transition: all linear 0.5s;
+    }
+
+    .ng-hide {
+        height: 0;
+    }
+    .upsplitedCardItem {
+        min-width: 33%;
+    }
+
+    .splitedCardItem {
+        min-width: 100%;
+    }
+
+    .splitedCardContainer {
+        min-width: 40%;
+        max-width: 40%;
+        width: 40%;
+    }
+
+    .posinfotabs > * > md-tab-content {
+        max-height: 75vh;
+        min-height: 75vh;
+        overflow: hidden;
+        /*overflow-x: hidden;
+        overflow-y: auto;*/
+    }
+
+    .posinfotabs > md-tabs-content-wrapper {
+        /*background-color: #eeeeee;*/
+    }
+
+    .selected-whiteframe {
+        box-shadow: 0px 5px 5px -3px rgba(63, 81, 181, 0.2), 0px 8px 10px 1px rgba(63, 81, 181, 0.14), 0px 3px 14px 2px rgba(63, 81, 181, 0.12);
+        border-left: 4px solid #3f51b5;
+    }
+
+    .edited-whiteframe {
+        box-shadow: 0px 5px 5px -3px rgba(255, 152, 0, 0.2), 0px 8px 10px 1px rgba(255, 152, 0, 0.14), 0px 3px 14px 2px rgba(255, 152, 0, 0.12);
+    }
+
+    .led-green {
+        color: #00920b;
+    }
+
+    .led-grey {
+        color: rgba(0,0,0,0.32);
+    }
+</style>

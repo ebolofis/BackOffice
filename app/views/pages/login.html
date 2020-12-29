@@ -1,0 +1,58 @@
+<div class="container" ng-controller="loginController" ng-keypress="enterKeyAction($event)" ng-init="init()">
+    <div layout="column" layout-align="center stretch" style="height:80vh;">
+        <div class="md-margin md-padding" layout="column" layout-align="center" flex="grow">
+            <!--<div ng-if="loading == true" class="md-margin md-padding" layout="column" layout-align="center" flex="grow"></div>-->
+            <div  layout="column" layout-align="center stretch" flex="grow">
+                <div  ng-if="loading == true" layout="column" layout-align="center center" flex="grow">
+                    <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+                    <span>{{promiseLoadingMsg}}</span>
+                </div>
+                <div ng-if="loading != true && viewState == 'errormsg'"  layout="row" layout-align="center center">
+                    <md-toolbar class="md-warn md-whiteframe-8dp md-margin" layout="row" layout-align="start center" flex="grow">
+                        <md-icon class="md-margin" md-svg-icon="action:info"></md-icon>Error on login: {{errormsg}}<span flex></span>
+                        <md-icon class="md-margin" md-svg-icon="navigation:refresh" ng-click="init()"><md-tooltip md-direction="top">Reinitiallize and check version again</md-tooltip></md-icon>
+                    </md-toolbar>
+                </div>
+                <form ng-if="loading != true && viewState == 'loginform'" aria-label="projectLoginForm" class="md-whiteframe-8dp" name="projectLoginForm" layout="column" layout-align="start stretch">
+                    <md-toolbar>
+                        <div class="md-toolbar-tools">
+                            <h2>HIT BackOffice</h2>
+                            <span flex></span>
+                        </div>
+                    </md-toolbar>
+                    <md-dialog-content class="md-padding">
+                        <div ng-cloak class="md-inline-form">
+                            <div class="md-dialog-content" layout="row" flex="80" layout-align="start">
+                                <md-content layout="column">
+                                    <md-input-container class="md-block" flex-gt-sm flex="50">
+                                        <label>Username</label>
+                                        <input name="username" ng-model="userModel.username" required autofocus>
+                                        <div ng-messages="projectLoginForm.username.$error">
+                                            <div ng-message="required">Username required</div>
+                                        </div>
+                                    </md-input-container>
+                                    <md-input-container class="md-block" flex-gt-sm>
+                                        <label>Password</label>
+                                        <input name="password" type="password" ng-model="userModel.password" required>
+                                        <div ng-messages="projectLoginForm.password.$error">
+                                            <div ng-message="required">Password required</div>
+                                        </div>
+                                    </md-input-container>
+                                </md-content>
+                            </div>
+                        </div>
+                    </md-dialog-content>
+                    <md-dialog-actions layout="row" layout-align="end center">
+                        <md-button class="md-primary" ng-disabled="projectLoginForm.$invalid" ng-click="login(userModel.username , userModel.password)" style="margin-right:20px;" aria-label="projectLoginForm">
+                            Login
+                        </md-button>
+                    </md-dialog-actions>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/ng-template" id="loading">
+    <div layout="column" layout-align="center center" flex="grow"><md-progress-circular md-mode="indeterminate"></md-progress-circular><span>{{promiseLoadingMsg}}</span></div>
+</script>
+

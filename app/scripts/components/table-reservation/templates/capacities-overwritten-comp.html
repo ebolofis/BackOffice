@@ -1,0 +1,241 @@
+﻿<md-content layout-fill layout="row" ng-init="$ctrl.initView(true)" layout-align="start stretch">
+    <!-- Main component -->
+    <md-content layout="column" layout-align="start stretch" flex style="overflow:hidden;">
+        <div class="md-padding" layout="row" layout-align="center space-between" style="padding-bottom:0;">
+            <div flex="50" layout="row" layout-align="start center">
+                <label flex="30" ng-if="$ctrl.selectedDate != null">Manage Date : {{$ctrl.selectedDate  | date:'MMM d, yyyy'}}</label>
+                <label flex="30" ng-if="$ctrl.selectedDate == null">--- No Date Selected---</label>
+                <md-button class="md-raised md-primary" ng-click="$ctrl.editOnModal()">Manage</md-button>
+            </div>
+
+            <div flex="50" layout="row" layout-align="end center">
+                <md-button ng-click="$ctrl.setDirection('vertical')">Agenda</md-button>
+                <md-button ng-click="$ctrl.setDirection('horizontal')">Calendar</md-button>
+                <!--action:view_list  action:view_module-->
+                <md-menu md-position-mode="target-right target" ng-if="$ctrl.devAccess">
+                    <md-button aria-label="Dev Actions" class="md-icon-button md-primary" ng-click="$mdOpenMenu($event)">
+                        <md-tooltip md-direction="top">Develop - Debug</md-tooltip>
+                        <md-icon md-menu-origin md-svg-icon="device:developer_mode"></md-icon>
+                    </md-button>
+                    <md-menu-content width="4" style="max-height:none;">
+                        <md-content layout="column" layout-align="start stretch" flex="grow" class="md-padding">
+                            <h4 style="font-variant:small-caps; text-align:center;">Use Debug Actions</h4>
+                            <md-button class="md-raised" ng-click="$ctrl.logGroups()">Log Groups</md-button>
+                        </md-content>
+                    </md-menu-content>
+                </md-menu>
+            </div>
+        </div>
+        <!-- On Error -->
+        <div layout="row" layout-align="center center" ng-if="$ctrl.hasError == true && $ctrl.restbusy != true">
+            <md-toolbar class="md-warn md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="space-between center">
+                <span><md-icon class="md-margin" md-svg-icon="action:info"></md-icon> Loading restaurants failed due to a server error. Please try reload data.</span>
+                <md-button class="md-fab md-primary md-mini" aria-label="refresh all restaurats" ng-click="$ctrl.initView()">
+                    <md-icon md-svg-icon="navigation:refresh"></md-icon>
+                </md-button>
+            </md-toolbar>
+        </div>
+        <!-- on empty -->
+        <div layout="row" layout-align="center center" ng-if="$ctrl.hasError != true && $ctrl.restaurants.length == 0 && $ctrl.restbusy != true">
+            <md-toolbar class="md-warn md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="space-between center">
+                <span><md-icon class="md-margin" md-svg-icon="action:info"></md-icon> No restaurants found. Try create new</span>
+                <md-button class="md-fab md-primary md-mini" aria-label="refresh all restaurats" ng-click="$ctrl.navigate('dashboard.tableResRestaurants')">
+                    <md-icon md-svg-icon="navigation:arrow_forward"></md-icon>
+                </md-button>
+            </md-toolbar>
+        </div>
+        <!-- Loading template -->
+        <div layout="column" layout-align="center center" style="overflow:auto;" ng-if="$ctrl.restbusy == true" flex="grow">
+            <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+            <span>Loading...</span>
+        </div>
+        <!-- Main restaurant content with capacities grouped by rest.Id -->
+        <md-content class="md-padding" layout="row" layout-align="start start" flex style="overflow-x:hidden; overflow-y:auto;" layout-wrap
+                    ng-if="$ctrl.hasError != true &&  $ctrl.restbusy != true &&  $ctrl.restaurants.length > 0 ">
+            <calendar-md flex layout layout-fill
+                         calendar-direction="$ctrl.direction"
+                         on-prev-month="$ctrl.prevMonth"
+                         on-next-month="$ctrl.nextMonth"
+                         on-day-click="$ctrl.dayClick"
+                         title-format="'MMMM y'"
+                         ng-model='$ctrl.selectedDate'
+                         week-starts-on="$ctrl.firstDayOfWeek"
+                         tooltips="$ctrl.tooltips"
+                         day-format="$ctrl.dayFormat"
+                         day-label-format="'EEE'"
+                         day-label-tooltip-format="'EEEE'"
+                         day-tooltip-format="'fullDate'"
+                         day-content="$ctrl.setDayContent"
+                         disable-future-selection="false">
+            </calendar-md>
+        </md-content>
+    </md-content>
+</md-content>
+
+
+
+
+<script id="capacities-overw-modal" type="text/ng-template">
+    <md-dialog ng-class="{'fullscreen-dialog' : fullscreenModal}" aria-label="EditPosInfo" ng-cloak style="min-width: 80vw; min-height:70vh;">
+        <form name="capOverWForm" flex="grow">
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <h2>Edit Overwritten Capacities</h2>
+                    <span flex></span>
+                    <toggle-fs-modal tvar="fullscreenModal"></toggle-fs-modal>
+                    <md-button class="md-icon-button" aria-label="CloseModal" ng-click="moc.cancel()">
+                        <md-icon md-svg-icon="navigation:close"></md-icon>
+                    </md-button>
+                </div>
+            </md-toolbar>
+            <md-dialog-content layout="row" layout-align="start stretch" flex>
+                <div class="md-dialog-content" layout="column" layout-align="start stretch" flex>
+                    <div layout="row" layout-align="start stretch" flex="grow" ng-if="moc.restbusy != true && moc.mode == 'edit' && moc.hasError !=true">
+                        <div flex="50" layout="column" layout-align="start stretch" style="overflow:hidden;">
+                            <h4>Overwrittes Form</h4>
+                            <md-divider></md-divider>
+                            <div layout="row" layout-align="space-between center">
+                                <md-datepicker ng-model="moc.data.Date" md-placeholder="Date"></md-datepicker>
+                                <md-button aria-label="clone to watch date" ng-click="moc.onChangeViewDate(moc.data.Date)">View Day</md-button>
+                            </div>
+                            <div layout="row" layout-align="space-between center" style="margin-top:30px;">
+                                <md-input-container class="md-block" required flex>
+                                    <label>Restaurant</label>
+                                    <md-select name="RestId" ng-model="moc.data.RestId" required>
+                                        <md-option ng-repeat="(key , obj) in moc.lookups.enumRestaurants" value="{{key}}">{{obj[moc.lookups.dispRName]}}</md-option>
+                                    </md-select>
+                                    <div ng-messages="capOverWForm.RestId.$error">
+                                        <div ng-message="required">Restaurant is required.</div>
+                                    </div>
+                                </md-input-container>
+                            </div>
+                            <div layout="row" layout-align="space-between center" style="margin-top:30px;">
+                                <md-input-container class="md-block" required flex>
+                                    <label>Capacity Overwritten</label>
+                                    <md-select name="CapacityId" ng-model="moc.data.CapacityId" required ng-disabled="moc.data.RestId == null">
+                                        <md-option ng-repeat="(key , val) in moc.lookups.enumCapacities[moc.data.RestId]" value="{{val.Id}}">
+                                            <div style="min-height: 50px; display: inline-flex; padding: 3px; align-items: center;">
+                                                Capacity:{{val.Capacity}}&nbsp;&nbsp;
+                                                Time:{{moc.escape(val.Time)}}&nbsp;&nbsp;
+                                                Type:{{moc.lookups.CapacitiesTypeEnum[val.Type]}}&nbsp;
+                                            </div>
+                                        </md-option>
+                                    </md-select>
+                                    <div ng-messages="capOverWForm.CapacityId.$error">
+                                        <div ng-message="required">Capacity OverWrite is required.</div>
+                                    </div>
+                                </md-input-container>
+                            </div>
+                            <div layout="row" layout-align="space-between center" style="margin-top:30px;">
+                                <md-input-container class="md-block" required flex>
+                                    <label>Capacity</label>
+                                    <input type="number" name="Capacity" ng-model="moc.data.Capacity" required min="0">
+                                    <div ng-messages="capOverWForm.Capacity.$error">
+                                        <div ng-message="required">You need to specify a Capacity value</div>
+                                        <div ng-message="min">Min value is 0</div>
+                                    </div>
+                                </md-input-container>
+                            </div>
+
+                            <h4 ng-if="moc.processExt != null">Managing Overwritten Capacities</h4>
+                            <div class="notice" layout="row" layout-align="space-between center" style="min-height:50px;" ng-if="moc.processExt != null">
+                                <div flex="80" layout="column" layout-align="start stretch">
+                                    <span>{{moc.lookups.enumRestaurants[moc.processExt.RestId][moc.lookups.dispRName]}}</span>
+                                    <!--<span flex>{{moc.processExt.Date | date:'MMM d, yyyy'}}</span>-->
+                                    <span ng-bind-html="moc.displayCapacity(moc.processExt)"></span>
+                                </div>
+                                <div flex="20" layout="row" layout-align="end center">
+                                    <md-button class="md-icon-button md-warn" ng-click="moc.clearSelection()" aria-label="delete selection exc">
+                                        <md-icon md-svg-icon="navigation:close"></md-icon>
+                                    </md-button>
+                                </div>
+                            </div>
+                        </div>
+                        <div flex="50" layout="column" layout-align="start stretch" style="overflow:hidden;">
+                            <h4>Date for Exclutions</h4>
+                            <md-divider></md-divider>
+                            <div layout="row" layout-align="space-between center" ng-if="moc.viewDay != null">
+                                <md-datepicker ng-model="moc.viewDay" md-placeholder="Date" ng-change="moc.onChangeViewDate(moc.viewDay)"></md-datepicker>
+                                <md-button aria-label="clone to form date" ng-click="moc.data.Date = moc.viewDay">Clone</md-button>
+                            </div>
+                            <div layout="column" layout-align="start stretch" flex ng-if="moc.exclutionsArray.length > 0" style="overflow-y:auto">
+                                <div class="notice" layout="row" ng-class="{'notice-info' : moc.processExt.Id == exc.Id}" layout-align="space-between center" ng-repeat="exc in moc.exclutionsArray" style="min-height:50px;">
+                                    <div flex="80" layout="column" layout-align="start stretch">
+                                        <span flex>{{moc.lookups.enumRestaurants[exc.RestId][moc.lookups.dispRName]}}</span>
+                                        <!--<span flex>{{exc.Date | date:'MMM d, yyyy'}}</span>-->
+                                        <span ng-bind-html="moc.displayCapacity(exc)"></span>
+                                    </div>
+                                    <div flex="20" layout="row" layout-align="end center">
+                                        <md-button class="md-icon-button md-primary" style="margin:0;" ng-click="moc.edit(exc)" aria-label="edit selection exc">
+                                            <md-icon md-svg-icon="editor:mode_edit"></md-icon>
+                                        </md-button>
+                                        <md-button class="md-icon-button md-warn" style="margin:0;" ng-click="moc.delete(exc)" aria-label="delete selection exc">
+                                            <md-icon md-svg-icon="action:delete"></md-icon>
+                                        </md-button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div layout="row" layout-align="center center" ng-if="moc.exclutionsArray.length == 0" flex>
+                                <md-toolbar class="md-warn md-whiteframe-8dp" flex="80" layout="row" layout-align="space-between center">
+                                    <span><md-icon class="md-margin" md-svg-icon="action:info"></md-icon> No Exclutions for Selected Date</span>
+                                </md-toolbar>
+                            </div>
+                        </div>
+                    </div>
+                    <div layout="row" layout-align="start stretch" flex="grow" ng-if="moc.restbusy != true && moc.hasError !=true && moc.mode == 'remove'">
+                        <div layout="column" layout-align="center stretch" flex="grow">
+                            <h4 ng-if="moc.processExt != null">Delete selected Exclution ? </h4>
+                            <div class="notice" layout="row" layout-align="space-between center" style="min-height:50px;" ng-if="moc.processExt != null">
+                                <div flex="90" layout="column" layout-align="start stretch">
+                                    <span flex layout="row" layout-align="space-between center">
+                                        {{moc.lookups.enumRestaurants[moc.processExt.RestId][moc.lookups.dispRName]}}
+                                    </span>
+                                    <span flex>{{moc.displayCapacity(moc.processExt)}}</span>
+                                    <span> {{moc.processExt.Date | date:'MMM d, yyyy'}} </span>
+                                </div>
+                                <div flex="10" layout="row" layout-align="end center">
+                                    <md-button class="md-icon-button md-warn" ng-click="moc.clearSelection(); moc.switchmode('edit');" aria-label="selection exc">
+                                        <md-icon md-svg-icon="navigation:close"></md-icon>
+                                    </md-button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div layout="row" layout-align="start stretch" flex="grow" ng-if="moc.restbusy == true && moc.hasError !=true">
+                        <div layout="column" layout-align="center center" style="overflow:auto;" flex="grow">
+                            <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+                            <span>Loading...</span>
+                        </div>
+                    </div>
+                    <div layout="column" layout-align="center stretch" flex="grow" ng-if="moc.hasError ==true">
+                        <md-toolbar class="md-warn md-whiteframe-8dp md-margin" layout="row" layout-align="space-between center">
+                            <div>
+                                <md-icon class="md-margin" md-svg-icon="action:info"></md-icon>
+                                <span>Error detected. To avoid data corruption close modal and manage again.</span>
+                            </div>
+                            <md-button class="md-fab md-primary" aria-label="refresh all restaurats" ng-click="moc.cancel('cancel')">
+                                <md-icon md-svg-icon="navigation:close"></md-icon>
+                            </md-button>
+                        </md-toolbar>
+                    </div>
+                </div>
+            </md-dialog-content>
+            <md-dialog-actions layout="row" ng-if="moc.restbusy != true && moc.hasError !=true">
+                <md-button ng-click="moc.cancel('cancel')" aria-label="close modal">Close</md-button>
+                <md-button ng-click="moc.add()" ng-if="moc.mode == 'edit'" ng-disabled="capOverWForm.$invalid" aria-label="add action modal">Add</md-button>
+                <md-button ng-click="moc.update()" ng-if="moc.mode == 'edit'" ng-disabled="capOverWForm.$invalid || moc.processExt == null" aria-label="update action modal">Update</md-button>
+                <md-button ng-click="moc.switchmode('edit')" aria-label="backEdit" ng-if="moc.mode == 'remove'">Back</md-button>
+                <md-button ng-click="moc.deleteConf()" aria-label="CancelAction" ng-if="moc.mode == 'remove'">Delete</md-button>
+            </md-dialog-actions>
+        </form>
+    </md-dialog>
+</script>
+
+<style>
+    .calendar-tr-list-item > strong {
+        padding: 0 !important;
+        font-weight: bold !important;
+        font-style: italic;
+        text-decoration: underline;
+    } 
+</style>

@@ -1,0 +1,354 @@
+﻿/*Calendar md custom- styling for cell html append*/
+/*Represents cell-container of data in a single calendar cell*/
+.calendar-tr-list {
+    height: 100%;
+    overflow-y: auto !important;
+}
+
+/*Item on above container*/
+.calendar-tr-list-item {
+    font-size: 11px;
+}
+
+/*Header styling in container*/
+.calendar-info-header {
+    margin: 3px 0;
+    text-align: center;
+    font-variant-caps: small-caps;
+    border-bottom: 1px solid;
+}
+
+/*Calendar view container options */
+.hor-calendar-container {
+    height: 100%;
+}
+
+/*Agenta view container options*/
+.ver-calendar-container {
+    width: 100% !important;
+}
+
+    /*Agenta container of list*/
+    .ver-calendar-container > .calendar-tr-list {
+        text-align: left;
+        padding: 6px;
+    }
+
+        /*Agenta view item */
+        .ver-calendar-container > .calendar-tr-list > .calendar-tr-list-item {
+            width: auto;
+            text-align: left;
+            padding: 6px;
+        }
+
+    /*Agenta cell header styling*/
+    .ver-calendar-container > h5.calendar-info-header {
+        width: 100% !important;
+        text-align: center !important;
+        padding-top: 3px !important;
+        padding-bottom: 3px !important;
+    }
+
+/*Image oreview class on directive-module of upload image*/
+.form-img-preview {
+    max-height: 300px;
+    max-width: 300px;
+    height: 200px;
+    width: 200px;
+    background-repeat: no-repeat;
+    background-size: 100% auto;
+    text-align: center;
+}
+
+    .form-img-preview > img {
+        max-width: 100%;
+        max-height: 200px;
+    }
+
+.card-img-preview {
+    max-height: 300px;
+    height: 300px;
+    width: auto;
+    background-repeat: no-repeat;
+    background-size: auto 100%;
+    background-position: center;
+}
+
+    .card-img-preview > img {
+        max-height: 300px;
+    }
+
+.force-break-word {
+    word-wrap: break-word;
+    word-break: break-all;
+}
+/*Collapsible search bar*/
+.search-widget.search-open {
+    width: 360px;
+}
+
+.search-widget {
+    position: absolute;
+    top: 16px;
+    right: 24px;
+    width: 0px;
+    height: 32px;
+    z-index: 2;
+    font-size: 16px;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0 0;
+    color: #fff;
+    -webkit-transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    -moz-transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.search-button {
+    position: absolute;
+    left: -48px;
+    top: -8px;
+    background: transparent center center no-repeat;
+    background-size: 24px 24px;
+    border: 0;
+    display: block;
+    height: 48px;
+    overflow: hidden;
+    width: 48px;
+    z-index: 2;
+}
+
+    .search-button.search-open {
+        background: transparent center center no-repeat;
+        background-size: 24px 24px;
+        border: 0;
+        display: block;
+        height: 48px;
+        overflow: hidden;
+        width: 48px;
+        z-index: 2;
+    }
+
+.search-close-button {
+    position: absolute;
+    right: -16px;
+    top: -8px;
+    display: none;
+    opacity: 0;
+    -webkit-transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    -moz-transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+    .search-close-button.search-open {
+        background: transparent center center no-repeat;
+        background-size: 24px 24px;
+        border: 0;
+        display: block;
+        height: 48px;
+        overflow: hidden;
+        width: 48px;
+        z-index: 14;
+        opacity: 1;
+    }
+
+.search-widget input, .search-widget input[type="text"] {
+    box-sizing: border-box;
+    border: none;
+    border-bottom: 1px solid rgba(255,255,255,0.87);
+    border-radius: 0;
+    display: block;
+    font-size: 16px;
+    font-weight: 400;
+    margin: 0;
+    padding: 4px 0;
+    width: 100%;
+    text-align: left;
+    background: 0 0;
+    box-shadow: none;
+    color: #fff;
+}
+
+.search-widget label {
+    box-sizing: border-box;
+    bottom: 0;
+    font-size: 16px;
+    font-weight: 300;
+    color: rgba(255,255,255,0.54);
+    left: 0;
+    right: 0;
+    pointer-events: none;
+    position: absolute;
+    display: block;
+    top: 6px;
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+/*old bootstrap element with boarder on left*/
+.notice {
+    padding: 7px;
+    background-color: #fafafa;
+    border-left: 6px solid #7f7f84;
+    margin-bottom: 2px;
+    -webkit-box-shadow: 0 5px 8px -6px rgba(0,0,0,.2);
+    -moz-box-shadow: 0 5px 8px -6px rgba(0,0,0,.2);
+    box-shadow: 0 5px 8px -6px rgba(0,0,0,.2);
+}
+
+.notice-list-rounded {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 3px;
+}
+
+    .notice-list-rounded > .notice {
+        margin-bottom: 0px;
+    }
+
+.notice-success {
+    border-color: #80D651;
+}
+
+.notice-warning {
+    border-color: #FEAF20;
+}
+
+.notice-danger {
+    border-color: #d73814;
+}
+
+.notice-info {
+    border-color: #45ABCD;
+}
+
+
+.draggebleArea {
+    width: 90%;
+    margin: 2% auto;
+    background-color: #F8F8F8;
+    min-height: 25vh;
+    border: 2px solid #18208C;
+}
+
+.advancedDemo ul[dnd-list],
+.advancedDemo ul[dnd-list] > li {
+    position: relative;
+}
+
+.advancedDemo .dropzone ul[dnd-list] {
+    min-height: 42px;
+    margin: 0px;
+    padding-left: 0px;
+}
+
+.advancedDemo .dropzone li {
+    display: block;
+}
+
+.advancedDemo .dropzone .dndDragging {
+    opacity: 0.7;
+}
+
+.advancedDemo .dropzone .dndDraggingSource {
+    display: none;
+}
+
+.advancedDemo .dropzone .dndPlaceholder {
+    background-color: #ddd !important;
+    min-height: 42px;
+    display: block;
+    position: relative;
+}
+
+.advancedDemo .dropzone .itemlist {
+    min-height: 120px !important;
+    background-color: blueviolet;
+    min-height: 75vh !important;
+    max-height: 75vh !important;
+    overflow: auto;
+}
+
+    .advancedDemo .dropzone .itemlist > li {
+        width: 100%;
+        min-width: 80px;
+        height: 100%;
+        min-height: 80px;
+        border: none;
+        background-color: #D4D4D4;
+        border-radius: .25em;
+        float: left;
+        margin: 5px;
+        font-weight: 700;
+        color: #fff;
+        text-align: center;
+        box-shadow: 0px 0px 4px 0px black;
+    }
+
+.advancedDemo .dropzone .container-element {
+    margin: 10px;
+}
+
+
+
+
+
+
+
+/**
+ * For the correct positioning of the placeholder element, the dnd-list and
+ * it's children must have position: relative
+ */
+.multiDemo ul[dnd-list],
+.multiDemo ul[dnd-list] > li {
+    position: relative;
+}
+
+/**
+ * The dnd-list should always have a min-height,
+ * otherwise you can't drop into it once it's empty
+ */
+.multiDemo ul[dnd-list] {
+    min-height: 70vh;
+    padding-left: 0px;
+    width: 100%;
+}
+
+    /**
+ * An element with .dndPlaceholder class will be
+ * added to the dnd-list while the user is dragging
+ * over it.
+ */
+    .multiDemo ul[dnd-list] .dndPlaceholder {
+        display: inline-flex;
+        background-color: rgb(0, 40, 91);
+        min-height: 80px;
+        max-width: 120px;
+        width: 100%;
+    }
+
+    /**
+ * The dnd-lists's child elements currently MUST have
+ * position: relative. Otherwise we can not determine
+ * whether the mouse pointer is in the upper or lower
+ * half of the element we are dragging over. In other
+ * browsers we can use event.offsetY for this.
+ */
+    .multiDemo ul[dnd-list] li {
+        background-color: #fff;
+        vertical-align: top;
+        width: 150px;
+        height: 100%;
+        /*min-height: 80px;*/
+        display: inline-block;
+        margin: 5px;
+    }
+
+        /**
+ * Show selected elements in green
+ */
+        .multiDemo ul[dnd-list] li.selected {
+            /*background-color: #dff0d8;*/
+            color: #3c763d;
+        }

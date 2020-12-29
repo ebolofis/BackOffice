@@ -1,0 +1,39 @@
+<div id="wrapper" layout="column" layout-align="start stretch" layout-fill>
+    <sidebar></sidebar>
+    <md-toolbar>
+        <div class="md-toolbar-tools md-theme-indigo">
+            <md-button class="md-icon-button md-primary" ng-click="navigate()" aria-label="Settings">
+                <i class="fa fa-navicon fa-fw"></i>
+            </md-button>
+            <h2>
+                <span>HIT BackOffice</span>
+                <state-header></state-header>
+            </h2>
+            <span flex></span>
+            <span ng-controller="loginController">{{LoggedUser.loggedUser}}</span>
+            <md-menu md-position-mode="target-right target">
+                <md-button aria-label="UserSettings" class="md-icon-button md-primary" ng-click="$mdOpenMenu($event)">
+                    <i md-menu-align-target style="margin: auto 3px auto 0;" class="fa fa-user fa-fw"></i>
+                     <!--<md-icon md-menu-origin md-svg-icon="call:portable-wifi-off"></md-icon>-->
+                </md-button>
+                <md-menu-content width="4">
+                     <md-button ng-controller="loginController" ng-click="logout()">
+                            <div layout="row" layout-align="start center">
+                                <i md-menu-align-target style="margin: auto 3px auto 0;" class="fa fa-user fa-fw"></i>
+                                <p flex>Log out<p>
+                            </div>
+                    </md-button>
+                    <!--<md-button ng-controller="UserSettingsCtrl" ng-click="userPrefs()">
+                        <div layout="row">
+                            <i md-menu-align-target style="margin: auto 3px auto 0;" class="fa fa-search fa-fw"></i>
+                            <p flex>Preferences<p>
+                        </div>
+                    </md-button>-->
+                </md-menu-content>
+            </md-menu>
+        </div>
+    </md-toolbar>
+    <div id="page-wrapper" layout="row" layout-align="start stretch" layout-fill>
+        <div ui-view style="padding: 0 1%; " layout-fill></div>
+    </div>
+</div>

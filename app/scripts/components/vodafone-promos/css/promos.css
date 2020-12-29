@@ -1,0 +1,104 @@
+﻿.border {
+    border-left: 12px solid grey;
+    background-color: grey;
+    border-bottom: 12px solid grey;
+    border-right: 12px solid grey;
+    border-top: 12px solid grey;
+}
+.RedCross {
+    text-decoration-color: #ff0000;
+}
+#header-fixed {
+    position: fixed;
+    top: 0px;
+    display: none;
+    background-color: white;
+}
+.close {
+    /*height: 20px;
+    width: 20px;
+    background-color: #ff0000;
+    border-radius: 5px;*/
+    color:red;
+    opacity:1;
+}
+.btn {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    border-radius: 50%;
+}
+.circlebtn {
+    border-radius: 50%;
+}
+.close:hover {
+   color: #000000;
+}
+.close:after {
+    position: relative;
+    content: "\d7";
+    font-size: 12px;
+    color: white;
+    font-weight: bold;
+    top: -53px;
+    left: -2px
+}
+#orangeBox {
+    background: #f90;
+    color: #fff;
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 2em;
+    font-weight: bold;
+    text-align: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 5px;
+}
+.border2 {
+    border-left: 12px solid gray;
+    background-color: gray;
+    border-bottom: 12px solid gray;
+    border-right: 12px solid gray;
+    border-top: 12px solid gray;
+}
+
+.inputbox {
+    width: 80%;
+    height: 15px;
+    padding: 12px 20px;
+    border-radius: 20px;
+    background-color: #f1f1f1;
+    border:  solid lightgrey;
+}
+
+
+.promobutton {
+    background-color: #333333; /* Green */
+    border: none;
+    color: white;
+    padding: 4px 8px;
+    text-align: right;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    align-content: center;
+}
+
+input[type="color"] {
+    -webkit-appearance: none;
+    border: none;
+    width: 32px;
+    height: 32px;
+}
+
+    input[type="color"]::-webkit-color-swatch-wrapper {
+        padding: 0;
+    }
+
+    input[type="color"]::-webkit-color-swatch {
+        border: none;
+    }

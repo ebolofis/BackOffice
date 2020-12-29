@@ -1,0 +1,219 @@
+<div id="home-view-wrapper" ng-cloak ng-controller="MainCtrl" ng-init="initView()" layout="column" layout-align="start stretch">
+    <md-content>
+        <md-tabs md-dynamic-height md-border-bottom>
+            <md-tab label="Store Info">
+                <md-content class="md-padding" layout="row">
+                    <div flex-xs flex-gt-xs="70" layout="column">
+                        <md-card>
+                            <md-card-title>
+                                <md-card-title-text layout-gt-sm="row">
+                                    <div flex-xs flex-gt-xs="60" layout-gt-sm="column">
+                                        <span class="md-headline">{{storeInfo.Description}}</span>
+                                        <span class="md-subhead">{{storeInfo.ExtDescription}}</span>
+                                    </div>
+                                    <div flex-xs flex-gt-xs="40" class="md-media-lg card-media" style="background-color:#C1C1C1;">
+                                        <img ng-src="{{storeInfo.LogoUri}}" class="md-avatar" alt="Error Loading img" onError="this.onerror = null; this.src = 'Images/noImagePreview.png';" />
+                                    </div>
+                                </md-card-title-text>
+                            </md-card-title>
+                            <md-divider></md-divider>
+                            <md-card-content>
+                                <p>Address: {{storeInfo.Address}}</p>
+                                <p>Email: {{storeInfo.Email}}</p>
+                                <div layout-gt-sm="row">
+                                    <md-input-container class="md-block" flex-gt-sm>
+                                        <label style="color: black !important;">Phone 1</label>
+                                        <input ng-model="storeInfo.Phone1" disabled style="color: black !important;">
+                                    </md-input-container>
+                                    <md-input-container class="md-block" flex-gt-sm>
+                                        <label style="color: black !important;">Phone 2</label>
+                                        <input ng-model="storeInfo.Phone2" disabled style="color: black !important;">
+                                    </md-input-container>
+                                    <md-input-container class="md-block" flex-gt-sm>
+                                        <label style="color: black !important;">Phone 3</label>
+                                        <input ng-model="storeInfo.Phone3" disabled style="color: black !important;">
+                                    </md-input-container>
+                                </div>
+                                <p>
+                                    <md-checkbox md-no-ink aria-label="StoreKitchenInstruction" ng-model="storeInfo.StoreKitchenInstructionBool" class="md-primary" disabled>Store KitchenInstruction</md-checkbox>
+                                </p>
+                                <p>StoreId: {{storeInfo.DisplayStoreId}}</p>
+                            </md-card-content>
+                            <md-card-actions layout="row" layout-align="end center">
+                                <md-button class="md-fab md-mini md-primary  md-raised" ng-click="editStore($event ,'store',storeInfo , 'edit')" aria-label="EditPosInfo"><i class="fa fa-pencil fa-fw"></i></md-button>
+                            </md-card-actions>
+                        </md-card>
+                    </div>
+                    <div flex-xs flex-gt-xs="30" layout="column" ng-show="storeInfo.Id != 0">
+                        <md-card>
+                            <md-card-title>
+                                <md-card-title-text layout="row">
+                                    <span layout="column" layout-align="center" class="md-headline">Hotel Info</span>
+                                    <md-button class="md-fab md-mini md-primary md-raised" ng-click="editStore($event ,'hotel', {} , 'insert')" aria-label="EditMessages"><i class="fa fa-plus fa-fw"></i></md-button>
+                                </md-card-title-text>
+                            </md-card-title>
+                            <md-card-content style="padding: 0;">
+                                <md-list style="max-height: 72vh; overflow-y:auto;">
+                                    <md-list-item style="padding: 0;" layout="row" ng-repeat="hti in hotelInfo">
+                                        <md-content flex>
+                                            <div ng-include src="'hotelInfoCard'"></div>
+                                        </md-content>
+                                    </md-list-item>
+                                </md-list>
+                            </md-card-content>
+                        </md-card>
+                    </div>
+                </md-content>
+
+                <!--<md-button ng-click="checkProtelConnection()">zavara</md-button>-->
+            </md-tab>
+            <md-tab label="Messages">
+                <md-content class="md-padding" layout="row" ng-show="storeInfo.Id != 0">
+                    <md-card flex>
+                        <md-card-title>
+                            <md-card-title-text layout="row">
+                                <span layout="column" layout-align="center" class="md-headline">Messages</span>
+                                <md-button class="md-fab md-mini md-primary md-raised" ng-click="editStore($event ,'message',{} , 'insert')" aria-label="EditMessages"><i class="fa fa-plus fa-fw"></i></md-button>
+                            </md-card-title-text>
+                        </md-card-title>
+                        <md-card-content style="padding: 0;">
+                            <md-list style="padding: 0;">
+                                <md-list-item layout="row" style="padding: 0;" ng-repeat="msg in storeMessages">
+                                    <md-content flex>
+                                        <div ng-include src="'messageCard'"></div>
+                                    </md-content>
+                                </md-list-item>
+                            </md-list>
+                        </md-card-content>
+                    </md-card>
+                </md-content>
+            </md-tab>
+        </md-tabs>
+    </md-content>
+
+</div>
+
+<script type="text/ng-template" id="hotelInfoCard">
+    <md-card>
+        <md-card-content layout="column" layout-align="space-between">
+            <div layout="row">
+                <md-input-container class="md-block" flex>
+                    <label style="color: black !important;">Hotel Id</label>
+                    <input style="color: black !important;" ng-model="hti.HotelId" disabled>
+                </md-input-container>
+                <md-input-container class="md-block" flex>
+                    <label style="color: black !important;">Type</label>
+                    <input style="color: black !important;" disabled value="{{customerPolicyEnum[hti.Type]}}">
+                </md-input-container>
+
+            </div>
+            <div layout="row">
+                <md-input-container class="md-block" flex>
+                    <label style="color: black !important;"> Hotel Interface Uri</label>
+                    <input style="color: black !important;" ng-model="hti.HotelUri" disabled>
+                </md-input-container>
+            </div>
+            <div layout="row">
+                <md-input-container class="md-block" flex>
+                    <label style="color: black !important;">Hotel Name</label>
+                    <input style="color: black !important;" ng-model="hti.HotelName" disabled>
+                </md-input-container>
+                <md-content layout="row" layout-align="end center">
+                    <md-button class="md-fab md-mini md-raised" ng-click="removeEntry($event ,'hotel info',hti)" aria-label="removeMessage"><i class="fa fa-trash fa-fw"></i></md-button>
+                    <md-button class="md-fab md-mini md-primary  md-raised" ng-click="editStore($event ,'hotel', hti, 'edit' )" aria-label="EditHotelInfo"><i class="fa fa-pencil fa-fw"></i></md-button>
+                </md-content>
+            </div>
+
+            <!--<div layout="column">
+                <md-button class="md-mini md-primary md-raised" ng-click="checkHotelInfo($event ,'Hotel', hti )" aria-label="TestConnection">Rooms from HotelInfo</md-button>
+                <md-button class="md-mini md-primary md-raised" ng-click="checkHotelInfo($event ,'Api', hti )" aria-label="TestConnection">Rooms from WebApi</md-button>
+            </div>-->
+        </md-card-content>
+
+    </md-card>
+</script>
+
+<script type="text/ng-template" id="messageCard">
+    <div layout="row" layout-align="start">
+        <md-card flex>
+            <md-card-title>
+                <md-card-title-text>
+                    <md-subheader class="md-no-sticky">{{ msg.Title }}</md-subheader>
+
+                    <!-- <span class="md-subhead">{{ msg.Title }}</span>-->
+                </md-card-title-text>
+            </md-card-title>
+            <md-card-content>
+                <div layout="column">
+                    <div></div>
+                    <p>{{ msg.Message }}</p>
+                    <div layout-gt-xs="row">
+                        <md-datepicker ng-model="msg.DPShowFrom" ng-disabled="true" md-placeholder="From date"></md-datepicker>
+                        <md-datepicker ng-model="msg.DPShowTo" ng-disabled="true" md-placeholder="To date"></md-datepicker>
+                    </div>
+                    <!--<md-switch class="md-secondary" ng-model="msg.Status"></md-switch>-->
+                </div>
+            </md-card-content>
+            <md-card-actions layout="row" layout-align="end center">
+                <md-button class="md-mini md-raised" ng-click="removeEntry($event ,'message',msg)" aria-label="removeMessage">Remove&nbsp;<i class="fa fa-trash fa-fw"></i></md-button>
+                <md-button class="md-mini md-raised md-primary" ng-click="editStore($event ,'message', msg ,'edit' )" aria-label="EditPosInfo">Edit&nbsp;<i class="fa fa-edit fa-fw"></i></md-button>
+            </md-card-actions>
+        </md-card>
+    </div>
+</script>
+<script type="text/ng-template" id="messageRemoveCard">
+    <md-dialog ng-class="{'fullscreen-dialog' : fullscreenModal}" aria-label="EditPosInfo" ng-cloak style="min-width: 50vw;">
+        <form>
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <h2 ng-show="templateOption == 'store'">Store Info</h2>
+                    <h2 ng-show="templateOption == 'message'">
+                        <span ng-show="action == 'edit'">Message</span>
+                        <span ng-show="action == 'insert'">New Message</span>
+                    </h2>
+                    <h2 ng-show="templateOption == 'hotel'">Hotel Info</h2>
+                    <span flex></span>
+                    <toggle-fs-modal tvar="fullscreenModal"></toggle-fs-modal>
+                    <md-button class="md-icon-button" aria-label="CloseModal" ng-click="cancel()">
+                        <md-icon md-svg-icon="navigation:close"></md-icon>
+                    </md-button>
+                </div>
+            </md-toolbar>
+            <md-dialog-content>
+                <div class="md-dialog-content">
+                    <div ng-cloak class="md-inline-form">
+                        <md-content>
+                            <div ng-show="templateOption == 'store'" ng-include src="'storeForm'"></div>
+                            <div ng-show="templateOption == 'message'" ng-include src="'messageForm'"></div>
+                            <div ng-show="templateOption == 'hotel'" ng-include src="'hotelInfoForm'"></div>
+                        </md-content>
+                    </div>
+                </div>
+            </md-dialog-content>
+            <md-dialog-actions layout="row">
+                <md-button ng-click="cancel('cancel')" aria-label="CancelAction">
+                    Cancel
+                </md-button>
+                <md-button ng-click="confirm('save')" style="margin-right:20px;" aria-label="ConfAction">
+                    Save
+                </md-button>
+            </md-dialog-actions>
+        </form>
+    </md-dialog>
+</script>
+
+
+<style>
+    .carddemoBasicUsage .card-media {
+        background-color: #999999;
+    }
+
+    .inputdemoBasicUsage .md-datepicker-button {
+        width: 36px;
+    }
+
+    /*md-tabs.md-default-theme md-ink-bar, md-tabs md-ink-bar {
+        color: red !important;
+        background-color: red !important;
+    }*/
+</style>

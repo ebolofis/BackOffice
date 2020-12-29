@@ -1,0 +1,70 @@
+﻿
+<!DOCTYPE html>
+<html ng-app="app">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <!--<div ng-controller="UpdateProdCatCtrl" ng-init="initView()" layout-fill layout="column" layout-align="start stretch">
+        <div layout="row" layout-align="start stretch" flex="grow">
+            <ChangeProdCategoriesVat-comp flex ng-if="editingEntity == 'UpdateProdCatVat'" style="height:100%" viewoptions="TRViewOps"></ChangeProdCategoriesVat-comp>-->
+
+    <div ng-controller="ChangeProductCategoriesVatCTRL as ChProdCatVatCont" ng-init="ChProdCatVatCont.initView()" layout-fill layout="column" layout-align="start stretch">
+        <div flex="10">
+            <md-subheader class="wrappers-view-header md-whiteframe-7dp md-primary">Update Product Categories Vat </md-subheader>
+        </div>
+        <div class="mybox" flex="90" layout="column">
+            <h3 style="text-align:center;"><i>Select and Update the desired Vat Value of selected Product Categories </i></h3>
+            <md-divider></md-divider>
+            <div layout="row" layout-align="start" class="md-padding" style="font-variant:small-caps;">
+
+
+                <md-divider></md-divider>
+                <md-divider></md-divider>
+
+                <md-input-container flex="50" class="flex-50" style="overflow-y: auto;">
+                    <label for="select_1739" class="md-placeholder">ProductCategories</label>
+                    <md-select ng-model="ChProdCatVatCont.SelectedProdCats" multiple="true" class="ng-pristine ng-valid ng-empty ng-valid-md-multiple ng-touched" tabindex="0" aria-disabled="false" role="listbox" aria-expanded="false" aria-multiselectable="true" id="select_1739" aria-owns="select_container_1740" aria-invalid="false" aria-label="Product Categories" style="">
+                        <md-option style="height:20px;" ng-repeat="x in ChProdCatVatCont.ProdCat" value="{{x.Id}}">{{x.Description}}</md-option>
+                        <md-select-value class="md-select-value md-select-placeholder" Id="ch.Id"><span>ProductCategories</span><span class="md-select-icon" aria-hidden="true"></span></md-select-value>
+                    </md-select>
+                </md-input-container>
+                <md-input-container flex="50" class="flex-50">
+                    <label class="md-placeholder">Vat Value</label>
+                    <md-select ng-model="ChProdCatVatCont.selectedVat">
+                        <md-option ng-repeat="ch in ChProdCatVatCont.Vat" value="{{ch.Id}}"> {{ch.Description}}</md-option>
+                        <md-select-value class="md-select-value md-select-placeholder"><span>Vat</span><span class="md-select-icon" aria-hidden="true"></span></md-select-value>
+                    </md-select>
+
+                </md-input-container>
+
+                <div flex="10" class="flex-10" layout-align="end" layout="column" style="height:50px;">
+                    <md-button style="background-color:lightblue;position:fixed; top :300px;" ng-click="ConvertVatValues()" aria-label="Convert">Convert</md-button>
+                </div>
+
+                <md-divider></md-divider>
+
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>
+
+<style>
+    .mybox {
+        width: 1500px;
+        border: 15px solid lightblue;
+        padding: 50px;
+        margin: 20px;
+        height: 3000px;
+    }
+</style>
+
+
+    </div>
+</div>
+
+
+

@@ -1,0 +1,165 @@
+﻿<div layout="column" layout-align="start stretch" ng-cloak ng-controller="IngredientAssocsServiceController" ng-init="initView()">
+    <md-subheader class="wrappers-view-header md-whiteframe-7dp md-primary">Manage your Ingredient Associations</md-subheader>
+    <div layout="row" layout-align="end center">
+        <md-menu md-position-mode="target-right target" ng-if="devAccess">
+            <md-button aria-label="UserSettings" class="md-icon-button md-primary" ng-click="$mdOpenMenu($event)">
+                <md-tooltip md-direction="top">Develop - Debug</md-tooltip>
+                <md-icon md-menu-origin md-svg-icon="device:developer_mode"></md-icon>
+            </md-button>
+            <md-menu-content width="4" style="max-height:none;">
+                <md-content layout="column" layout-align="start stretch" flex="grow" class="md-padding">
+                    <h4 style="font-variant:small-caps; text-align:center;">Use Debug Actions</h4>
+                    <md-button class="md-raised md-primary" ng-disabled="!devAccess" ng-click="displayLookups()" aria-label="dev-log-lookups">Log Lookups</md-button>
+                    <md-button class="md-raised md-primary" ng-disabled="!devAccess" ng-click="displayContainer()" aria-label="dev-log-container">Log Container</md-button>
+                    <md-button class="md-raised md-primary" ng-disabled="!devAccess" ng-click="displaylogs()" aria-label="dev-log-crud-array">Log Changes</md-button>
+                    <md-button class="md-raised md-primary" ng-disabled="!devAccess" ng-click="displayLoadedAssocs()" aria-label="dev-log-crud-array">Log Loaded Assocs</md-button>
+                </md-content>
+            </md-menu-content>
+        </md-menu>
+        <md-button class="md-raised md-primary" ng-disabled="savingProcess" ng-click="saveIngredientsAssocs()">Save&nbsp;<i class="fa fa-save fa-fw"></i></md-button>
+        <md-menu md-position-mode="target-right target" ng-if="devAccess">
+            <md-button aria-label="Ingredient Association Options" class="md-icon-button md-primary" ng-click="$mdOpenMenu($event)">
+                <md-tooltip md-direction="top">Ingredient Assoc Options</md-tooltip>
+                <md-icon md-menu-origin md-svg-icon="navigation:apps"></md-icon>
+            </md-button>
+            <md-menu-content width="4" style="max-height:none;">
+                <md-content layout="column" layout-align="start stretch" flex="grow" class="md-padding">
+                    <h4 style="font-variant:small-caps; text-align:center;">Options</h4>
+                    <md-list>
+                        <md-list-item class="bo-head-sc" ng-click="createDynamicEntity('ProductCategories')" aria-label="create-product-category-modal-option">Create Product Category<md-tooltip md-direction="top">Create new product category and reload lookups</md-tooltip></md-list-item>
+                        <md-list-item class="bo-head-sc" ng-click="createDynamicEntity('Ingredients')" aria-label="create-ingredient-modal-option">Create Ingredient<md-tooltip md-direction="top">Create new Ingredient and reload lookups</md-tooltip></md-list-item>
+                        <md-list-item class="bo-head-sc" ng-click="modalSortPropose()" aria-label="create-ingredient-modal-option">Sort all Associations<md-tooltip md-direction="top">Check and modify sort missmatch against all containers</md-tooltip></md-list-item>
+                    </md-list>
+                </md-content>
+            </md-menu-content>
+        </md-menu>
+    </div>
+    <div class="container-panel" layout="row" layout-align="start stretch" flex="grow">
+        <div class="md-whiteframe-7dp" layout-margin="1%" layout="column" layout-align="start stretch" flex="33">
+            <div>
+                <div class="bo-htd">Product Categories Associated</div>
+                <div layout="row" layout-align="center center">
+                    <md-input-container class="md-block" flex-gt-sm style="margin-bottom:0;" aria-label="search-inp-assoc-cat">
+                        <label>Search category...</label>
+                        <input ng-model="searchStringPcats">
+                    </md-input-container>
+                    <md-button class="md-icon-button md-primary" ng-click="addCategoryModal()" arial-label="assign-product-category">
+                        <md-icon md-svg-icon="content:add"></md-icon><md-tooltip md-direction="top">Add association categories</md-tooltip>
+                    </md-button>
+                </div>
+            </div>
+            <div style="overflow:auto;" flex="grow" class="hitbo-virtual-repeat">
+                <div class="notice-list-rounded" ng-repeat="(key, cObj) in containerObjects | searchStringByEnum:searchStringPcats:productCategoryEnum" ng-if="containerObjects != {} && containerObjects!= null">
+                    <category-assoc-container pckey="key" lookups="lookups" data="cObj" action-funs="categoryContainerFunctions"></category-assoc-container>
+                </div>
+            </div>
+        </div>
+        <!-- Assosiated Selected Category Ingredients -->
+        <div class="cssFade-animation md-whiteframe-7dp bo-draggable-list" layout-margin="1%" layout="column" layout-align="start stretch" flex="33" ng-show="selectedProductCategory !== null">
+            <div>
+                <div class="bo-htd">Ingredients Associated</div>
+                <div>
+                    <md-input-container class="md-block" flex-gt-sm style="margin-bottom:0;" aria-label="search-inp-assoc-cat">
+                        <label>Find associated Ingredients</label>
+                        <input ng-model="searchloadedingrs">
+                    </md-input-container>
+                </div>
+            </div>
+            <ul style="overflow-y:auto;" dnd-list="selectedContainerObj">
+                <li ng-repeat="ingrs in selectedContainerObj | filter:filterContainerIngrs | orderBy : 'Sort'" dnd-draggable="ingrs" dnd-moved="selectedContainerObj.splice($index, 1);" dnd-dragend="sortDisplay()">
+                    <div class="notice" ng-class="{'notice-warning' : (ingrs.edited == true && ingrs.Id != 0) ,'notice-success' : (ingrs.edited == true && ingrs.Id == 0)}" style="margin-bottom:0;" layout="row" layout-align="start center">
+                        <strong ng-if="ingrs.Id == 0">*</strong>
+                        <span class="content-overflow-ellipsis" flex>
+                            {{ingrs.Sort}} : {{ingredientsEnum[ingrs.IngredientId]}} : {{lookupArrays['Ingredients'][ingrs.IngredientId]['Code']}}  :
+                        </span>
+                        <!--<md-tooltip md-direction="top">{{ingredientsEnum[ingrs.IngredientId]}}</md-tooltip>-->
+                        <!--<md-tooltip md-direction ="top"> <input type="number" id="tentacles" name="tentacles" min="10" max="100"></md-tooltip>-->
+                        <label>MinQty : &nbsp;</label>
+                        <input type="number"  name="MinQty" min="0" max="1000" ng-model="ingrs.MinQty">
+                        &nbsp;
+                        &nbsp;
+                        <label>MaxQty : &nbsp;</label>
+                        <input type="number" name="MaxQty" min="1" max="10000" ng-model="ingrs.MaxQty">
+                        &nbsp;
+                        &nbsp;
+                        <md-icon md-svg-icon="action:delete" size="24px;" ng-click="ingrsDeleteAction(ingrs,selectedContainerObj)" aria-label="del-assoced-ingr"></md-icon>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <!-- Displayed Available to Add Ingredients -->
+        <div class="cssFade-animation md-whiteframe-7dp" layout-margin="1%" layout="column" layout-align="start stretch" flex="33" ng-show="selectedProductCategory != null">
+            <div>
+                <div class="bo-htd">Available Ingredients</div>
+                <!--<md-toolbar class="bo-header-toolbar"><div class="md-toolbar-tools">Available Ingredients</div></md-toolbar>-->
+                <div layout="row" layout-align="center center">
+                    <md-input-container class="md-block" flex-gt-sm style="margin-bottom:0;" aria-label="search-inp-assoc-cat">
+                        <label>Search Ingredients</label>
+                        <input ng-model="searchingrs">
+                    </md-input-container>
+                    <md-button class="md-icon-button md-primary" ng-click="insertIngredients()" arial-label="assign-product-category">
+                        <md-icon md-svg-icon="content:add_box"></md-icon><md-tooltip md-direction="top">Append ingredients to association</md-tooltip>
+                    </md-button>
+
+                    <md-menu md-position-mode="target-right target">
+                        <md-button aria-label="available-ingredient-options-menu" class="md-icon-button" ng-click="$mdOpenMenu($event)">
+                            <md-tooltip md-direction="top">Options</md-tooltip>
+                            <md-icon md-menu-origin md-svg-icon="navigation:more_vert"></md-icon>
+                        </md-button>
+                        <md-menu-content width="4" style="max-height:none;">
+                            <md-content layout="column" layout-align="start stretch" flex="grow" class="md-padding">
+                                <h4 style="font-variant:small-caps; text-align:center;">Ingredient Options</h4>
+                                <md-button class="md-raised" ng-click="toggleSelection(ingredientsArrayOptions , true)" aria-label="ingredient-select-option">Select All</md-button>
+                                <md-button class="md-raised" ng-click="toggleSelection(ingredientsArrayOptions , false)" aria-label="ingredient-clear-select-option">Clear Selection</md-button>
+                            </md-content>
+                        </md-menu-content>
+                    </md-menu>
+                </div>
+            </div>
+            <div style="overflow:auto;" flex="grow" class="hitbo-virtual-repeat">
+                <md-virtual-repeat-container id="vertical-container">
+                    <div md-virtual-repeat="ing in ingredientsArrayOptions| filter:searchingrsFilter | filter:filterIngrs" class="repeated-item notice" ng-class="ing.selected ? 'notice-success' : ''" flex ng-click="(ing.selected = !ing.selected)">
+                        <span class="col-md-10 col-xs-10 content-overflow-ellipsis">{{ing.Description || '--'}} : {{ing.Code || '--'}}</span>
+                        <md-checkbox aria-label="ins-pici" ng-checked="ing['selected'] == true" class="md-primary" style="margin: auto;"></md-checkbox>
+                    </div>
+                </md-virtual-repeat-container>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    md-backdrop.md-opaque.md-default-theme, .md-dialog-container {
+        position: fixed;
+    }
+
+    .list {
+        list-style: none outside none;
+        margin: 10px 0 30px;
+    }
+
+    .deliconhover {
+        float: right;
+        border: 3px solid #2e6da4;
+        border-radius: 141px;
+        background: #BBE8FF;
+    }
+
+    .cssFade-animation {
+        max-height: inherit !important;
+        opacity: 1;
+    }
+
+        .cssFade-animation.ng-hide-add.ng-hide-add-active,
+        .cssFade-animation.ng-hide-remove.ng-hide-remove-active {
+            -webkit-transition: 0.5s linear all;
+            -moz-transition: 0.5s linear all;
+            -ms-transition: 0.5s linear all;
+            -o-transition: 0.5s linear all;
+            transition: 0.5s linear all;
+        }
+
+        .cssFade-animation.ng-hide {
+            max-height: 0 !important;
+            opacity: 0;
+        }
+</style>

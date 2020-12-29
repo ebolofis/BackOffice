@@ -1,0 +1,44 @@
+{
+  "name": "ng-material-datetimepicker",
+  "description": "A datetime picker for AngularJS Material",
+  "version": "1.13.1",
+  "keywords": [
+    "css",
+    "js",
+    "mobile-first",
+    "angular",
+    "material",
+    "angular-material",
+    "responsive",
+    "front-end",
+    "web"
+  ],
+  "homepage": "https://beenote.github.io/angular-material-datetimepicker",
+  "main": [
+    "js/angular-material-datetimepicker.js",
+    "css/material-datetimepicker.css"
+  ],
+  "ignore": [
+    "_config.yml",
+    "CNAME",
+    "composer.json",
+    "CONTRIBUTING.md",
+    "docs",
+    "js/tests",
+    "test-infra"
+  ],
+  "dependencies": {
+    "moment": "^2.21.0",
+    "angular-material": "^1.1.8"
+  },
+  "_release": "1.13.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "v1.13.1",
+    "commit": "6fee0f00d50f212368b3d1bafdeaa6b16237f844"
+  },
+  "_source": "https://github.com/beenote/angular-material-datetimepicker.git",
+  "_target": "v1.13.1",
+  "_originalSource": "ng-material-datetimepicker",
+  "_direct": true
+}

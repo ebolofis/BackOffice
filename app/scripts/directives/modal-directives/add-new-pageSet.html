@@ -1,0 +1,127 @@
+﻿<md-dialog ng-class="{'fullscreen-dialog' : fullscreenModal}" aria-label="Edit pageset modal" ng-cloak style="min-width:55vw;" layout="column" layout-align="space-between stretch">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2 class="modal-title">{{mps.tittle}}</h2>
+            <span flex></span>
+            <toggle-fs-modal tvar="fullscreenModal"></toggle-fs-modal>
+            <md-button class="md-icon-button" aria-label="CloseModal" ng-click="mps.dismiss('close')">
+                <md-icon md-svg-icon="navigation:close"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-dialog-content style="min-height:50vh;" flex layout="column" layout-align="space-between stretch">
+        <form name="pageSetInsForm" layout="row" layout-align="start stretch" flex>
+            <md-content class="md-padding" layout="row" layout-align="start stretch" flex="grow">
+                <md-tabs md-border-bottom flex="grow">
+                    <md-tab label="Basic Options" ng-click="mps.panelHandler('overview')">
+                        <div class="smooth-opacity-showhide md-padding md-margin" ng-show="mps.panelOption =='overview'">
+                            <div ng-if="mps.actionOption != null">
+                                <div layout="row" layout-align="start stretch">
+                                    <md-input-container class="md-block" flex>
+                                        <label>Description</label><input name="Description" ng-model="mps.entity.Description" required>
+                                        <div ng-messages="pageSetInsForm.Description.$error"><div ng-message="required">You need to specify a Description for the page</div></div>
+                                    </md-input-container>
+                                </div>
+                                <div layout="row" layout-align="space-between center">
+                                    <div layout="column" flex="50">
+                                        <label>Activation Date</label>
+                                        <md-datepicker ng-model="mps.entity.DPActivationDate" md-placeholder="Activation Date" ng-change="mps.entity.ActivationDate = mps.entity.DPActivationDate.toISOString()" required></md-datepicker>
+                                        <div ng-messages="pageSetInsForm.ActivationDate.$error"><div ng-message="required">You have to select an activation date</div></div>
+                                    </div>
+                                    <div layout="column" flex="50">
+                                        <label>Deactivation Date</label>
+                                        <md-datepicker ng-model="mps.entity.DPDeactivationDate" md-placeholder="Deactivation Date" ng-change="mps.entity.DeactivationDate = mps.entity.DPDeactivationDate.toISOString()" required></md-datepicker>
+                                        <div ng-messages="pageSetInsForm.DeactivationDate.$error"><div ng-message="required">You have to select a deactivation date</div></div>
+                                    </div>
+                                </div>
+                                <div layout="row" layout-align="start stretch">
+                                    <md-input-container class="md-block" required flex="50">
+                                        <label>Assosiated Pos</label>
+                                        <md-select name="AssosiatedPos" ng-model="mps.entity.selectedPos" multiple="true">
+                                            <md-option ng-repeat="ch in mps.posarray" value="{{ch.value}}">{{ch.name}}</md-option>
+                                        </md-select>
+                                    </md-input-container>
+                                </div>
+                                <!--<form name="createRowEntryForm" sf-schema="mps.schema" sf-form="mps.form" sf-model="mps.entity"></form>-->
+                            </div>
+                        </div>
+                    </md-tab>
+                    <md-tab label="Pages Management" ng-click="mps.panelHandler('pageManagement')" ng-if="mps.actionOption =='Update'">
+                        <div style="overflow:hidden;" layout="column" layout-align="start stretch">
+                            <md-subheader class="md-primary">Manage Pages & display order</md-subheader>
+                            <div style="overflow-y:auto; padding: 0 15px;" flex>
+                                <md-list dnd-list="mps.pages">
+                                    <md-list-item class="notice" style="cursor:pointer; list-style-type:none;" ng-repeat="item in mps.pages" dnd-draggable="item" dnd-moved="mps.pages.splice($index, 1)" dnd-selected="mps.selectedPage = item" ng-class="{'selected': mps.selectedPage === item}">
+                                        <span class="badge">{{$index + 1}}</span>&nbsp;
+                                        <span flex>{{item.Description}}</span>
+                                        <span style="float:right;">
+                                            <a class="hvr-fade hvr-danger" style="text-decoration:none;padding: 0 1em;" ng-click="mps.removePage(item)">
+                                                <i class="fa fa-xs fa-trash-o" style="margin: auto 0; vertical-align: middle;"></i>
+                                            </a>
+                                        </span>
+                                    </md-list-item>
+                                </md-list>
+                            </div>
+                        </div>
+                    </md-tab>
+                    <md-tab label="Copy Pages" ng-click="mps.panelHandler('addPages')" ng-if="mps.actionOption =='Update'">
+                        <div class="smooth-opacity-showhide" ng-show="mps.panelOption =='addPages'">
+                            <new-pages-manager ret-model="mps.insertTypeModel" pagesets="mps.pagesetArray" insert-action="'copy'" disable-viewopp="true" product-cats="mps.pcategories"></new-pages-manager>
+                        </div>
+                    </md-tab>
+                    <md-tab label="Insert new Pages" ng-click="mps.panelHandler('addPages')" ng-if="mps.actionOption =='Insert'">
+                        <div class="smooth-opacity-showhide" ng-show="mps.panelOption =='addPages'">
+                            <new-pages-manager ret-model="mps.insertTypeModel" pagesets="mps.pagesetArray" product-cats="mps.pcategories"></new-pages-manager>
+                        </div>
+                    </md-tab>
+                </md-tabs>
+            </md-content>
+        </form>
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+        <md-button class="md-raised" ng-click="mps.dismiss('close')">Cancel</md-button>
+        <md-button class="md-raised md-primary" ng-disabled="pageSetInsForm.$invalid" ng-if="mps.actionOption != null" ng-click="mps.Conf('empty')">{{mps.actionOption}}</md-button>
+    </md-dialog-actions>
+</md-dialog>
+<style>
+    .simpleDragContainer {
+        max-height: 60vh;
+        overflow-y: auto;
+        padding: 2%;
+    }
+
+        .simpleDragContainer ul[dnd-list],
+        .simpleDragContainer ul[dnd-list] > li {
+            position: relative;
+        }
+
+        .simpleDragContainer ul[dnd-list] {
+            min-height: 42px;
+            padding-left: 0px;
+        }
+
+            .simpleDragContainer ul[dnd-list] .dndDraggingSource {
+                display: none;
+            }
+
+            .simpleDragContainer ul[dnd-list] .dndPlaceholder {
+                display: block;
+                background-color: #ddd;
+                min-height: 42px;
+            }
+
+            .simpleDragContainer ul[dnd-list] li {
+                background-color: #fff;
+                border: 1px solid #ddd;
+                border-top-right-radius: 4px;
+                border-top-left-radius: 4px;
+                display: block;
+                padding: 4px 15px;
+                margin-bottom: 3px;
+            }
+
+                .simpleDragContainer ul[dnd-list] li.selected {
+                    background-color: #dff0d8;
+                    color: #3c763d;
+                }
+</style>

@@ -1,0 +1,303 @@
+﻿<md-dialog ng-class="{'fullscreen-dialog' : fullscreenModal}" aria-label="AddNewProductModal" ng-cloak style="min-width: 90vw;">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>Product Category Ingredient Assocs</h2>
+            <span flex></span>
+            <toggle-fs-modal tvar="fullscreenModal"></toggle-fs-modal>
+            <md-button class="md-icon-button" aria-label="CloseModal" ng-disabled="processing==true" ng-click="cancel('cancel')">
+                <md-icon md-svg-icon="navigation:close"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-dialog-content layout="row" layout-align="start stretch" style="overflow:hidden;min-height:60vh;">
+        <div class="md-padding" layout="column" layout-align="start stretch" flex="grow" style="height:100%">
+            <div layout="row" layout-align="start center">
+                <md-steppers ng-if="steps.length > 0 && templateChoice != 'default'" md-selected="selectedstep" md-stretch-steppers="always" layout-fill>
+                    <md-step ng-repeat="s in steps" label="{{actions[s].label}}" md-complete="actions[s].completed" ng-disabled="actions[s].disabled" ng-click="selectAction(s)"></md-step>
+                </md-steppers>
+            </div>
+            <div layout="row" layout-align="start center">
+                <h4 class="bo-head-sc-center" flex>{{selectedAction.title}}</h4>
+            </div>
+            <div layout="row" layout-align="start stretch" flex="grow">
+                <div layout="column" layout-align="start stretch" flex ng-include src="selectedAction.template"></div>
+            </div>
+        </div>
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+        <div layout="row" layout-align="space-between center" flex="grow">
+            <a ng-click="selectAction('default')" style="cursor:pointer;">Change association Policy.</a>
+            <div layout="row" layout-align="end center">
+                <!--<md-button ng-click="logAppendContainer('cancel')" aria-label="CancelAction">Log</md-button>-->
+                <md-button ng-click="cancel('cancel')" aria-label="CancelAction">Close</md-button>
+                <md-button ng-if="templateChoice == 'applyIngredients' || templateChoice == 'applyClonedIngredients'" ng-click="applyChanges()" ng-disabled="validToAppend != true" class="md-primary md-raised" aria-label="ConfAction">Apply Changes</md-button>
+            </div>
+        </div>
+    </md-dialog-actions>
+</md-dialog>
+
+<!-- Template Options selection Default view layout -->
+<script id="action-selection-template" type="text/ng-template">
+    <div layout="row" layout-align="center start" flex="grow" layout-wrap>
+        <md-card style="width:350px;" class="md-whiteframe-8dp bo-hover-negative" ng-click="switchSelectionMapPolicy('assoc')">
+            <md-card-header><md-card-header-text><span class="md-title">Append Custom Ingredients</span></md-card-header-text></md-card-header>
+            <md-card-content><p>Choose Ingredients from the list you wish to append</p></md-card-content>
+        </md-card>
+        <md-card style="width:350px;" class="md-whiteframe-8dp bo-hover-negative" ng-click="switchSelectionMapPolicy('clone')">
+            <md-card-header><md-card-header-text><span class="md-title">Clone Associated Ingredients</span></md-card-header-text></md-card-header>
+            <md-card-content><p>Choose Product-Categories allready associated to clone Ingredients</p></md-card-content>
+        </md-card>
+    </div>
+    <md-divider></md-divider>
+    <small>*{{actions['default'].info}}</small>
+</script>
+<!-- Select ProductCategories to manage assosiations -->
+<script id="inner-assoc-split-option-template" type="text/ng-template">
+    <div layout="row" layout-align="start stretch" flex>
+        <div class="md-padding" layout="column" layout-align="start stretch" flex="50" ng-include src="selectedAction.leftT"></div>
+        <div class="md-padding" layout="column" layout-align="start stretch" flex="50" ng-include src="selectedAction.rightT"></div>
+    </div>
+    <md-divider></md-divider>
+    <small>*{{selectedAction.info}}</small>
+</script>
+<!-- Select Containers vs Selected Ingrs and Assocs-->
+<script id="apply-selected-ingredients-template" type="text/ng-template">
+    <div layout="row" layout-align="start stretch" flex>
+        <div class="md-padding" layout="column" layout-align="start stretch" flex="50" ng-include src="selectedAction.leftT"></div>
+        <div class="md-padding" layout="column" layout-align="start stretch" flex="50" ng-include src="selectedAction.rightT"></div>
+    </div>
+    <md-divider></md-divider>
+    <small>*{{selectedAction.info}}</small>
+</script>
+
+<!-- ---------------Split Inner Templates--------------- -->
+<!--Selected Cloned Associations to copy from clone functionality -->
+<script id="selected-associations-template" type="text/ng-template">
+    <h4 class="bo-head-sc-center">Selected Cloned Ingredients</h4>
+    <div ng-if="templateChoice == 'applyClonedIngredients' && (selectedAssocs == undefined || selectedAssocs.length == 0)" layout="column" layout-align="start stretch" flex>
+        <md-divider></md-divider>
+        <div layout="row" layout-align="center center" flex>
+            <md-card style="width:350px;" class="bo-hover-negative" ng-click="selectAction('cloneIngredients')">
+                <md-card-header><md-card-header-text><span class="md-title">{{actions['cloneIngredients'].title}}</span></md-card-header-text></md-card-header>
+                <md-card-content><p>{{actions['cloneIngredients'].info}}</p></md-card-content>
+            </md-card>
+        </div>
+        <small style="text-align: center;">*no selected associations try select some from ingredients by category view.</small>
+        <div flex></div>
+    </div>
+    <div class="container-panel-header-toolbar" layout="row" layout-align="center center" ng-if="(templateChoice == 'cloneIngredients' || templateChoice == 'applyClonedIngredients') && selectedAssocs != undefined && selectedAssocs.length > 0">
+        <md-input-container class="md-block" flex-gt-sm style="margin-bottom:0;" aria-label="search-inp-clone-assoc-cat"><label>Search selected Ingredients</label><input ng-model="searchselectedAssocs"></md-input-container>
+
+        <md-button class="md-icon-button md-warn" ng-click="removeSelection('selectedAssocs')" aria-label="remove-cloned-selected-assocs">
+            <md-icon md-svg-icon="action:delete"></md-icon><md-tooltip md-direction="top">Append selected ingredients to choice association</md-tooltip>
+        </md-button>
+        <md-menu md-position-mode="target-right target">
+            <md-button aria-label="available-ingredient-options-menu-1" class="md-icon-button" ng-click="$mdOpenMenu($event)"><md-tooltip md-direction="top">Options</md-tooltip><md-icon md-menu-origin md-svg-icon="navigation:more_vert"></md-icon></md-button>
+            <md-menu-content width="4" style="max-height:none;">
+                <md-content layout="column" layout-align="start stretch" flex="grow" class="md-padding">
+                    <h4 style="font-variant:small-caps; text-align:center;">Cloned Ingredient Options</h4>
+                    <md-button class="md-raised" ng-click="toggleSelection(selectedAssocs , true)" aria-label="toggle-true-scont-assoc-option">Select All</md-button>
+                    <md-button class="md-raised" ng-click="toggleSelection(selectedAssocs , false)" aria-label="toggle-false-scont-assoc-option">Clear Selection</md-button>
+                </md-content>
+            </md-menu-content>
+        </md-menu>
+    </div>
+    <div flex style="overflow:auto;" ng-if="(templateChoice == 'cloneIngredients' || templateChoice == 'applyClonedIngredients') && selectedAssocs != undefined && selectedAssocs.length > 0">
+        <div>
+            <div class="notice-list-rounded" ng-repeat="ing in selectedAssocs | searchStringByEnum:searchselectedAssocs:lookupEnums['Ingredients']">
+                <div class="notice" ng-class="{ 'notice-warning' : ing.selected == true }" ng-click="(ing.selected == true)? ing.selected = false: ing.selected = true" layout="row" layout-align="start center">
+                    <span class="content-overflow-ellipsis" flex>{{lookupEnums['Ingredients'][ing.IngredientId]}}</span>
+                    <md-tooltip md-direction="top">{{lookupEnums['Ingredients'][ing.IngredientId]}}</md-tooltip>
+                    <md-checkbox aria-label="ins-pici" ng-checked="ing['selected'] == true" class="md-warn" style="margin: auto;"></md-checkbox>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+<!-- Available 4 clone Selected container and Ingredient Associations -->
+<script id="container-associations-template" type="text/ng-template">
+    <h4 class="bo-head-sc-center">Available Clone Assosiations</h4>
+    <!-- Drop Down Directive to Allow bind arialabel assocs -->
+    <container-drop-selection smodel="selectedCloneAssoc" loop="assocCatIds" onchange-fun="assocSelectionChanged" lookup="lookupEnums['ProductCategories']" lookup-extra ="assocExtraLength" style="width:100%;" layout="column" layout-align="start stretch"></container-drop-selection>
+    <!-- Header Search and copy action on the drop down -->
+    <div class="container-panel-header-toolbar" ng-if="selectedCloneContainer.length > 0 && selectedCloneAssoc != null && selectedCloneAssoc  != 'null'" layout="row" layout-align="center center">
+        <md-input-container class="md-block" flex-gt-sm style="margin-bottom:0;" aria-label="search-clone-assoc-cat" flex>
+            <label>Search ingredients in category...</label><input ng-model="searchCloneInput" ng-change="searchtextclonec(searchCloneInput)">
+        </md-input-container>
+        <md-button class="md-icon-button md-primary" ng-click="appendCloneIngredients()" aria-label="assign-clone-product-category"><md-icon md-svg-icon="content:content_copy"></md-icon><md-tooltip md-direction="top">Append selected ingredients to choice association</md-tooltip></md-button>
+        <md-menu md-position-mode="target-right target">
+            <md-button aria-label="available-clone-ingredient-options-menu" class="md-icon-button" ng-click="$mdOpenMenu($event)"><md-tooltip md-direction="top">Options</md-tooltip><md-icon md-menu-origin md-svg-icon="navigation:more_vert"></md-icon></md-button>
+            <md-menu-content width="4" style="max-height:none;">
+                <md-content layout="column" layout-align="start stretch" flex="grow" class="md-padding">
+                    <h4 style="font-variant:small-caps; text-align:center;">Clone Ingredient Options</h4>
+                    <md-button class="md-raised" ng-click="toggleSelection(selectedCloneContainer , true)" aria-label="toggle-clone-select-option">Select All</md-button>
+                    <md-button class="md-raised" ng-click="toggleSelection(selectedCloneContainer , false)" aria-label="toggle-clone-clear-select-option">Clear Selection</md-button>
+                </md-content>
+            </md-menu-content>
+        </md-menu>
+    </div>
+    <div flex style="overflow:auto;">
+        <div>
+            <!-- Error Message quick template -->
+            <div ng-if="selectedCloneAssoc == null || selectedCloneAssoc == 'null' || selectedCloneContainer.length == 0" layout="row" layout-align="center center" flex>
+                <md-toolbar class="md-accent md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="start center">
+                    <md-icon class="md-margin" md-svg-icon="action:info"></md-icon>
+                    <span ng-if="selectedCloneContainer.length == 0  || selectedCloneAssoc != 'null' || selectedCloneAssoc != null">Select a category with assosiations mapped to clone.</span>
+                </md-toolbar>
+            </div>
+            <!-- List of Associated Ingredients to selected container available for copy selection -->
+            <md-list ng-if="selectedCloneContainer.length > 0 && selectedCloneAssoc != null && selectedCloneAssoc  != 'null'">
+                <md-list-item  class="notice-list-rounded" aria-label="to-clone-assoc" ng-repeat="cing in selectedCloneContainer | searchStringByEnumField:searchCloneAssocIngrs:lookupEnums['Ingredients']:'IngredientId' |filter:filterClones" ng-click="(cing.selected = !cing.selected)">
+                    <md-checkbox aria-label="to-clone-assoc-checkbox" ng-checked="cing['selected'] == true" class="md-primary"></md-checkbox>
+                    <md-tooltip md-direction="top">{{lookupEnums['Ingredients'][cing.IngredientId]}}</md-tooltip>
+                    <strong>{{lookupEnums['Ingredients'][cing.IngredientId]}}</strong>
+                </md-list-item>
+            </md-list>
+        </div>
+    </div>
+</script>
+
+<!-- Selected Ingredients -->
+<script id="selected-ingredients-template" type="text/ng-template">
+    <h4 class="bo-head-sc-center">Selected Ingredients</h4>
+    <div ng-if="templateChoice == 'applyIngredients' && (selectedIngredients == undefined || selectedIngredients.length == 0)" layout="column" layout-align="start stretch" flex>
+        <md-divider></md-divider>
+        <div layout="row" layout-align="center center" flex>
+            <md-card style="width:350px;" class="bo-hover-negative" ng-click="selectAction('selectIngredients')">
+                <md-card-header><md-card-header-text><span class="md-title">{{actions['selectIngredients'].title}}</span></md-card-header-text></md-card-header>
+                <md-card-content><p>{{actions['selectIngredients'].info}}</p></md-card-content>
+            </md-card>
+        </div>
+        <small style="text-align: center;">*no selected associations try select some from ingredients by category view.</small>
+        <div flex></div>
+    </div>
+    <div class="container-panel-header-toolbar" layout="row" layout-align="center center" ng-if="(templateChoice == 'applyIngredients'|| templateChoice == 'selectIngredients') && selectedIngredients != undefined && selectedIngredients.length > 0">
+        <md-input-container class="md-block" flex-gt-sm style="margin-bottom:0;" aria-label="search-inp-assoc-cat"><label>Search selected Ingredients</label><input ng-model="searchselingrs.Description"></md-input-container>
+        <md-button class="md-icon-button md-warn" ng-click="removeSelection('selectedIngredients')" aria-label="assign-product-category"><md-icon md-svg-icon="action:delete"></md-icon><md-tooltip md-direction="top">Remove selected ingredients</md-tooltip></md-button>
+        <md-menu md-position-mode="target-right target">
+            <md-button aria-label="available-ingredient-options-menu-2" class="md-icon-button" ng-click="$mdOpenMenu($event)"><md-tooltip md-direction="top">Options</md-tooltip><md-icon md-menu-origin md-svg-icon="navigation:more_vert"></md-icon></md-button>
+            <md-menu-content width="4" style="max-height:none;">
+                <md-content layout="column" layout-align="start stretch" flex="grow" class="md-padding">
+                    <h4 style="font-variant:small-caps; text-align:center;">Ingredient Options</h4>
+                    <md-button class="md-raised" ng-click="toggleSelection(selectedIngredients , true)" aria-label="toggle-true-selected-ingrs-option">Select All</md-button>
+                    <md-button class="md-raised" ng-click="toggleSelection(selectedIngredients , false)" aria-label="toggle-false-selected-ingrs-option">Clear Selection</md-button>
+                </md-content>
+            </md-menu-content>
+        </md-menu>
+    </div>
+    <div flex style="overflow:auto;" ng-if="(templateChoice == 'applyIngredients' || templateChoice == 'selectIngredients') && selectedIngredients != undefined && selectedIngredients.length > 0">
+        <div>
+            <div class="notice-list-rounded" ng-repeat="ing in selectedIngredients | filter:searchselingrs">
+                <div class="notice" ng-class="ing.selected ? 'notice-warning' : ''" ng-click="(ing.selected = !ing.selected)">
+                    <span class="col-md-10 col-xs-10 content-overflow-ellipsis">{{lookupEnums['Ingredients'][ing.IngredientId]}}</span>
+                    <md-tooltip md-direction="top">{{lookupEnums['Ingredients'][ing.IngredientId]}}</md-tooltip>
+                    <md-checkbox aria-label="ins-pici" ng-checked="ing['selected'] == true" class="md-warn" style="margin: auto;"></md-checkbox>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
+<!-- Available Ingredients -->
+<script id="available-ingredients-template" type="text/ng-template">
+    <h4 class="bo-head-sc-center">Available Ingredients</h4>
+    <div class="container-panel-header-toolbar" layout="row" layout-align="center center">
+        <md-input-container class="md-block" flex-gt-sm style="margin-bottom:0;" aria-label="search-inp-assoc-cat"><label>Search Ingredients</label><input ng-model="searchingrs.Description"></md-input-container>
+        <md-button class="md-icon-button md-primary" ng-click="appendSelectedIngredients()" aria-label="assign-product-category">
+            <md-icon md-svg-icon="content:add_box"></md-icon><md-tooltip md-direction="top">Append selected ingredients association list</md-tooltip>
+        </md-button>
+        <md-menu md-position-mode="target-right target">
+            <md-button aria-label="available-ingredient-options-menu-3" class="md-icon-button" ng-click="$mdOpenMenu($event)">
+                <md-tooltip md-direction="top">Options</md-tooltip>
+                <md-icon md-menu-origin md-svg-icon="navigation:more_vert"></md-icon>
+            </md-button>
+            <md-menu-content width="4" style="max-height:none;">
+                <md-content layout="column" layout-align="start stretch" flex="grow" class="md-padding">
+                    <h4 style="font-variant:small-caps; text-align:center;">Ingredient Options</h4>
+                    <md-button class="md-raised" ng-click="toggleSelection(allAvailableIngredients , true)" aria-label="ingredient-select-option">Select All</md-button>
+                    <md-button class="md-raised" ng-click="toggleSelection(allAvailableIngredients , false)" aria-label="ingredient-clear-select-option">Clear Selection</md-button>
+                </md-content>
+            </md-menu-content>
+        </md-menu>
+    </div>
+    <div flex style="overflow:auto;">
+        <div>
+            <div class="notice-list-rounded" ng-repeat="ing in allAvailableIngredients| filter:searchingrs | filter:filterIngrs">
+                <div class="notice" ng-class="{ 'notice-success' : ing.selected == true }" ng-click="(ing.selected == true)? ing.selected = false: ing.selected = true">
+                    <span class="col-md-10 col-xs-10 content-overflow-ellipsis">{{ing.Description}}</span>
+                    <md-tooltip md-direction="top">{{ing.Description}}</md-tooltip>
+                    <md-checkbox aria-label="ins-pici" ng-checked="ing['selected'] == true" class="md-primary" style="margin: auto;"></md-checkbox>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
+
+
+<!-- Split Templates to define selected categories to associate -->
+<!--Available Categories Drop down list template -->
+<script id="categories-list-template" type="text/ng-template">
+    <h4 class="bo-head-sc-center">Available Categories to Insert</h4>
+
+    <div layout="row" layout-align="center center">
+        <md-input-container class="md-block" flex-gt-sm style="margin-bottom:0;" aria-label="inp-s-av-cats">
+            <label>Search unmapped Category Containers...</label>
+            <input ng-model="searchpcats.Description">
+        </md-input-container>
+        <md-button class="md-icon-button md-primary" ng-click="insertProductCategories()" aria-label="ins-selected-cats-as-containers">
+            <md-icon md-svg-icon="content:add"></md-icon><md-tooltip md-direction="top">Insert selected categories</md-tooltip>
+        </md-button>
+        <md-menu md-position-mode="target-right target">
+            <md-button aria-label="available-ingredient-options-menu-2" class="md-icon-button" ng-click="$mdOpenMenu($event)"><md-tooltip md-direction="top">Options</md-tooltip><md-icon md-menu-origin md-svg-icon="navigation:more_vert"></md-icon></md-button>
+            <md-menu-content width="4" style="max-height:none;">
+                <md-content layout="column" layout-align="start stretch" flex="grow" class="md-padding">
+                    <h4 style="font-variant:small-caps; text-align:center;">Container Options</h4>
+                    <md-button class="md-raised" ng-click="toggleSelection(allProductCategories , true)" aria-label="toggle-true-selected-ingrs-option">Select All</md-button>
+                    <md-button class="md-raised" ng-click="toggleSelection(allProductCategories , false)" aria-label="toggle-false-selected-ingrs-option">Clear Selection</md-button>
+                </md-content>
+            </md-menu-content>
+        </md-menu>
+        <!--<md-button class="md-icon-button md-primary" ng-click="toggleSelection()" aria-label="insert-assoc-prod-categories">
+            <md-icon md-svg-icon="toggle:check_box"></md-icon><md-tooltip md-direction="top">Toggle selection</md-tooltip>
+        </md-button>-->
+    </div>
+    <div flex style="overflow:auto;">
+        <div>
+            <div class="notice-list-rounded" ng-repeat="pcat in allProductCategories  | filter:searchpcats | filter:filterPCats">
+                <div class="notice" ng-class="pcat.selected ? 'notice-success' : ''" style="cursor:pointer;" ng-click="(pcat.selected == true ) ? pcat.selected = false : pcat.selected = true">
+                    <span class="col-md-10 col-xs-10 content-overflow-ellipsis">{{pcat.Description}}</span>
+                    <md-checkbox aria-label="checkbox-all-pcats-drop-down" ng-checked="pcat['selected'] == true" class="md-warn" style="margin: auto;"></md-checkbox>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+<!--New Container Selection Objects -->
+<script id="container-add-list-template" type="text/ng-template">
+    <h4 class="bo-head-sc-center">Containers to Create</h4>
+    <div ng-if="(templateChoice == 'applyIngredients' || templateChoice == 'applyClonedIngredients') && (validContainerSelection == false)" layout="column" layout-align="start stretch" flex>
+        <md-divider></md-divider>
+        <div layout="row" layout-align="center center" flex>
+            <md-card style="width:350px;" class="bo-hover-negative" ng-click="selectAction('selectCat')">
+                <md-card-header><md-card-header-text><span class="md-title">{{actions['selectCat'].title}}</span></md-card-header-text></md-card-header>
+                <md-card-content><p>{{actions['selectCat'].info}}</p></md-card-content>
+            </md-card>
+        </div>
+        <small style="text-align: center;">*There are no selected containers to append associations try select some from unassociated categories view.</small>
+        <div flex></div>
+    </div>
+    <div class="container-panel-header-toolbar" layout="row" layout-align="center center" ng-if="(templateChoice == 'applyIngredients' || templateChoice == 'applyClonedIngredients' ||  templateChoice == 'selectCat') && validContainerSelection == true">
+        <md-input-container class="md-block" flex-gt-sm style="margin-bottom:0;" aria-label="search-inp-assoc-cat">
+            <label>Search selection containers...</label>
+            <input ng-model="searchStringPcats">
+        </md-input-container>
+    </div>
+    <div flex style="overflow:auto;" ng-if="(templateChoice == 'applyIngredients' || templateChoice == 'applyClonedIngredients' ||  templateChoice == 'selectCat') && validContainerSelection == true">
+        <div>
+            <div class="notice-list-rounded" ng-repeat="(key, cObj) in appendContainers | searchStringByEnum:searchStringPcats:lookupEnums['ProductCategories']">
+                <category-assoc-container pckey="key" lookups="lookupEnums" data="cObj" options="categoryContainerOptions" action-funs="categoryContainerModalFunctions"></category-assoc-container>
+            </div>
+        </div>
+    </div>
+</script>

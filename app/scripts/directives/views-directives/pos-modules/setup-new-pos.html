@@ -1,0 +1,239 @@
+﻿<div layout="column" layout-align="start none" style="min-width:50vw; min-height:70vh;">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>Setup new POS</h2>
+            <span flex></span>
+            <md-button class="md-icon-button" aria-label="CloseModal" ng-click="cancel()">
+                <md-icon><i class="fa fa-times fa-fw"></i></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <div layout="column" layout-align="start stretch" style="padding:5px;" layout-fill flex>
+        <md-steppers md-selected="selectedstep" md-stretch-steppers="always" layout-fill flex>
+            <md-step label="{{wizardStepModels[0].label}}" md-complete="wizardStepModels[0].completed" ng-disabled="wizardStepModels[0].disabled">
+                <md-content class="md-padding">
+                    <md-subheader>
+                        {{wizardStepModels[0].title}}<md-subheader>
+                            <form name="step1Form">
+                                <md-content>
+                                    <div layout="row" layout-align="center stretch" flex="grow">
+                                        <md-input-container class="md-block" flex="50">
+                                            <label>Department </label>
+                                            <md-select name="DepartmentId" ng-model="dataModel.DepartmentId" required>
+                                                <md-option ng-repeat="ch in dropdownsLookup.DepartmentId" value="{{ch.Key}}">{{ch.Value}}</md-option>
+                                            </md-select>
+                                            <div ng-messages="step1Form.DepartmentId.$error">
+                                                <div ng-message="required">Department selection is required.</div>
+                                            </div>
+                                        </md-input-container>
+                                        <md-input-container class="md-block" flex="50">
+                                            <label>Type </label>
+                                            <md-select name="Type" ng-model="dataModel.Type" required>
+                                                <md-option ng-repeat="ch in dropdownsLookup.Type" value="{{ch.Key}}">{{ch.Value}}</md-option>
+                                            </md-select>
+                                            <div ng-messages="step1Form.Type.$error">
+                                                <div ng-message="required">Type selection is required.</div>
+                                            </div>
+                                        </md-input-container>
+                                    </div>
+                                    <div layout="row" layout-align="center stretch" flex="grow">
+                                        <md-input-container class="md-block" flex="30">
+                                            <label>Code</label>
+                                            <input name="Code" ng-model="dataModel.Code" ng-minlength="1" ng-maxlength="3" required />
+                                            <div ng-messages="step1Form.Code.$error">
+                                                <div ng-message="required">You need to specify a Code from 1-3 chars</div>
+                                                <div ng-message="minlength">Please provide a Code between 1-3 chars</div>
+                                                <div ng-message="maxlength">Please provide a Code between 1-3 chars</div>
+                                            </div>
+                                        </md-input-container>
+                                        <md-input-container class="md-block" flex="70">
+                                            <label>Description</label>
+                                            <input name="Description" ng-model="dataModel.Description" required>
+                                            <div ng-messages="step1Form.Description.$error">
+                                                <div ng-message="required">You need to specify a Description</div>
+                                            </div>
+                                        </md-input-container>
+                                    </div>
+                                    <div layout="row" layout-align="start stretch" flex="grow">
+                                        <md-input-container class="md-block" flex="50">
+                                            <label>IP Address</label>
+                                            <input name="IPAddress" ng-model="dataModel.IPAddress" required />
+                                            <!--<input name="IPAddress" ng-model="dataModel.IPAddress" required pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">-->
+                                            <div ng-messages="step4Form.IPAddress.$error">
+                                                <div ng-message="required">You need to specify an IP Address</div>
+                                               <!-- <div ng-message="pattern">IP format needed: 255.255.255.255</div>-->
+                                            </div>
+                                        </md-input-container>
+                                    </div>
+                                    <div layout="row" layout-align="center stretch" flex="grow">
+                                        <md-input-container class="md-block" required flex="50">
+                                            <label>Theme</label>
+                                            <md-select name="Theme" ng-model="dataModel.Theme">
+                                                <md-option ng-repeat="ch in ['Light', 'Dark']" value="{{ch}}">{{ch}}</md-option>
+                                            </md-select>
+                                        </md-input-container>
+                                        <div layout="row" layout-align="start center" flex="50">
+                                            <md-checkbox name="IsOpen" ng-model="dataModel.IsOpen" class="md-primary" value="dataModel.IsOpen">Is Open</md-checkbox>
+                                        </div>
+
+                                    </div>
+                                </md-content>
+                            </form>
+                </md-content>
+                <div layout="column" layout-align="end stretch" layout-fill flex>
+                    <div layout="row" layout-align="end end">
+                        <div>
+                            <md-button ng-click="cancel('cancel')" aria-label="CancelAction">Cancel</md-button>
+                            <md-button class="md-raised md-primary" ng-disabled="step1Form.$invalid" aria-label="next step" ng-click="nextStep()">NEXT</md-button>
+                        </div>
+                    </div>
+                </div>
+            </md-step>
+            <md-step label="{{wizardStepModels[1].label}}" md-complete="wizardStepModels[1].completed" ng-disabled="wizardStepModels[1].disabled">
+                <md-content class="md-padding">
+                    <md-subheader>
+                        {{wizardStepModels[1].title}}<md-subheader>
+                            <form name="step2Form">
+                                <md-content>
+                                    <div layout="row" layout-align="center stretch" flex="grow">
+                                        <md-input-container class="md-block" flex="grow">
+                                            <label>FiscalName</label>
+                                            <input name="FiscalName" ng-model="dataModel.FiscalName" required>
+                                            <div ng-messages="step2Form.FiscalName.$error">
+                                                <div ng-message="required">You need to specify a Fiscal Name</div>
+                                            </div>
+                                        </md-input-container>
+                                    </div>
+                                    <div layout="row" layout-align="center stretch" flex="grow">
+                                        <md-input-container class="md-block" flex="grow">
+                                            <label>FiscalType</label>
+                                            <md-select name="FiscalType" ng-model="dataModel.FiscalType" required>
+                                                <md-option ng-repeat="ch in dropdownsLookup.FiscalType" value="{{ch.Key}}">{{ch.Value}}</md-option>
+                                            </md-select>
+                                            <div ng-messages="step2Form.FiscalType.$error">
+                                                <div ng-message="required">FiscalType selection is required.</div>
+                                            </div>
+                                        </md-input-container>
+                                    </div>
+                                    <div layout="row" layout-align="center stretch" flex="grow">
+                                        <md-input-container class="md-block" flex="grow">
+                                            <label>Receipt Count</label>
+                                            <input name="ReceiptCount" type="number" ng-model="dataModel.ReceiptCount" required step="1">
+                                            <div ng-messages="step2Form.ReceiptCount.$error">
+                                                <div ng-message="required">You need to specify a Receipt Count</div>
+                                            </div>
+                                        </md-input-container>
+                                    </div>
+                                    <div layout="row" layout-align="start stretch" flex="grow">
+                                        <div layout="row" layout-align="start center">
+                                            <md-checkbox name="ResetsReceiptCounter" ng-model="dataModel.ResetsReceiptCounter" class="md-primary" value="dataModel.ResetsReceiptCounter">Resets Receipt Counter</md-checkbox>
+                                        </div>
+                                    </div>
+                                </md-content>
+                            </form>
+                </md-content>
+                <div layout="row" layout-align="space-between end">
+                    <md-button class="md-raised md-primary" aria-label="previous step" ng-click="selectedstep  = selectedstep - 1">PREV</md-button>
+                    <div>
+                        <md-button ng-click="cancel('cancel')" aria-label="CancelAction">Cancel</md-button>
+                        <md-button class="md-raised md-primary" ng-disabled="step2Form.$invalid" aria-label="next step" ng-click="nextStep()">NEXT</md-button>
+                    </div>
+                </div>
+            </md-step>
+            <md-step label="{{wizardStepModels[2].label}}" md-complete="wizardStepModels[2].completed" ng-disabled="wizardStepModels[2].disabled">
+                <md-content class="md-padding">
+                    <md-subheader>
+                        {{wizardStepModels[2].title}}<md-subheader>
+                            <form name="step3Form">
+                                <md-content>
+                                    <div layout="row" layout-align="start stretch" flex="grow">
+                                        <md-input-container class="md-block" flex="grow">
+                                            <label>Account</label>
+                                            <md-select name="AccountId" ng-model="dataModel.AccountId" required>
+                                                <md-option ng-repeat="ch in dropdownsLookup.AccountId" value="{{ch.Key}}">{{ch.Value}}</md-option>
+                                            </md-select>
+                                            <div ng-messages="step3Form.AccountId.$error">
+                                                <div ng-message="required">You need to specify an Account</div>
+                                            </div>
+                                        </md-input-container>
+                                    </div>
+                                    <div layout="row" layout-align="center stretch" flex="grow">
+                                        <md-input-container class="md-block" flex="grow">
+                                            <label>Keyboard Type</label>
+                                            <md-select name="KeyboardType" ng-model="dataModel.KeyboardType" required>
+                                                <md-option ng-repeat="ch in dropdownsLookup.KeyboardType" value="{{ch.Key}}">{{ch.Value}}</md-option>
+                                            </md-select>
+                                            <div ng-messages="step3Form.KeyboardType.$error">
+                                                <div ng-message="required">You need to specify a Keyboard Type</div>
+                                            </div>
+                                        </md-input-container>
+                                        <md-input-container class="md-block" flex="grow">
+                                            <label>Login Mode</label>
+                                            <md-select name="LoginToOrderMode" ng-model="dataModel.LoginToOrderMode" required>
+                                                <md-option ng-repeat="ch in dropdownsLookup.LoginToOrderMode" value="{{ch.Key}}">{{ch.Value}}</md-option>
+                                            </md-select>
+                                            <div ng-messages="step3Form.LoginToOrderMode.$error">
+                                                <div ng-message="required">You need to specify a Login Mode</div>
+                                            </div>
+                                        </md-input-container>
+                                    </div>
+                                    <div layout="row" layout-align="start stretch" flex="grow">
+                                        <md-input-container class="md-block" flex="50">
+                                            <label>Close Id</label>
+                                            <input name="ReceiptCount" type="number" ng-model="dataModel.CloseId" required step="1">
+                                            <div ng-messages="step4Form.CloseId.$error">
+                                                <div ng-message="required">You need to specify a Receipt Count</div>
+                                            </div>
+                                        </md-input-container>
+                                    </div>
+                                    <div layout="row" layout-align="start stretch" flex="grow">
+                                        <div layout="column" layout-align="center start" flex="50">
+                                            <lab>FO Day</lab>
+                                            <md-datepicker ng-model="dataModel.FODay" md-placeholder="FODay Date">
+                                            </md-datepicker>
+                                        </div>
+                                    </div>
+                                </md-content>
+                            </form>
+                </md-content>
+                <div layout="row" layout-align="space-between end">
+                    <md-button class="md-raised md-primary" aria-label="previous step" ng-click="selectedstep  = selectedstep - 1">PREV</md-button>
+                    <div>
+                        <md-button ng-click="cancel('cancel')" aria-label="CancelAction">Cancel</md-button>
+                        <md-button class="md-raised md-primary" ng-disabled="step3Form.$invalid" aria-label="next step" ng-click="nextStep()">NEXT</md-button>
+                    </div>
+                </div>
+            </md-step>
+            <md-step label="{{wizardStepModels[3].label}}" md-complete="wizardStepModels[3].completed" ng-disabled="wizardStepModels[3].disabled">
+                <md-content class="md-padding">
+                    <md-subheader>
+                        {{wizardStepModels[3].title}}<md-subheader>
+                            <form name="step4Form">
+                                <md-content style="overflow:hidden; max-height: 40vh; overflow-y: auto;">
+                                    <div layout="row" layout-align="start center" ng-repeat="tmpl in dataModel.PosInfoDetailTemplate" style="padding:2px;" ng-click="event.preventDefault()">
+                                        <div layout="row" layout-align="start center" flex="70" style="margin:auto 0;">
+                                            <md-checkbox aria-label="checkbox posinfotemplate" ng-model="tmpl.selected" style="margin:auto 0;"></md-checkbox>
+                                            <p style="margin:auto 0;">{{tmpl.InvoiceType.Description}}</p>
+                                        </div>
+                                        <md-select aria-label="posinfotemplate choices" name="TransactionType" ng-model="tmpl.TransactionType" required flex="30" style="margin:auto 0;">
+                                            <md-option ng-repeat="ch in dropdownsLookup.PidTemplateTransactionTypeEnum" value="{{ch.Key}}">{{ch.Value}}</md-option>
+                                        </md-select>
+                                    </div>
+                                </md-content>
+                                <md-divider></md-divider>
+                            </form>
+                </md-content>
+                <div layout="row" layout-align="space-between end">
+                    <md-button class="md-raised md-primary" aria-label="previous step" ng-click="selectedstep  = selectedstep - 1">PREV</md-button>
+                    <div>
+                        <md-button ng-click="cancel('cancel')" aria-label="CancelAction">Cancel</md-button>
+                        <md-button ng-click="confirm('save')" class="md-primary" ng-disabled="disablefinish" style="margin-right:20px;" aria-label="ConfAction">Save</md-button>
+                    </div>
+                </div>
+            </md-step>
+        </md-steppers>
+    </div>
+</div>
+<style>
+
+</style>

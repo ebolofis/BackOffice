@@ -1,0 +1,91 @@
+﻿<md-dialog ng-class="{'fullscreen-dialog' : fullscreenModal}" aria-label="EditPosInfo" ng-cloak style="min-width: 50vw;">
+    <form name="payroleFilterForm">
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>Select payrole display filters</h2>
+                <span flex></span>
+                <toggle-fs-modal tvar="fullscreenModal"></toggle-fs-modal>
+                <md-button class="md-icon-button" aria-label="CloseModal" ng-click="cancel()">
+                    <md-icon md-svg-icon="navigation:close"></md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content>
+            <div class="md-dialog-content">
+                <div layout="row" layout-align="start space-between">
+                    <div layout-gt-sm="column" flex="50">
+                        <md-checkbox md-no-ink aria-label="Status" ng-model="resfilter.filters.usedate" class="md-primary" style="margin:auto 0;">Use datefilter</md-checkbox>
+                    </div>
+                    <div layout="row" layout-align="end center" flex="50">
+                        <span aria-label="clear filter">Clear filters</span>
+                        <md-button class="md-icon-button" aria-label="Clear filter to its initial" ng-click="clearFilter()">
+                            <md-tooltip md-direction="top">Clear filters</md-tooltip>
+                            <md-icon md-svg-icon="action:visibility_off"></md-icon>
+                            <!--</md-button>
+                            <md-button class="md-icon-button" aria-label="Clear filter to its initial" ng-click="logfilter()">
+                                <md-tooltip md-direction="top">Log filter</md-tooltip>
+                                <md-icon md-svg-icon="action:print"></md-icon>
+                            </md-button>-->
+                    </div>
+                </div>
+                <div ng-cloak class="md-inline-form">
+                    <md-content class="md-padding" layout="column" layout-align="start stretch" flex="grow">
+                        <div layout="row" layout-align="space-between center">
+                            <div>
+                                <label>From</label>
+                                <md-datepicker ng-model="resfilter.filters.DPActionDateFrom"
+                                               md-placeholder="From date"
+                                               ng-change="managedate('ActionDateFrom' ,'DPActionDateFrom'); changeForceToDate()"
+                                               ng-disabled="!resfilter.filters.usedate"></md-datepicker>
+                            </div>
+                            <div>
+                                <label>To</label>
+                                <!--ng-change="resfilter.filters.ActionDateTo = resfilter.filters.DPActionDateTo.toISOString()"
+                                    <div ng-messages="payroleFilterForm.dateto.$error"><div ng-message="filtered">ToDate has to be at least same as FromDate!</div></div>-->
+                                <md-datepicker ng-model="resfilter.filters.DPActionDateTo" name="dateto" md-placeholder="To date"
+                                               ng-change="managedate('ActionDateTo' ,'DPActionDateTo');" md-date-filter="dateBiggerFrom"
+                                               ng-disabled="!resfilter.filters.usedate"></md-datepicker>
+                            </div>
+                        </div>
+                        <div layout="row" layout-align="start stretch">
+                            <md-input-container flex="50">
+                                <label>Selected Staff</label>
+                                <md-select ng-model="resfilter.filters.StaffId" multiple="true">
+                                    <md-optgroup label="Staff Registered">
+                                        <md-option ng-repeat="ch in lookups.StaffId" value="{{ch.Id}}">{{ch.Code}} : {{ch.FirstName}}</md-option>
+                                    </md-optgroup>
+                                </md-select>
+                            </md-input-container>
+                            <md-input-container flex="50">
+                                <label>Selected Pos</label>
+                                <md-select ng-model="resfilter.filters.PosInfoId" multiple="true">
+                                    <md-optgroup label="Pos entities">
+                                        <md-option ng-repeat="ch in lookups.PosInfoId" value="{{ch.Id}}">{{ch.Description}}</md-option>
+                                    </md-optgroup>
+                                </md-select>
+                            </md-input-container>
+                        </div>
+                        <div layout="row" layout-align="start stretch">
+                            <md-input-container class="md-block" flex="50">
+                                <label>User Identification</label><input name="Identification" ng-model="resfilter.filters.Identification">
+                            </md-input-container>
+                            <md-input-container>
+                                <label>State</label>
+                                <md-select name="payroletype" ng-model="resfilter.filters.Type" placeholder="Payrole Type" class="md-no-underline" md-no-asterisk="false">
+                                    <md-option value=null>---</md-option>
+                                    <md-option ng-repeat="lu in lookups.Type" value="{{lu.Key}}">{{lu.Value}}</md-option>
+                                </md-select>
+                            </md-input-container>
+                        </div>
+                    </md-content>
+                </div>
+            </div>
+        </md-dialog-content>
+        <md-dialog-actions layout="row">
+            <md-button ng-click="cancel('cancel')" aria-label="CancelAction">Close</md-button>
+            <md-button ng-click="confirm('save')" ng-disabled="payroleFilterForm.$invalid" style="margin-right:20px;" aria-label="ConfAction">
+                Search<md-icon md-svg-icon="action:search"></md-icon>
+            </md-button>
+        </md-dialog-actions>
+    </form>
+</md-dialog>

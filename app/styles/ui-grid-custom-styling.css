@@ -1,0 +1,26 @@
+﻿.customGridFooter {
+    display: flex;
+    min-height: 50px;
+    padding: 12px;
+    border: 1px solid #D4D4D4;
+    background-color: white;
+}
+
+.btn-customBlack {
+    background-image: -webkit-linear-gradient(top,#5cb85c 0,#000000 100%);
+    background-image: -o-linear-gradient(top,#5cb85c 0,#000000 100%);
+    background-image: -webkit-gradient(linear,left top,left bottom,from(#000000),to(#000000));
+    background-image: linear-gradient(to bottom,#000000 0,#000000 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff000000', endColorstr='#ff000000', GradientType=0);
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+    background-repeat: repeat-x;
+    border-color: #8B8C8B;
+    border-radius: 0px;
+    color: white;
+}
+
+    .btn-customBlack:focus, .btn-customBlack:hover {
+        color: white;
+        text-decoration: none;
+    }
+

@@ -1,0 +1,90 @@
+﻿<div ng-controller="ManageReceiptsController" ng-init="init()" style="overflow:hidden;" layout="column" layout-align="start stretch" layout-fill>
+    <md-subheader class="wrappers-view-header md-whiteframe-7dp md-primary">Manage Receipts</md-subheader>
+    <div layout="row" layout-align="end center">
+        <md-button class="md-primary md-icon-button" arial-label="refresh-data-with-receipt-filter" ng-click="reloadResults();">
+            <md-tooltip md-direction="top">Refresh</md-tooltip>
+            <md-icon md-svg-icon="navigation:refresh"></md-icon>
+        </md-button>
+        <md-button class="md-primary md-icon-button" arial-label="apply-receipt-filter" ng-click="applyFilter()">
+            <md-tooltip md-direction="top">Apply Filters</md-tooltip>
+            <md-icon md-svg-icon="content:filter_list"></md-icon>
+        </md-button>
+    </div>
+    <div flex></div>
+    <div layout="row" layout-align="start center" class="md-padding" style="font-variant:small-caps;">
+        <strong flex="10">#Receipt</strong>
+        <strong flex="10">#OrderNo</strong>
+        <strong flex="10">Date</strong>
+        <strong flex="10" style="text-align:center;">Abbreviation</strong>
+        <strong flex="10" style="text-align:center;">Total</strong>
+        <strong flex="10" style="text-align:center;">Payment</strong>
+        <strong flex="10">Staff</strong>
+        <strong flex="10">Table</strong>
+        <strong flex="10">Room</strong>
+        <strong flex="10">Actions</strong>
+    </div>
+    <md-divider></md-divider>
+    <div layout="row" layout-align="start stretch" style="overflow:hidden;" flex="grow">
+        <div layout="column" layout-align="start stretch" flex="grow" style="overflow:auto;">
+            <div ng-include src="'receipt-list'" ng-if="busyloading != true && loadedReceipts.length > 0"></div>
+            <div flex="grow" ng-if="busyloading == true" layout="column" layout-align="center center">
+                <md-progress-circular md-mode="indeterminate"></md-progress-circular><span>Loading Receipts...</span>
+            </div>
+            <div flex="grow" ng-if="busyloading != true && loadedReceipts.length == 0" layout="column" layout-align="center center">
+                <div layout="row" layout-align="center start" flex="80">
+                    <md-toolbar class="md-warn md-whiteframe-8dp md-margin md-padding" flex="grow" layout="row" layout-align="start center">
+                        <md-icon class="md-margin" md-svg-icon="action:info"></md-icon>Specific filter yield no Results. Please choose another filter.
+                    </md-toolbar>
+                </div>
+            </div>
+        </div>
+    </div>
+    <md-divider></md-divider>
+    <section layout="row" layout-align="space-between center">
+        <cl-paging class="small-fabs-30" cl-pages="paging.total" cl-steps="4" cl-page-changed="paging.onPageChanged()" cl-align="center center" cl-current-page="paging.current"></cl-paging>
+        <md-select aria-label="pagesize dropdown" ng-model="paging.pageSize" ng-change="psizeChanged()">
+            <md-optgroup label="Page Size">
+                <md-option ng-repeat="ch in [20,50,100,200]" value="{{ch}}">{{ch}}</md-option>
+            </md-optgroup>
+        </md-select>
+    </section>
+</div>
+
+<script id="receipt-list" type="text/ng-template">
+    <md-list flex="grow">
+        <md-list-item class="md-whiteframe-4dp" ng-repeat="rec in loadedReceipts" style="margin-bottom:10px; background-color:white;" ng-click="viewReceiptDetails(rec)">
+            <div class="md-list-item-text" layout="column" layout-align="start stretch" flex="grow">
+                <div layout="row" layout-align="start center">
+                    <span class="cell-style" flex="10">{{rec.ReceiptNo}}<md-tooltip md-direction="top">{{rec.ReceiptNo}}</md-tooltip></span>
+                    <span class="cell-style" flex="10">{{rec.OrderNo}}<md-tooltip md-direction="top">{{rec.OrderNo}}</md-tooltip></span>
+                    <span class="cell-style" flex="10">{{rec.Day | date }}<md-tooltip md-direction="top">{{rec.Day | date }}</md-tooltip></span>
+                    <span class="cell-style" flex="10" style="text-align:center;">{{rec.Abbreviation}}<md-tooltip md-direction="top">{{rec.Abbreviation}}</md-tooltip></span>
+                    <strong class="cell-style" flex="10" style="text-align:right; margin-right:5px;">{{rec.Total.toFixed(2)}} €<md-tooltip md-direction="top">{{rec.Total.toFixed(2)}}</md-tooltip></strong>
+                    <span class="cell-style" flex="10" style="text-align:center;">{{rec.PaymentsDesc}}<md-tooltip md-direction="top">{{rec.PaymentsDesc}}</md-tooltip></span>
+                    <span class="cell-style" flex="10">{{rec.StaffName || '--'}}<md-tooltip md-direction="top">{{rec.StaffName || '--'}}</md-tooltip></span>
+                    <span class="cell-style" flex="10">{{rec.TableCode || '--'}}<md-tooltip md-direction="top">{{rec.TableCode || '--'}}</md-tooltip></span>
+                    <span class="cell-style" flex="10">{{rec.Room ||'--'}}<md-tooltip md-direction="top">{{rec.Room ||'--'}}</md-tooltip></span>
+                    <md-button class="md-icon-button" ng-class="(rec.IsPrinted == true) ? 'md-primary ' : ''" aria-label="isprintedicon">
+                        <md-tooltip md-direction="top" ng-if="(rec.IsPrinted ==true)">'Printed'</md-tooltip>
+                        <md-tooltip md-direction="top" ng-if="(rec.IsPrinted !=true)">'Not yet Printed'"></md-tooltip>
+                        <md-icon md-svg-icon="action:print"></md-icon>
+                    </md-button>
+                    <md-button class="md-icon-button" ng-if="(rec.InvoiceTypeType == 3 || rec.InvoiceTypeType == 8 ) || rec.IsVoided == true" aria-label="Show Receipt Details">
+                        <md-tooltip md-direction="top">Canceled</md-tooltip>
+                        <md-icon md-svg-icon="content:block"></md-icon>
+                    </md-button>
+                </div>
+            </div>
+    </md-list>
+</script>
+<style>
+    .cell-style {
+        overflow: hidden;
+        padding: 4px;
+        text-overflow:ellipsis;
+    }
+    .selected-whiteframe {
+        box-shadow: 0px 5px 5px -3px rgba(63, 81, 181, 0.2), 0px 8px 10px 1px rgba(63, 81, 181, 0.14), 0px 3px 14px 2px rgba(63, 81, 181, 0.12);
+        border-left: 4px solid #3f51b5;
+    }
+</style>

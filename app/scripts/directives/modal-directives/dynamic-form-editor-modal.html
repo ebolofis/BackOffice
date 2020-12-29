@@ -1,0 +1,21 @@
+﻿<md-dialog ng-class="{'fullscreen-dialog' : fullscreenModal}" aria-label="editDtnamicForm" ng-cloak style="min-width: 50vw;">
+    <form name="dynFormEdit">
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>{{templateOptions.header}}</h2>
+                <span flex></span>
+                <toggle-fs-modal tvar="fullscreenModal"></toggle-fs-modal>
+                <md-button class="md-icon-button" aria-label="CloseModal" ng-click="cancel()">
+                    <md-icon md-svg-icon="navigation:close"></md-icon>
+            </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content>
+            <load-dynamic-template template-url="templateOptions.Url"></load-dynamic-template>
+        </md-dialog-content>
+        <md-dialog-actions layout="row">
+            <md-button ng-click="cancel('cancel')" aria-label="CancelAction">Cancel</md-button>
+            <md-button ng-click="confirm('save')" ng-disabled="dynFormEdit.$invalid" aria-label="ConfAction">Save</md-button>
+        </md-dialog-actions>
+    </form>
+</md-dialog>

@@ -1,0 +1,211 @@
+﻿<div layout="column" layout-align="start stretch" ng-cloak ng-controller="PosInfoAssocsController" ng-init="initView()">
+    <md-subheader class="wrappers-view-header md-whiteframe-7dp md-primary">Manage Pos Info Associations</md-subheader>
+    <div layout="row" layout-align="end center">
+        <md-button class="md-raised md-primary" aria-label="save modified changes" ng-disabled="savingProcess" ng-click="savePosInfoAssocs()">Save&nbsp; <i class="fa fa-save fa-fw"></i> </md-button>
+    </div>
+    <div layout="row" layout-align="start stretch">
+        <div layout="column" layout-align="start stretch" style="max-height:inherit; min-height: inherit;" flex="40" layout-margin="1%" class="md-whiteframe-7dp">
+            <div class="container-panel-header">
+                <div class="bo-htd">Pos Info</div>
+                <div class="container-panel-header-toolbar">
+                    <div class="input-group">
+                        <input type="text" class="form-control" style="height: inherit;" placeholder="Search POS..." ng-model="searchPosInfo.Description">
+                        <span class="input-group-btn" style="width:17px;">
+                            <a class="btn" style="color: rgb(204, 204, 204); text-decoration: none; position: absolute; right: 0px; top: 0px; z-index: 50;" ng-click="searchPosInfo.Description = ''"><i class="fa fa-times"></i></a>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="container-panel-content">
+                <div ng-repeat="cpos in posInfo | filter:searchPosInfo">
+                    <div class="notice" ng-class="(selectedPos.Id == cpos.Id) ? 'notice-info' : ((cpos.IsEdited == true) ? 'notice-warning' : '')" ng-click="clickSelectPosInfo(cpos)">
+                        <div class="panel-notice-list-component">
+                            <div class="overflow-text-on-component content-overflow-ellipsis" style="width:100%" uib-tooltip={{cpos.Description}}>
+                                <strong ng-style="(selectedPos.Id == cpos.Id) ?  {'color':'#45ABCD'} : ((cpos.IsEdited == true) ? {'color':'#FEAF20'} : '')">{{cpos.Description}}</strong><br />
+                                <div layout="column" layout-align="center stretch">
+                                    <div layout="row" layout-align="center center" flex="grow">
+                                        <div layout="row" layout-align="space-between center" flex="33" style="padding-left:3px;">
+                                            <span>Pricelists:</span>&nbsp;<span class="badge badgeStyle" ng-style="(selectedPos.Id == cpos.Id) ? {'background-color':'#45ABCD'} : ''">{{badgeLength(cpos.AssosiatedPricelists)}}</span>
+                                        </div>
+                                        <div layout="row" layout-align="space-between center" flex="33" style="padding-left:3px;">
+                                            <span>Staff:</span>&nbsp;<span class="badge badgeStyle" ng-style="(selectedPos.Id == cpos.Id) ? {'background-color':'#45ABCD'} : ''">{{badgeLength(cpos.AssosiatedStaffPositions)}}</span>
+                                        </div>
+                                        <div layout="row" layout-align="space-between center" flex="33" style="padding-left:3px;">
+                                            <span>Kds:</span>&nbsp;<span class="badge badgeStyle" ng-style="(selectedPos.Id == cpos.Id) ? {'background-color':'#45ABCD'} : ''">{{badgeLength(cpos.AssosiatedKDS)}}</span>
+                                        </div>
+                                    </div>
+                                    <div layout="row" layout-align="center center" flex="grow">
+                                        <div layout="row" layout-align="space-between center" flex="33" style="padding-left:3px;">
+                                            <span>Region:</span>&nbsp;<span class="badge badgeStyle" ng-style="(selectedPos.Id == cpos.Id) ? {'background-color':'#45ABCD'} : ''">{{badgeLength(cpos.AssosiatedRegions)}}</span>
+                                        </div>
+                                        <div layout="row" layout-align="space-between center" flex="33" style="padding-left:3px;">
+                                            <span>K.Inst:</span>&nbsp;<span class="badge badgeStyle" ng-style="(selectedPos.Id == cpos.Id) ? {'background-color':'#45ABCD'} : ''">{{badgeLength(cpos.AssosiatedKitchenInstructions)}}</span>
+                                        </div>
+                                        <div layout="row" layout-align="center center" flex="33" style="padding-left:3px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div layout="column" layout-align="start stretch" style="max-height:inherit; min-height: inherit;" flex="60" layout-margin="1%" class="md-whiteframe-7dp">
+            <div ng-show="selectedPos !== null">
+                <div class="bo-htd">Pos: "{{selectedPos.Description}}" management</div>
+                <uib-tabset class="activeJustified tab-animation" justified="true">
+                    <uib-tab heading="Pricelists" active ng-click="tabSelected = 'Pricelists'">
+                        <div class="smooth-opacity-showhide" layout="row" layout-align="start start" ng-show="tabSelected == 'Pricelists'">
+                            <div layout="column" layout-align="start stretch" flex="50">
+                                <h4 style="text-align:center;">Included</h4>
+                                <div class="list-repeat-element container-panel-content" layout="column" layout-align="start stretch"
+                                     display-field="'PricelistDescription'" mainlist="selectedPos.AssosiatedPricelists"
+                                     loop-item-class="'notice content-overflow-ellipsis noticeCustom'"
+                                     loop-item-selected-class="'notice-success'"
+                                     search-placeholder="'Search priceLists...'" extra-filter="includedFilter"
+                                     action-fun="excludeOptions('Pricelists')" action-desc="" action-icon="'fa fa-xs fa-minus'">
+                                </div>
+                            </div>
+                            <div layout="column" layout-align="start stretch" flex="50">
+                                <h4 style="text-align:center;">Available</h4>
+                                <div class="list-repeat-element container-panel-content" layout="column" layout-align="start stretch"
+                                     display-field="'Description'" mainlist="priceLists"
+                                     loop-item-class="'notice content-overflow-ellipsis noticeCustom'"
+                                     loop-item-selected-class="'notice-info'"
+                                     search-placeholder="'Search priceLists...'" extra-filter="availablePlsFilter"
+                                     action-fun="includeOptions('Pricelists')" action-desc="" action-icon="'fa fa-xs fa-plus'">
+                                </div>
+                            </div>
+                        </div>
+                    </uib-tab>
+
+                    <uib-tab heading="Staff" ng-click="tabSelected = 'StaffPositions'">
+                        <div class="smooth-opacity-showhide" layout="row" layout-align="start start" ng-show="tabSelected == 'StaffPositions'">
+                            <div layout="column" layout-align="start stretch" flex="50">
+                                <h4 style="text-align:center;">Included</h4>
+                                <div class="list-repeat-element container-panel-content" layout="column" layout-align="start stretch"
+                                     display-field="'StaffPositionDescription'" mainlist="selectedPos.AssosiatedStaffPositions"
+                                     loop-item-class="'notice content-overflow-ellipsis noticeCustom'"
+                                     loop-item-selected-class="'notice-success'"
+                                     search-placeholder="'Search Staff Positions...'" extra-filter="includedFilter"
+                                     action-fun="excludeOptions('StaffPositions')" action-desc="" action-icon="'fa fa-xs fa-minus'">
+                                </div>
+                            </div>
+                            <div layout="column" layout-align="start stretch" flex="50">
+                                <h4 style="text-align:center;">Available</h4>
+                                <div class="list-repeat-element container-panel-content" layout="column" layout-align="start stretch"
+                                     display-field="'Description'" mainlist="staffPositions"
+                                     loop-item-class="'notice content-overflow-ellipsis noticeCustom'"
+                                     loop-item-selected-class="'notice-info'"
+                                     search-placeholder="'Search Staff Positions...'" extra-filter="availableStpFilter"
+                                     action-fun="includeOptions('StaffPositions')" action-desc="" action-icon="'fa fa-xs fa-plus'">
+                                </div>
+                            </div>
+                        </div>
+                    </uib-tab>
+
+                    <uib-tab heading="Kds" ng-click="tabSelected = 'Kds'">
+                        <div class="smooth-opacity-showhide" layout="row" layout-align="start start" ng-show="tabSelected == 'Kds'">
+                            <div layout="column" layout-align="start stretch" flex="50">
+                                <h4 style="text-align:center;">Included</h4>
+                                <div class="list-repeat-element container-panel-content" layout="column" layout-align="start stretch"
+                                     display-field="'KdsDescription'" mainlist="selectedPos.AssosiatedKDS"
+                                     loop-item-class="'notice content-overflow-ellipsis noticeCustom'"
+                                     loop-item-selected-class="'notice-success'"
+                                     search-placeholder="'Search Kds...'" extra-filter="includedFilter"
+                                     action-fun="excludeOptions('Kds')" action-desc="" action-icon="'fa fa-xs fa-minus'">
+                                </div>
+                            </div>
+                            <div layout="column" layout-align="start stretch" flex="50">
+                                <h4 style="text-align:center;">Available</h4>
+                                <div class="list-repeat-element container-panel-content" layout="column" layout-align="start stretch"
+                                     display-field="'Description'" mainlist="kds"
+                                     loop-item-class="'notice content-overflow-ellipsis noticeCustom'"
+                                     loop-item-selected-class="'notice-info'"
+                                     search-placeholder="'Search Kds...'" extra-filter="availableKdsFilter"
+                                     action-fun="includeOptions('Kds')" action-desc="" action-icon="'fa fa-xs fa-plus'">
+                                </div>
+                            </div>
+                        </div>
+                    </uib-tab>
+
+                    <uib-tab heading="Regions" ng-click="tabSelected = 'Regions'">
+                        <div class="smooth-opacity-showhide"  layout="row" layout-align="start start" ng-show="tabSelected == 'Regions'">
+                            <div layout="column" layout-align="start stretch" flex="50">
+                                <h4 style="text-align:center;">Included</h4>
+                                <div class="list-repeat-element container-panel-content" layout="column" layout-align="start stretch" 
+                                     display-field="'RegionDescription'" mainlist="selectedPos.AssosiatedRegions"
+                                     loop-item-class="'notice content-overflow-ellipsis noticeCustom'"
+                                     loop-item-selected-class="'notice-success'"
+                                     search-placeholder="'Search Regions...'" extra-filter="includedFilter"
+                                     action-fun="excludeOptions('Regions')" action-desc="" action-icon="'fa fa-xs fa-minus'"
+                                     >
+                                </div>
+                            </div>
+                            <div layout="column" layout-align="start stretch" flex="50">
+                                <h4 style="text-align:center;">Available</h4>
+                                <div class="list-repeat-element container-panel-content" layout="column" layout-align="start stretch"
+                                     display-field="'Description'" mainlist="regions"
+                                     loop-item-class="'notice content-overflow-ellipsis noticeCustom'"
+                                     loop-item-selected-class="'notice-info'"
+                                     search-placeholder="'Search Regions...'" extra-filter="availableRegFilter"
+                                     action-fun="includeOptions('Regions')" action-desc="" action-icon="'fa fa-xs fa-plus'">
+                                </div>
+                            </div>
+                        </div>
+                    </uib-tab>
+
+                    <uib-tab heading="Kitchen" ng-click="tabSelected = 'KitchenInstruction'">
+                        <div class="smooth-opacity-showhide" layout="row" layout-align="start start" ng-show="tabSelected == 'KitchenInstruction'">
+                            <div layout="column" layout-align="start stretch" flex="50">
+                                <h4 style="text-align:center;">Included</h4>
+                                <div class="list-repeat-element container-panel-content" layout="column" layout-align="start stretch"
+                                     display-field="'KitchenInstructionDescription'" mainlist="selectedPos.AssosiatedKitchenInstructions"
+                                     loop-item-class="'notice content-overflow-ellipsis noticeCustom'"
+                                     loop-item-selected-class="'notice-success'"
+                                     search-placeholder="'Search Instructions...'" extra-filter="includedFilter"
+                                     action-fun="excludeOptions('KitchenInstruction')" action-desc="" action-icon="'fa fa-xs fa-minus'">
+                                </div>
+                            </div>
+                            <div layout="column" layout-align="start stretch" flex="50">
+                                <h4 style="text-align:center;">Available</h4>
+                                <div class="list-repeat-element container-panel-content" layout="column" layout-align="start stretch"
+                                     display-field="'Description'" mainlist="kitchenInstructions"
+                                     loop-item-class="'notice content-overflow-ellipsis noticeCustom'"
+                                     loop-item-selected-class="'notice-info'"
+                                     search-placeholder="'Search Instructions...'" extra-filter="availableKinstFilter"
+                                     action-fun="includeOptions('KitchenInstruction')" action-desc="" action-icon="'fa fa-xs fa-plus'">
+                                </div>
+                            </div>
+                        </div>
+</uib-tab>
+                </uib-tabset>
+                <!-- tabs left -->
+            </div>
+            <div ng-show="selectedPos === null">
+                <div class="alert alert-info" style="margin-top:4%;"><i class="fa fa-xs fa-info-circle"></i>&nbsp; Please select a Pos Entity from left column to manage associations.</div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .infoBadge {
+        font-size: 12px;
+        width: 33%;
+        padding: 0 2%;
+    }
+
+    .badgeStyle {
+        float: right;
+        vertical-align: middle;
+    }
+
+    .element-blue-header {
+        background: rgb(63, 81, 181);
+        color: white;
+        font-weight: bolder;
+        font-size: 15px;
+        text-align: center;
+        padding: 12px;
+    }
+</style>

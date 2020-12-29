@@ -1,0 +1,34 @@
+﻿<div ng-controller="GenericEntityManagerCtrl"  ng-init="initView()" layout-fill layout="column" layout-align="start stretch">
+    <div style="margin:0">
+        <md-subheader class="wrappers-view-header md-whiteframe-7dp md-primary">{{viewTitle}}</md-subheader>
+    </div>
+    <div layout="column" layout-align="start stretch" flex="grow">
+        <div ng-include src="containerTemplate" style="height:100%;"></div>
+    </div>
+</div>
+
+<script id="edit-staff-container-template" type="text/ng-template">
+    <staff-manager></staff-manager>
+</script>
+
+<script id="edit-regionlockerproduct-container-template" type="text/ng-template">
+    <region-locker-product-manager></region-locker-product-manager>
+</script>
+<script id="edit-manageexternalproducts-container-template" type="text/ng-template">
+    <manage-external-products-manager></manage-external-products-manager>
+</script>
+<script id="edit-payrole-container-template" type="text/ng-template">
+    <payrole-manager></payrole-manager>
+</script>
+
+<script id="edit-closeyear-container-template" type="text/ng-template">
+    <close-year-manager></close-year-manager>
+</script>
+<script id="edit-nfcDevice-template" type="text/ng-template">
+    <nfc-device-manager></nfc-device-manager>
+</script>
+<script id="edit-emailconfig-template" type="text/ng-template">
+    not yet implemented
+    <!--<email-config-manager></email-config-manager>-->
+</script>
+

@@ -1,0 +1,70 @@
+﻿<div layout="column" layout-align="start stretch" ng-cloak ng-controller="MasterSlaveGridController">
+    <div layout="row" layout-align="space-between center">
+        <strong style="font-variant:small-caps;">{{masterGridTitle}}</strong>
+        <span layout="row" layout-align="end center">
+            <md-button class="md-raised" style="line-height: 32px; min-height: 32px;" ng-disabled="savingProcess" ng-click="addData('master')()">Add&nbsp;<i class="fa fa-plus-circle fa-fw"></i> </md-button>
+            <md-button class="md-raised" style="line-height: 32px; min-height: 32px;" ng-disabled="savingProcess" ng-click="removeMasterRowObject()">Remove&nbsp;<i class="fa fa-trash fa-fw"></i> </md-button>
+            <md-button class="md-raised md-primary" style="line-height: 32px; min-height: 32px;" ng-disabled="savingProcess" ng-click="saveMasterGridChanges()">Save&nbsp;<i class="fa fa-save fa-fw"></i> </md-button>
+        </span>
+    </div>
+    <div layout="column" layout-align="start stretch">
+        <div id="grid" ui-grid="masterGrid" data-ng-init="initGrid()" external-scopes="editRows" ui-grid-auto-resize ui-grid-grouping ui-grid-edit ui-grid-validate ui-grid-cellNav ui-grid-row-edit ui-grid-pagination ui-grid-exporter ui-grid-selection ui-grid-resize-columns ui-grid-paging style="width: 100%; height: auto; overflow:visible;" class="grid"></div>
+    </div>
+    <div layout="row" layout-align="space-between center">
+        <strong style="font-variant:small-caps;">{{slaveGridTitle}}</strong>
+        <span layout="row" layout-align="end center">
+            <md-button class="md-raised" style="line-height: 32px; min-height: 32px;" ng-disabled="savingProcess" ng-click="addData('slave')()">Add&nbsp;<i class="fa fa-plus-circle fa-fw"></i> </md-button>
+            <md-button class="md-raised" style="line-height: 32px; min-height: 32px;" ng-disabled="savingProcess" ng-click="removeSlaveRowObject()">Remove&nbsp;<i class="fa fa-trash fa-fw"></i> </md-button>
+            <md-button class="md-raised md-primary" style="line-height: 32px; min-height: 32px;" ng-disabled="savingProcess" ng-click="saveSlaveGridChanges()">Save&nbsp;<i class="fa fa-save fa-fw"></i> </md-button>
+        </span>
+    </div>
+    <div layout="column" layout-align="start stretch">
+        <div ui-grid="slaveGrid" external-scopes="editRows" ui-grid-auto-resize ui-grid-grouping ui-grid-edit ui-grid-validate ui-grid-cellNav ui-grid-row-edit ui-grid-pagination ui-grid-exporter ui-grid-selection ui-grid-resize-columns ui-grid-paging style="width: 100%; height: auto; overflow:visible;"></div>
+    </div>
+</div>
+
+<script id="colorEditIngrModal" type="text/ng-template">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>PosInfoDetails Button Colours</h2><span flex></span>
+            <md-button class="md-icon-button" aria-label="CloseModal" ng-click="hide()"><md-icon><i class="fa fa-times fa-fw"></i></md-icon></md-button>
+        </div>
+    </md-toolbar>
+    <md-dialog-content>
+        <div layout="row" layout-align="center stretch" style="min-height: 29vh;">
+            <md-content class="md-block md-padding" layout="column" layout-align="center stretch" flex="grow">
+                <div layout="column" layout-align="start stretch">
+                    <form name="pageButtonForm" sf-schema="schema" sf-form="form" sf-model="entity" style="padding: 0 6%;"></form>
+                </div>
+                <div layout="row" layout-align="center center" flex="grow">
+                    <button type="button" class="btn" style="background-color:{{entity.Background || '#dae0e0'}}; color:{{entity.Color || 'black'}};">{{data.Description}}</button>
+                </div>
+            </md-content>
+        </div>
+    </md-dialog-content>
+    <div flex></div>
+    <md-dialog-actions layout="row" style="border-top:0;">
+        <md-button ng-click="cancel('cancel')" aria-label="CancelAction">Cancel</md-button>
+        <md-button class="md-primary" ng-click="confirm('ok')" style="margin-right:20px;" aria-label="ConfAction">Select</md-button>
+    </md-dialog-actions>
+</script>
+
+<style>
+    .extras-button {
+        width: 23%;
+        height: 30px;
+        margin: 1.5px 5px;
+        background: #dae0e0;
+        border-radius: 5px;
+    }
+
+    .inlineFormDisplay {
+        display: inline-flex;
+        width: 100%;
+    }
+
+        .inlineFormDisplay > sf-decorator {
+            width: 50%;
+            text-align: center;
+        }
+</style>

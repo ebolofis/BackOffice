@@ -1,0 +1,129 @@
+﻿
+<div ng-controller="managedashortagescompCTRL as ShortMain" ng-init="ShortMain.initView()" layout-fill layout="column" layout-align="start stretch">
+    <div flex="15" class="md-padding">
+        <md-subheader class="wrappers-view-header md-whiteframe-7dp md-primary">Manage Shortages</md-subheader>
+    </div>
+    <div flex="5" layout="row" layout-align="start stretch">
+      
+        <div flex="20" align="center">
+            <md-list style="border:2px solid black; border-radius:3%;background-color:lightgray;">
+                <md-list-item class="md-whiteframe-4dp" ng-repeat="row in ShortMain.stores |orderBy: 'StoreDescr' | filter: searchText" style="margin-bottom:10px; background-color:white;border:2px solid black; border-radius:3%;">
+                    <div class="md-list-item-text" layout="column" layout-align="start stretch" flex="grow">
+                        <div layout="row" layout-align="right" align="start">
+                            <span class="cell-style" flex="100" ng-click="viewStoreShortages(row)" style="cursor:pointer;"> #{{row.Title}}<md-tooltip md-direction="top">{{row.Id}}</md-tooltip></span>
+                        </div>
+                    </div>
+            </md-list>
+        </div>
+        <div flex="60">
+            <div align="right" flex="100" style="border:1px solid black; background-color: rgb(63,81,181);">
+                <div layout="row" layout-align="start center" class="md-padding" style="font-variant:small-caps; margin-bottom:10px;" align="center">
+                    <strong style="color:white;" flex="10"> </strong>
+                    <strong style="color:white;" flex="20">Product</strong>
+                    <strong style="color:white;" flex="20">Store</strong>
+                    <strong style="color:white;" flex="20">Shortage Type</strong>
+                    <strong style="color:white;" flex="20"></strong>
+                </div>
+                <md-button aria-label="addDataRow" id="addData" class="md-raised" style="line-height: 32px; min-height: 32px; background-color:lightblue;" align="right" ng-disabled="savingProcess" ng-click="addShortages($event ,'ManageDaShortages',row,'add')">Add Shortage&nbsp;<i class="fa fa-plus-circle fa-fw"></i> </md-button>
+                <md-list flex="grow">
+                    <md-list-item class="md-whiteframe-4dp" ng-repeat="row in ShortMain.selectedshortages |orderBy: 'StoreDescr' | filter:  searchText" style="margin-bottom:10px; background-color:white;">
+                        <div class="md-list-item-text" layout="column" layout-align="start stretch" flex="grow">
+                            <div layout="row" layout-align="right" align="center">
+                                <span class="cell-style" flex="10" ng-click="viewHeaderDetails(row)" style="cursor:pointer;"> <md-tooltip md-direction="top"></md-tooltip></span>
+                                <span class="cell-style" flex="20">{{row.ProductDescr}}<md-tooltip md-direction="top">{{row.ProductDescr}}</md-tooltip></span>
+                                <span class="cell-style" flex="20">{{row.StoreDescr}}<md-tooltip md-direction="top">{{row.StoreDescr}}</md-tooltip></span>
+                                <span class="cell-style" flex="20">{{row.ShortType}}<md-tooltip md-direction="top">{{row.ShortType}}</md-tooltip></span>
+                                <span flex="20" align="left">
+                                    <md-button class="md-fab md-mini md-primary  md-raised" ng-click="editShortage($event ,'ManageDaShortages',row,'edit') " aria-label="EditPosInfo"><i class="fa fa-pencil fa-fw"></i>  <md-tooltip md-direction="top">Edit selected Shortage</md-tooltip></md-button>
+                                    <md-button class=" md-fab md-mini" ng-disabled="processingUser" ng-click='removeShortage(row)'><i class="fa fa-trash fa-fw"></i>  <md-tooltip md-direction="top">Delete selected Shortage</md-tooltip></md-button>
+                                </span>
+                            </div>
+                        </div>
+                </md-list>
+
+            </div>
+        </div>
+    </div>
+<script id="header-list" type="text/ng-template">
+    <md-list flex="grow">
+        <md-list-item class="md-whiteframe-4dp" ng-repeat="row in ShortMain.shortages |orderBy: 'StoreDescr' | filter: searchText" style="margin-bottom:10px; background-color:white;">
+            <div class="md-list-item-text" layout="column" layout-align="start stretch" flex="grow">
+                <div layout="row" layout-align="right" align="center">
+                    <span class="cell-style" flex="20">{{row.ProductDescr}}<md-tooltip md-direction="top">{{row.ProductDescr}}</md-tooltip></span>
+                    <span class="cell-style" flex="20">{{row.StoreDescr}}<md-tooltip md-direction="top">{{row.StoreDescr}}</md-tooltip></span>
+                    <span class="cell-style" flex="20">{{row.ShortType}}<md-tooltip md-direction="top">{{row.ShortType}}</md-tooltip></span>
+                    <span class="cell-style" flex="20" ng-click="viewHeaderDetails(row)" style="cursor:pointer;"> #{{row.Id}}<md-tooltip md-direction="top">{{row.Id}}</md-tooltip></span>
+
+                    <span flex="20" align="left">
+                        <md-button class=" md-fab md-mini" ng-disabled="processingUser" ng-click='removeShortage(row)'><i class="fa fa-trash fa-fw"></i>  <md-tooltip md-direction="top">Delete selected Shortage</md-tooltip></md-button>
+                    </span>
+                </div>
+            </div>
+    </md-list>
+</script>
+<style>
+    .cell-style {
+        overflow: hidden;
+        padding: 4px;
+        text-overflow: ellipsis;
+    }
+
+    .selected-whiteframe {
+        box-shadow: 0px 5px 5px -3px rgba(63, 81, 181, 0.2), 0px 8px 10px 1px rgba(63, 81, 181, 0.14), 0px 3px 14px 2px rgba(63, 81, 181, 0.12);
+        border-left: 4px solid #3f51b5;
+    }
+</style>
+<style>
+    .btn {
+        background-color: #4165f4; /*navy blue*/
+        border: none;
+        color: white;
+        padding: 12px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 22px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 90%;
+    }
+
+    .editbtn {
+        background-color: #4165f4; /*navy blue*/
+        border: none;
+        color: white;
+        padding: 12px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 22px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 90%;
+    }
+
+    .RedCross {
+        background-color: #ff0000; /*red*/
+        border: none;
+        color: white;
+        padding: 6px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 10px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 90%;
+    }
+
+    .cell-style {
+        overflow: hidden;
+        padding: 4px;
+        text-overflow: ellipsis;
+    }
+
+    .selected-whiteframe {
+        box-shadow: 0px 5px 5px -3px rgba(63, 81, 181, 0.2), 0px 8px 10px 1px rgba(63, 81, 181, 0.14), 0px 3px 14px 2px rgba(63, 81, 181, 0.12);
+        border-left: 4px solid #3f51b5;
+    }
+</style>

@@ -1,0 +1,167 @@
+﻿
+<div layout="column" layout-align="start stretch" ng-cloak ng-controller="MessagesMainCTRL as MessagesMain" ng-init="MessagesMain.initView()">
+    <md-subheader class="wrappers-view-header md-whiteframe-7dp md-primary">Manage Customer Requests</md-subheader>
+    <div layout="row" layout-align="end center">
+        <md-menu md-position-mode="target-right target" ng-if="devAccess">
+            <md-button aria-label="UserSettings" class="md-icon-button md-primary" ng-click="$mdOpenMenu($event)">
+                <md-tooltip md-direction="top">Develop - Debug</md-tooltip>
+                <md-icon md-menu-origin md-svg-icon="device:developer_mode"></md-icon>
+            </md-button>
+            <md-menu-content width="4" style="max-height:none;">
+                <md-content layout="column" layout-align="start stretch" flex="grow" class="md-padding">
+                    <h4 style="font-variant:small-caps; text-align:center;">Use Debug Actions</h4>
+                    <md-button class="md-raised md-primary" ng-disabled="!devAccess" ng-click="displayLookups()" aria-label="dev-log-lookups">Log Lookups</md-button>
+                    <md-button class="md-raised md-primary" ng-disabled="!devAccess" ng-click="displayContainer()" aria-label="dev-log-container">Log Container</md-button>
+                    <md-button class="md-raised md-primary" ng-disabled="!devAccess" ng-click="displaylogs()" aria-label="dev-log-crud-array">Log Changes</md-button>
+                    <md-button class="md-raised md-primary" ng-disabled="!devAccess" ng-click="displayLoadedAssocs()" aria-label="dev-log-crud-array">Log Loaded Assocs</md-button>
+                </md-content>
+            </md-menu-content>
+        </md-menu>
+        <md-menu md-position-mode="target-right target" ng-if="devAccess">
+            <md-button aria-label="Ingredient Association Options" class="md-icon-button md-primary" ng-click="$mdOpenMenu($event)">
+                <md-tooltip md-direction="top">Ingredient Assoc Options</md-tooltip>
+                <md-icon md-menu-origin md-svg-icon="navigation:apps"></md-icon>
+            </md-button>
+            <md-menu-content width="4" style="max-height:none;">
+                <md-content layout="column" layout-align="start stretch" flex="grow" class="md-padding">
+                    <h4 style="font-variant:small-caps; text-align:center;">Options</h4>
+                    <!--ng-if="loading == true"-->
+                    <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+                    <md-list>
+                        <md-list-item class="bo-head-sc" ng-click="createDynamicEntity('ProductCategories')" aria-label="create-product-category-modal-option">Create Product Category<md-tooltip md-direction="top">Create new product category and reload lookups</md-tooltip></md-list-item>
+                        <md-list-item class="bo-head-sc" ng-click="createDynamicEntity('Ingredients')" aria-label="create-ingredient-modal-option">Create Ingredient<md-tooltip md-direction="top">Create new Ingredient and reload lookups</md-tooltip></md-list-item>
+                        <md-list-item class="bo-head-sc" ng-click="modalSortPropose()" aria-label="create-ingredient-modal-option">Sort all Associations<md-tooltip md-direction="top">Check and modify sort missmatch against all containers</md-tooltip></md-list-item>
+                    </md-list>
+                </md-content>
+            </md-menu-content>
+        </md-menu>
+    </div>
+    <div class="container-panel" layout="row" layout-align="start stretch" flex="grow">
+        <div class="md-whiteframe-7dp" layout-margin="1%" layout="column" layout-align="start stretch" flex="33">
+            <div>
+                <div class="bo-htd">Macro</div>
+                <div layout="row">
+                    <md-button class="md-icon-button md-primary" ng-click="addMainMessage($event ,'MainMessages',row,'add')" arial-label="assign-product-category">
+                        <md-icon md-svg-icon="content:add"></md-icon><md-tooltip md-direction="top">Add Main Messages</md-tooltip>
+                    </md-button>
+                </div>
+            </div>
+            <div style="overflow:auto;" flex="grow" class="hitbo-virtual-repeat">
+                <div class="notice-list-rounded" ">
+                    <md-list flex="grow" ng-if="!$scope.flag">
+                        <md-list-item class="md-whiteframe-4dp" ng-repeat="data in MessagesMain.mainmessages" style="margin-bottom:10px; background-color:white;" ">
+                            <div class="md-list-item-text" layout="column" layout-align="start stretch" flex="grow">
+                                <div layout="row" layout-align="center">
+                                    <span style="align-self: center;" ng-click='GetMessageById(data.Id)' class="cell-style" flex="80">{{data.Description}}<md-tooltip md-direction="top">{{data.Description}}</md-tooltip></span>
+                                    <span flex="10" align="center">
+                                        <md-button class="md-fab md-mini md-primary  md-raised" ng-click="editMainMessage($event ,'MainMessages',data,'edit')" aria-label="EditMainMessage"><i class="fa fa-pencil fa-fw"></i>  <md-tooltip md-direction="top">Edit Selected Main Message</md-tooltip></md-button>
+                                    </span>
+                                    <span flex="10" align="center">
+                                        <md-button class="md-fab md-mini" ng-disabled="processingUser" ng-click='DeleteMainMessage(data)'><i class="fa fa-trash fa-fw"></i>  <md-tooltip md-direction="top">Delete Selected Main Message</md-tooltip></md-button>
+                                    </span>
+                                </div>
+                            </div>
+                    </md-list>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="cssFade-animation md-whiteframe-7dp bo-draggable-list" layout-margin="1%" layout="column" layout-align="start stretch" flex="33" ng-show="selectedProductCategory !== null">
+            <div>
+                <div class="bo-htd">Category</div>
+                <div>
+                    <md-button class="md-icon-button md-primary" ng-click="addMessage($event ,'Messages',row,'add')" arial-label="assign-product-category">
+                        <md-icon md-svg-icon="content:add"></md-icon><md-tooltip md-direction="top">Add  Messages</md-tooltip>
+                    </md-button>
+                </div>
+            </div>
+            <div style="overflow:auto;" flex="grow" class="hitbo-virtual-repeat">
+                <div class="notice-list-rounded">
+                    <md-list flex="grow" ng-if="!$scope.flag">
+                        <md-list-item class="md-whiteframe-4dp" ng-repeat="data in MessagesMain.messages |filter: searchbox     " style="margin-bottom:10px; background-color:white;" ng-click="">
+                            <div class="md-list-item-text" layout="column" layout-align="start stretch" flex="grow">
+                                <div layout="row" layout-align=" center">
+                                    <span style="align-self: center;" ng-click='GetMessageDetailsById(data.Id)' class="cell-style" flex="80">{{data.Description}}<md-tooltip md-direction="top">{{data.Description}}</md-tooltip></span>
+                                    <span flex="10" align="center">
+                                        <md-button class="md-fab md-mini md-primary  md-raised" ng-click="editMessage($event ,'Messages',data,'edit')" aria-label="EditMessages"><i class="fa fa-pencil fa-fw"></i>  <md-tooltip md-direction="top">Edit Selected Message</md-tooltip></md-button>
+                                    </span>
+                                    <span flex="10" align="center">
+                                        <md-button class=" md-fab md-mini" ng-disabled="processingUser" ng-click='DeleteMessage(data)'><i class="fa fa-trash fa-fw"></i>  <md-tooltip md-direction="top">Delete Selected  Message</md-tooltip></md-button>
+                                    </span>
+                                </div>
+                            </div>
+                    </md-list>
+
+                </div>
+            </div>
+        </div>
+        <!-- Displayed Available to Add Ingredients -->
+        <div class="cssFade-animation md-whiteframe-7dp bo-draggable-list" layout-margin="1%" layout="column" layout-align="start stretch" flex="33" ng-show="selectedProductCategory !== null">
+            <div>
+                <div class="bo-htd">Sub Category</div>
+                <div>
+                    <md-button class="md-icon-button md-primary" ng-click="addMessageDetail($event ,'MessagesDetails',row,'add')" arial-label="assign-product-category">
+                        <md-icon md-svg-icon="content:add"></md-icon><md-tooltip md-direction="top">Add  Message Details</md-tooltip>
+                    </md-button>
+                </div>
+            </div>
+            <div style="overflow:auto;" flex="grow" class="hitbo-virtual-repeat">
+                <div class="notice-list-rounded" >
+                    <md-list flex="grow" ng-if="!$scope.flag">
+                        <md-list-item class="md-whiteframe-4dp" ng-repeat="data in MessagesMain.messagesdetails |filter: searchbox     " style="margin-bottom:10px; background-color:white;" ng-click="">
+                            <div class="md-list-item-text" layout="column" layout-align="start stretch" flex="grow">
+                                <div layout="row" layout-align=" center">
+                                    <span style="align-self: center;" class="cell-style" flex="80">{{data.Description}}<md-tooltip md-direction="top">{{data.Description}}</md-tooltip></span>
+                                    <span flex="10" align="center">
+                                        <md-button class="md-fab md-mini md-primary  md-raised" ng-click="editMessageDetails($event ,'MessagesDetails',data,'edit') " aria-label="EditMessageDetails"><i class="fa fa-pencil fa-fw"></i>  <md-tooltip md-direction="top">Edit Message Detail</md-tooltip></md-button>
+                                    </span>
+                                    <span flex="10" align="center">
+                                        <md-button class=" md-fab md-mini" ng-disabled="processingUser" ng-click='DeleteMessageDetail(data)'><i class="fa fa-trash fa-fw"></i>  <md-tooltip md-direction="top">Delete Selected  Message Detail</md-tooltip></md-button>
+                                    </span>
+                                </div>
+                            </div>
+                    </md-list>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    md-backdrop.md-opaque.md-default-theme, .md-dialog-container {
+        position: fixed;
+    }
+
+    .list {
+        list-style: none outside none;
+        margin: 10px 0 30px;
+    }
+
+    .deliconhover {
+        float: right;
+        border: 3px solid #2e6da4;
+        border-radius: 141px;
+        background: #BBE8FF;
+    }
+
+    .cssFade-animation {
+        max-height: inherit !important;
+        opacity: 1;
+    }
+
+        .cssFade-animation.ng-hide-add.ng-hide-add-active,
+        .cssFade-animation.ng-hide-remove.ng-hide-remove-active {
+            -webkit-transition: 0.5s linear all;
+            -moz-transition: 0.5s linear all;
+            -ms-transition: 0.5s linear all;
+            -o-transition: 0.5s linear all;
+            transition: 0.5s linear all;
+        }
+
+        .cssFade-animation.ng-hide {
+            max-height: 0 !important;
+            opacity: 0;
+        }
+</style>

@@ -1,0 +1,11 @@
+﻿<md-toast>
+    <div ng-include="innerTmpl" flex="grow"></div>
+</md-toast>
+
+
+<script id="simple-dynamic-default-toster" type="text/ng-template">
+        <div layout="row" layout-align="space-between center">
+            <md-icon md-svg-icon={{svgIcon.icon}} ng-style="{'color' : svgIcon.color}"></md-icon>&nbsp;
+            <span class="md-toast-text" flex>{{message}}</span>
+        </div>
+</script>

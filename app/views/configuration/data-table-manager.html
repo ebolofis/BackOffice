@@ -1,0 +1,131 @@
+﻿<div class="row" ng-controller="DataTableManagerCtrl" ng-init="initView()">
+    <md-subheader class="wrappers-view-header md-whiteframe-7dp md-primary">Data Table Management</md-subheader>
+    <div layout="row" layout-align="end center" flex>
+        <md-button class="md-raised" ng-click="viewOption = viewChoiceOption"><md-icon md-svg-icon="content:reply"><md-tooltip md-direction="top">Return back</md-tooltip></md-icon></md-button>
+        <md-button class="md-raised" ng-click="viewOption = 'default'"><md-icon md-svg-icon="action:home"><md-tooltip md-direction="top">Return manager Home View</md-tooltip></md-icon></md-button>
+    </div>
+    <div ng-if="viewOption == 'default'" layout="row" layout-align="center start">
+        <md-card style="min-width:250px; max-width:250px" ng-click="switchView('models')">
+            <md-card-header>
+                <md-card-avatar>
+                    <md-icon class="md-avatar-icon" md-svg-icon="editor:attach_file"></md-icon>
+                </md-card-avatar>
+                <md-card-header-text>
+                    <span class="md-title">Manage Single Models</span>
+                    <span class="md-subhead">Repository API models</span>
+                </md-card-header-text>
+            </md-card-header>
+        </md-card>
+        <md-card style="min-width:250px; max-width:250px" ng-click="switchView('manageGridModel')">
+            <md-card-header>
+                <md-card-avatar>
+                    <md-icon class="md-avatar-icon" md-svg-icon="editor:attach_file"></md-icon>
+                </md-card-avatar>
+                <md-card-header-text>
+                    <span class="md-title">Manage Table Models</span>
+                </md-card-header-text>
+            </md-card-header>
+        </md-card>
+    </div>
+
+    <div ng-if="viewOption == 'models'">
+        <div layout="row" layout-align="start center">
+            <div>
+                <h2 class="md-title">Manage Repository API models</h2>
+            </div>
+            <md-button class="md-icon-button md-primary" ng-click="editModelEntity('add','',{});">
+                <md-icon md-svg-icon="content:add"><md-tooltip md-direction="left">Add new register</md-tooltip></md-icon>
+            </md-button>
+            <md-button class="md-icon-button md-primary" ng-click="generateJson(loadedModels);">
+                <md-icon md-svg-icon="content:archive"><md-tooltip md-direction="left">Generate Json</md-tooltip></md-icon>
+            </md-button>
+        </div>
+        <div layout="column">
+            <div class="custom-justify-item" style="min-width:33%;" ng-repeat="(key, value) in loadedModels" ng-click="selectModel(key,value)">
+                <div ng-include src="'modelPreviewCard'"></div>
+            </div>
+        </div>
+    </div>
+    <div ng-if="viewOption == 'manageSelectedModel'">
+        <div ng-include src="'modelPropertiesList'" flex="50"></div>
+    </div>
+    <div ng-if="viewOption == 'manageGridModel'">
+        zavara
+    </div>
+</div>
+<!-- card view of repository models -->
+<script id="modelPreviewCard" type="text/ng-template">
+    <md-card style="min-width:250px; max-width:250px">
+        <md-card-header style="padding-bottom:0;">
+            <md-card-avatar>
+                <md-icon class="md-avatar-icon" md-svg-icon="editor:attach_file"></md-icon>
+            </md-card-avatar>
+            <md-card-header-text>
+                <span class="md-title">{{key}}</span>
+                <span class="md-subhead">Properties : <span class="badge" ng-style="((entityLength(value) == 0 ) ? {'background-color': 'red'} : {'background-color': 'blue'})" ng-bind="entityLength(value)"></span></span>
+            </md-card-header-text>
+        </md-card-header>
+        <md-card-actions layout="row" layout-align="end center">
+            <md-button class="md-icon-button" aria-label="Favorite" ng-click="removeModelEntity(key,value);">
+                <md-icon style="width: 15px;" md-svg-icon="action:delete"><md-tooltip md-direction="bottom">Remove model</md-tooltip></md-icon>
+            </md-button>
+            <md-button class="md-icon-button" aria-label="Settings" ng-click="selectModel(key,value); editModelEntity('edit',key,value);">
+                <md-icon style="width: 15px;" md-svg-icon="editor:mode_edit"><md-tooltip md-direction="bottom">Edit model Identifier</md-tooltip></md-icon>
+            </md-button>
+            <md-button class="md-icon-button" aria-label="Share" ng-click="selectModel(key,value); switchView('manageSelectedModel');">
+                <md-icon style="width: 15px;" md-svg-icon="action:settings"><md-tooltip md-direction="bottom">Manage model properties</md-tooltip></md-icon>
+            </md-button>
+        </md-card-actions>
+    </md-card>
+</script>
+<!-- Properties editing template -->
+<script id="modelPropertiesList" type="text/ng-template">
+    <md-toolbar style="margin-top:8px;">
+        <div class="md-toolbar-tools">
+            <h2>Editing "{{sModel.identity}}"</h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="editModelProperty('add','', {})">
+                <md-icon md-svg-icon="content:add_box"><md-tooltip md-direction="top">Add new property</md-tooltip></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <div style="overflow:visible;" layout="row" layout-align="start stretch">
+        <md-list flex="grow">
+            <md-list-item class="md-3-line md-whiteframe-4dp" ng-repeat="(key, value) in sModel.repoOptions" style="padding:4px; margin-bottom:10px; background-color:white;">
+                <div class="md-list-item-text" layout="column" flex="85" style="">
+                    <div layout="column" layout-align="center stretch" style="margin:3px;">
+                        <div layout="row" flex="grow">
+                            <span style="font-variant:small-caps">PropertyName:</span>
+                            <strong>{{key}}</strong>
+                        </div>
+                        <div layout="row" layout-align="start center" flex="grow">
+                            <div layout="column" layout-align="start center" flex="25">
+                                <span style="font-variant:small-caps">Type</span>
+                                <span>{{value.type}}</span>
+                            </div>
+                            <div layout="column" layout-align="start center" flex="25">
+                                <span style="font-variant:small-caps">Visible</span>
+                                <span>{{value.visible}}</span>
+                            </div>
+                            <div layout="column" layout-align="start center" flex="25">
+                                <span style="font-variant:small-caps">Nullable</span>
+                                <span>{{value.nullable}}</span>
+                            </div>
+                            <div layout="column" layout-align="start center" flex="25">
+                                <span style="font-variant:small-caps">Editable</span>
+                                <span>{{value.editable}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="md-list-item-text" layout="column" flex="15" style="">
+                    <md-button class="md-icon-button md-primary" aria-label="editmodel" ng-click="editModelProperty('edit' , key  ,value )">
+                        <i class="fa fa-edit fa-fw"><md-tooltip md-direction="top">Edit current model</md-tooltip></i>
+                    </md-button>
+                </div>
+            </md-list-item>
+        </md-list>
+    </div>
+</script>
+
+

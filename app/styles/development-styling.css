@@ -1,0 +1,44 @@
+﻿.test-bg-1 { background-color:red;}
+.test-bg-2 { background-color:green;}
+.test-bg-3 { background-color:blue;}
+.test-bg-4 { background-color:orangered;}
+.test-bg-5 { background-color:greenyellow;}
+.test-bg-6 { background-color:cornflowerblue;}
+.test-bg-7 { background-color:yellow;}
+.test-bg-8 { background-color:sandybrown;}
+.test-bg-9 { background-color:gold;}
+
+
+
+.animate-enter, 
+.animate-leave { 
+	-webkit-transition: 400ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+	-moz-transition: 400ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+	-ms-transition: 400ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+	-o-transition: 400ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+	transition: 400ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+	position: relative;
+	display: block;
+} 
+
+.animate-leave.animate-leave-active,
+.animate-enter {
+    -webkit-transform: scaleY(0);
+    -moz-transform: scaleY(0);
+    -ms-transform: scaleY(0);
+    -o-transform: scaleY(0);
+    transform: scaleY(0);
+	height: 0px;
+	opacity: 0;
+}
+
+.animate-enter.animate-enter-active,
+.animate-leave {
+    -webkit-transform: scaleY(1);
+    -moz-transform: scaleY(1);
+    -ms-transform: scaleY(1);
+    -o-transform: scaleY(1);
+    transform: scaleY(1);
+	height: 30px;
+	opacity: 1;
+}

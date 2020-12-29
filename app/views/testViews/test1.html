@@ -1,0 +1,35 @@
+﻿<div ng-controller="testController">
+    <h4>Hello solid</h4>
+    <span>I am a single template1 and my value of desc is : {{model.desc}}</span>
+    <div ng-include="model.firstInnertmplName"></div>
+    <br />
+    <md-divider></md-divider>
+    <div ng-include="model.secondInnertmplName"></div>
+</div>
+
+
+<script type="text/ng-template" id="innertmpl1">
+    <p>
+        Hi, i am a paragraph in innertmpl1 nested and initialised by my parent ctrl
+        <strong>var: {{model.desc}}</strong>
+        <md-button class="md-primary md-raised" ng-click="clickAction1()">Allow me Click1</md-button>
+        <md-button class="md-primary md-raised" ng-click="clickAction2(model.exdesc)">Allow me Click2</md-button>
+    </p>
+    <br />
+    <br />
+    <p  ng-controller="testNestedController">
+        Hi, i same with the above template with a different controller
+        <strong>var: {{model.desc}}</strong>
+        <md-button class="md-primary md-raised" ng-click="clickAction1(model.desc)">Allow me Click1</md-button>
+        <md-button class="md-primary md-raised" ng-click="clickAction2(model.exdesc)">Allow me Click2</md-button>
+    </p>
+</script>
+
+<script type="text/ng-template" id="innertmpl2">
+    <p>
+        Hi, i also an inner  paragraph in innertmpl2 loaded.
+        <strong>var: {{model.exdesc}}</strong>
+        <md-button class="md-primary md-raised" ng-click="clickAction1()">Allow me Click1</md-button>
+        <md-button class="md-primary md-raised" ng-click="clickAction2('foo')">Allow me Click2</md-button>
+    </p>
+</script>

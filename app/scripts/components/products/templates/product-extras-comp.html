@@ -1,0 +1,407 @@
+﻿<div layout="column" layout-align="center stretch" flex="grow" ng-include src="$ctrl.viewTemplate"></div>
+
+<!-- Ingredients actions manage -->
+<script id="ingredient-extras-menu" type="text/ng-template">
+    <md-menu md-position-mode="target-right target" style="padding:0;">
+        <md-button aria-label="UserSettings" class="md-icon-button" ng-click="$ctrl.checkToggleCollapsed();$mdOpenMenu($event)">
+            <md-tooltip md-direction="top">Ingredient options</md-tooltip>
+            <md-icon md-menu-origin md-svg-icon="navigation:apps"></md-icon>
+        </md-button>
+        <md-menu-content width="4" style="max-height:none;">
+            <md-content layout="column" layout-align="start stretch" flex="grow" class="md-padding">
+                <md-list>
+                    <md-list-item class="md-whiteframe-4dp bo-hover-negative" layout="column" layout-align="center start" ng-click="$ctrl.manageingrs('display')">
+                        <span class="bo-head-sc">View Extras</span>
+                        <md-tooltip md-direction="left">Extras display list</md-tooltip>
+                    </md-list-item>
+                    <md-list-item class="md-whiteframe-4dp bo-hover-negative" ng-show="$ctrl.inrgManageType == undefined || $ctrl.inrgManageType=='display'" ng-click="$ctrl.sortDisplay()">
+                        <span class="bo-head-sc">Sort Displayed</span>
+                        <md-tooltip md-direction="left">Apply sort edit based on view order</md-tooltip>
+                    </md-list-item>
+                </md-list>
+                <h4 style="font-variant:small-caps; text-align:center;">Ingredient Insert Options</h4>
+                <md-divider></md-divider>
+                <md-list>
+                    <md-list-item class="md-whiteframe-4dp bo-hover-negative" layout="column" layout-align="center start" ng-click="$ctrl.manageingrs('insert')">
+                        <span class="bo-head-sc">Only Category Ingredients</span>
+                        <md-tooltip md-direction="left">This action will <strong style="color:red;">remove</strong> any ingredients assigned and apply only category ingredients selected.</md-tooltip>
+                    </md-list-item>
+                    <md-list-item class="md-whiteframe-4dp bo-hover-negative" layout="column" layout-align="center start" ng-click="$ctrl.manageingrs('append')">
+                        <span class="bo-head-sc">Missing Category Ingredients</span>
+                        <md-tooltip md-direction="left">This action will try to append selected category ingredients. Any ingredients that allready exist + category ingredients selected avoiding dublicates.</md-tooltip>
+                    </md-list-item>
+                    <md-list-item class="md-whiteframe-4dp bo-hover-negative" layout="column" layout-align="center start" ng-click="$ctrl.manageingrs('manual')">
+                        <span class="bo-head-sc">Associations Selection</span>
+                        <md-tooltip md-direction="left">This action will provide associated by category ingredients and will allows you to select which ingredients you would like to keep.</md-tooltip>
+                    </md-list-item>
+                    <md-list-item class="md-whiteframe-4dp bo-hover-negative" layout="column" layout-align="center start" ng-click="$ctrl.manageingrs('product')">
+                        <span class="bo-head-sc">Clone from Product</span>
+                        <md-tooltip md-direction="left">This allows you to keep or manage current ingredients providing a list of extras by product selection.</md-tooltip>
+                    </md-list-item>
+                    <md-list-item class="md-whiteframe-4dp bo-hover-negative" layout="column" layout-align="center start" ng-click="$ctrl.manageingrs('all')">
+                        <span class="bo-head-sc">All ingredients</span>
+                        <md-tooltip md-direction="left">A list of all ingredients associated and not for custom choice.</md-tooltip>
+                    </md-list-item>
+                </md-list>
+                <md-divider></md-divider>
+            </md-content>
+        </md-menu-content>
+    </md-menu>
+</script>
+
+<!-- Main display component of included ingredients as extras -->
+<script id="main-list-display" type="text/ng-template">
+    <md-subheader class="md-no-sticky subhead-nopad">
+        <div layout="row" layou-align="start center" style="padding: 0px 16px;">
+            <div flex="15" class="h-ext-list">Unit</div>
+            <div flex="35" class="h-ext-list">Ingredient</div>
+            <div flex="8" class="h-ext-list">Req</div>
+            <div flex="8" class="h-ext-list">Min Q.</div>
+            <div flex="8" class="h-ext-list">Max Q.</div>
+            <div flex="8" class="h-ext-list">Sort</div>
+            <div flex="15" class="h-c-ext-list" ng-include src="'ingredient-extras-menu'"></div>
+        </div>
+    </md-subheader>
+    <div layout="row" layout-align="center center" ng-if="$ctrl.data['ProductExtras'].length == 0">
+        <md-toolbar class="md-warn md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="start center">
+            <md-icon class="md-margin" md-svg-icon="action:info"></md-icon>No Extras mapped on this product.
+        </md-toolbar>
+    </div>
+    <div class="bo-draggable-list" style="overflow:auto;" flex="grow" ng-if="$ctrl.data['ProductExtras'].length > 0">
+        <ul dnd-list="$ctrl.data.ProductExtras">
+            <li aria-label="pre-a" ng-repeat="pr in $ctrl.data['ProductExtras']" dnd-draggable="pr" dnd-moved="$ctrl.data.ProductExtras.splice($index, 1);" dnd-dragend="$ctrl.dragsort()">
+                <!-- Not editing template  -->
+                <div ng-dblclick="$ctrl.editDetail(pr , true)" ng-if="pr.isEditing != true" layout="row" layout-align="start center" flex="grow" ng-class="{'new-row' : pr.EntityStatus == 0 , 'edited-row' : pr.EntityStatus == 1 ,'deleted-row' : pr.EntityStatus == 2 }" style="padding:3px 10px">
+                    <span flex="15">{{$ctrl.unitDescEnum[pr.UnitId]}} </span>
+                    <span flex="35">{{$ctrl.ingDescEnum[pr.IngredientId]}} </span>
+                    <span flex="8">
+                        <md-icon ng-if="pr.IsRequired != true" md-menu-origin md-svg-icon="navigation:close"></md-icon>
+                        <md-icon ng-if="pr.IsRequired == true" md-menu-origin md-svg-icon="navigation:check"></md-icon>
+                    </span>
+                    <span flex="8">{{pr.MinQty}} </span>
+                    <span flex="8">{{pr.MaxQty}} </span>
+                    <span flex="8">{{pr.Sort}} </span>
+                    <div flex="15" layout="row" layout-align="center center">
+                        <md-button class="md-fab md-mini md-accent" aria-label="delrowpr" style="margin: 0 auto;" ng-if="pr.EntityStatus != 2" ng-click="$ctrl.editDetail(pr , true)">
+                            <md-tooltip md-direction="top">Edit selected recipe</md-tooltip>
+                            <md-icon md-svg-icon="content:create"></md-icon>
+                        </md-button>
+                        <md-button class="md-fab md-mini md-warn" style="margin: 0 auto;" ng-if="pr.EntityStatus != 2" ng-click="$ctrl.removeDetail('ProductExtras',pr, $index)">
+                            <md-tooltip md-direction="top">Remove selected recipe</md-tooltip>
+                            <md-icon md-svg-icon="action:delete"></md-icon>
+                        </md-button>
+                        <md-button class="md-fab md-mini" style="margin: 0 auto;" ng-if="pr.EntityStatus == 2" ng-click="$ctrl.refreshRow('ProductExtras',pr)">
+                            <md-tooltip md-direction="top">Restore Entity from delete state</md-tooltip>
+                            <md-icon md-svg-icon="action:settings_backup_restore"></md-icon>
+                        </md-button>
+                    </div>
+                </div>
+                <div ng-if="pr.isEditing == true" ng-click="$event.preventDefault()" layout="row" layout-align="start center" flex="grow" ng-class="{'new-row' : pr.EntityStatus == 0 , 'edited-row' : pr.EntityStatus == 1 ,'deleted-row' : pr.EntityStatus == 2 }" style="padding:3px 10px">
+                    <md-input-container flex="15" class="fix-input-display">
+                        <md-select name="Unit" aria-label="Details Unit" ng-model="pr.UnitId" ng-change="$ctrl.markEditedDetail(pr)">
+                            <!--<md-option value="null">-unitDescEnum--</md-option>-->
+                            <md-option ng-repeat="ch in $ctrl.lookups.Units" value="{{ch.Id}}">{{ch.Description}}</md-option>
+                        </md-select>
+                    </md-input-container>
+                    <div flex="35">
+                        <md-autocomplete md-no-cache="false"
+                                         md-selected-item="$ctrl.selectedItem"
+                                         md-search-text-change="$ctrl.searchTextChange($ctrl.searchText)" md-search-text="$ctrl.searchText"
+                                         md-selected-item-change="$ctrl.selectedItemChange(item,pr)"
+                                         md-items="item in $ctrl.querySearch($ctrl.searchText)" md-item-text="item.Description + ' : '+item.Code"
+                                         md-min-length="0" placeholder="Select Ingredient">
+                            <md-item-template><span md-highlight-text="$ctrl.searchText" md-highlight-flags="^i">{{item.Description + ' : ' + item.Code}}</span></md-item-template>
+                            <md-not-found> No Ingredients matching "{{$ctrl.searchText}}" were found. </md-not-found>
+                        </md-autocomplete>
+                    </div>
+                    <!--<md-input-container flex="25" class="fix-input-display">
+                        <md-select name="IngredientId" aria-label="Details Ingredient" ng-model="pr.IngredientId" required ng-change="$ctrl.markEditedDetail(pr)">
+                            <md-option ng-repeat="(ch , val) in ingDescEnum" value="{{ch}}">{{val}}</md-option>
+                        </md-select>
+                    </md-input-container>-->
+                    <div layout="row" layout-align="center center" flex="8" class="fix-input-display">
+                        <span>
+                            <md-checkbox md-no-ink aria-label="IsRequired" ng-model="pr.IsRequired" class="md-primary" ng-change="$ctrl.markEditedDetail(pr)"></md-checkbox>
+                        </span>
+                    </div>
+                    <md-input-container flex="8" class="fix-input-display"><input name="MinQty" aria-label="MinQty" ng-model="pr.MinQty" type="number" min="0" step="1" ng-change="$ctrl.markEditedDetail(pr)"></md-input-container>
+                    <md-input-container flex="8" class="fix-input-display"><input name="MaxQty" aria-label="MaxQty" ng-model="pr.MaxQty" type="number" min="0" step="1" ng-change="$ctrl.markEditedDetail(pr)"></md-input-container>
+                    <md-input-container flex="8" class="fix-input-display"><input name="Sort" aria-label="Sort" ng-model="pr.Sort" type="number" min="0" step="1" ng-change="$ctrl.markEditedDetail(pr)"></md-input-container>
+                    <div flex="15" layout="row" layout-align="center center">
+                        <md-button class="md-fab md-mini md-primary" aria-label="delrowpr" style="margin: 0 auto;" ng-if="pr.EntityStatus != 2" ng-click="$ctrl.editDetail(pr , false)">
+                            <md-tooltip md-direction="top">Edit selected recipe</md-tooltip>
+                            <md-icon md-svg-icon="action:done"></md-icon>
+                        </md-button>
+                        <md-button class="md-fab md-mini md-warn" style="margin: 0 auto;" ng-if="pr.EntityStatus != 2" ng-click="$ctrl.removeDetail('ProductExtras',pr, $index)">
+                            <md-tooltip md-direction="top">Remove selected recipe</md-tooltip>
+                            <md-icon md-svg-icon="action:delete"></md-icon>
+                        </md-button>
+                        <md-button class="md-fab md-mini" style="margin: 0 auto;" ng-if="pr.EntityStatus == 2" ng-click="$ctrl.refreshRow('ProductExtras',pr)">
+                            <md-tooltip md-direction="top">Restore Entity from delete state</md-tooltip>
+                            <md-icon md-svg-icon="action:settings_backup_restore"></md-icon>
+                        </md-button>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div flex></div>
+    <md-divider></md-divider>
+    <div layout="row" layout-align="space-between center">
+        <md-button class="md-raised md-primary" ng-click="$ctrl.addDetail('ProductExtras')">
+            <md-tooltip md-direction="top">Add new extra</md-tooltip>
+            Add Extra
+        </md-button>
+
+        <strong>Results:&nbsp;#{{$ctrl.data['ProductExtras'].length}}</strong>
+    </div>
+</script>
+
+<!-- first choices to add missing from cat or remove not belog and append selected FROM cat -->
+<script id="insert-ingredients-choice-template" type="text/ng-template">
+    <div layout="column" layout-align="start stretch" flex="grow">
+        <md-toolbar class="md-primary md-whiteframe-4dp slim-material-toolbar" style="padding:0 10px;" layout="row" layout-align="start center">
+            <div>Select Ingredients to add as Extras</div>
+            <div flex></div>
+            <div flex="15" class="h-c-ext-list" ng-include src="'ingredient-extras-menu'"></div>
+        </md-toolbar>
+        <div layout="row" layout-align="start stretch" style="margin-top:20px;">
+            <div layout="row" layout-align="start center" flex="50" style="margin-top: 20px; padding-right: 15px;">
+                <md-input-container class="md-block fix-input-display" flex>
+                    <label>{{$ctrl.innerHeader}}</label>
+                    <input ng-model="$ctrl.searchStringToSelected">
+                </md-input-container>
+                <md-icon md-svg-icon="navigation:close" ng-click="$ctrl.searchStringToSelected = ''"></md-icon>
+            </div>
+            <div layout="row" layout-align="start center" flex="50" style="margin-top: 20px; padding-right: 15px;">
+                <md-input-container class="md-block fix-input-display" flex>
+                    <label>Selected to add</label>
+                    <input ng-model="$ctrl.searchStringSelected">
+                </md-input-container>
+                <md-icon md-svg-icon="navigation:close" ng-click="$ctrl.searchStringSelected = ''"></md-icon>
+            </div>
+        </div>
+        <div ng-if="$ctrl.toaddingrs.length > 0" layout="row" layout-align="start stretch" flex>
+            <div layout="column" layout-align="start stretch" flex="50">
+                <div style="overflow:auto;" flex="grow" class="hitbo-virtual-repeat">
+                    <md-virtual-repeat-container id="vertical-container">
+                        <div md-virtual-repeat="ing in $ctrl.toaddingrs | filterByRef: $ctrl.searchStringToSelected : 'IngredientId' : $ctrl.ingDescEnum : 'selected' : false | sortByRef :'IngredientId':$ctrl.ingDescEnum" class="repeated-item" flex="" ng-click="$ctrl.toggleInsSelection(ing)">
+                            <md-checkbox aria-label="ins-ici-{{$index}}" ng-checked="ing['selected'] == true" class="md-primary" style="margin:auto 0;"></md-checkbox>
+                            <strong flex>{{$ctrl.ingDescEnum[ing.IngredientId]}}</strong>
+                        </div>
+                    </md-virtual-repeat-container>
+                </div>
+            </div>
+            <div layout="column" layout-align="start stretch" flex="50">
+                <div style="overflow:auto;" flex="grow" class="hitbo-virtual-repeat">
+                    <md-virtual-repeat-container id="vertical-container">
+                        <div md-virtual-repeat="ing in $ctrl.toaddingrs | filterByRef : $ctrl.searchStringSelected : 'IngredientId' : $ctrl.ingDescEnum : 'selected' : true| sortByRef :'IngredientId':$ctrl.ingDescEnum" class="repeated-item" flex="" ng-click="$ctrl.toggleInsSelection(ing)">
+                            <md-checkbox aria-label="ins-ici-{{$index}}" ng-checked="ing['selected'] == true" class="md-primary" style="margin:auto 0;"></md-checkbox>
+                            <strong flex>{{$ctrl.ingDescEnum[ing.IngredientId]}}</strong>
+                        </div>
+                    </md-virtual-repeat-container>
+                </div>
+
+            </div>
+        </div>
+        <div ng-if="$ctrl.toaddingrs.length == 0" layout="row" layout-align="center center" flex>
+            <md-toolbar class="md-accent md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="start center"><md-icon class="md-margin" md-svg-icon="action:info"></md-icon>{{$ctrl.notLengthMSg}}</md-toolbar>
+        </div>
+        <md-divider></md-divider>
+        <small style="margin:0.5% auto 0.5% 0;">Product Category  <strong>{{$ctrl.lookups.ProductCategories[data.ProductCategoryId]['Description']}}</strong> has {{$ctrl.lookups.ingrsByCat[$ctrl.data.ProductCategoryId].length || 'no'}} extras associated.</small>
+        <small>{{$ctrl.innerInfo}}</small>
+        <div layout="row" layout-align="space-between center">
+            <md-button class="md-raised" ng-click="$ctrl.manageingrs('display')" flex="25">Return<md-tooltip md-direction="top">Return to extras list</md-tooltip></md-button>
+            <md-button class="md-raised md-warn" ng-click="$ctrl.clearSelected($ctrl.toaddingrs)" flex="25">Clear</md-button>
+            <md-button class="md-raised md-accent" ng-click="$ctrl.selectAll($ctrl.toaddingrs)" flex="25">Select all</md-button>
+            <md-button class="md-raised md-primary" ng-click="$ctrl.appendIngredients()" flex="25">Apply</md-button>
+        </div>
+    </div>
+</script>
+
+<!--Insert Extras from Association of category selected-->
+<script id="bycategory-ingredients-choice-template" type="text/ng-template">
+    <md-toolbar class="md-primary md-whiteframe-4dp slim-material-toolbar" style="padding:0 10px;" layout="row" layout-align="start center">
+        <div>Select Ingredients to add as Extras</div>
+        <div flex></div>
+        <div flex="15" class="h-c-ext-list" ng-include src="'ingredient-extras-menu'"></div>
+    </md-toolbar>
+    <div layout="row" layout-align="start stretch" style="margin-top:20px;">
+        <div layout="row" layout-align="start center" flex="50" style="margin-top: 20px; padding-right: 15px;">
+            <md-input-container class="md-block" style="font-variant:small-caps; margin:0px;" flex>
+                <label>{{$ctrl.innerHeader}}</label>
+                <input ng-model="$ctrl.searchStringAssocs">
+            </md-input-container>
+            <md-icon md-svg-icon="navigation:close" ng-click="$ctrl.searchStringAssocs = ''"></md-icon>
+        </div>
+        <div layout="row" layout-align="start center" flex="50" style="margin-top: 20px; padding-right: 15px;">
+            <md-input-container class="md-block" style="font-variant:small-caps; margin:0px;" flex>
+                <label>Selected to add</label>
+                <input ng-model="$ctrl.searchStringAssocsToAdd">
+            </md-input-container>
+            <md-icon md-svg-icon="navigation:close" ng-click="$ctrl.searchStringAssocsToAdd = ''"></md-icon>
+        </div>
+    </div>
+    <div layout="row" layout-align="start stretch">
+        <md-input-container class="fix-input-display" flex="50">
+            <md-select name="dropextrasAssoc" aria-label="Current ProductCategory" ng-model="$ctrl.dropselectionAssoc" ng-change="$ctrl.assocSelectionChanged($ctrl.dropselectionAssoc)">
+                <md-option ng-repeat="(ch,group) in $ctrl.lookups.ingrsByCat" value="{{ch}}">{{$ctrl.lookups.ProductCategories[ch].Description}} ({{group.length || '--'}})</md-option>
+            </md-select>
+        </md-input-container>
+        <div layout="column" layout-align="start stretch" flex="50"></div>
+    </div>
+    <div layout="row" layout-align="start stretch" flex>
+        <div layout="column" layout-align="start stretch" flex="50">
+            <div style="overflow:auto;" flex="grow" class="hitbo-virtual-repeat">
+                <md-virtual-repeat-container id="vertical-container">
+                    <div md-virtual-repeat="ing in $ctrl.toaddingrs | filterByRef:$ctrl.searchStringAssocs:'IngredientId':$ctrl.ingDescEnum : 'selected' : false | sortByRef :'IngredientId':$ctrl.ingDescEnum" class="repeated-item" flex="" ng-click="$ctrl.toggleInsSelection(ing)">
+                        <md-checkbox aria-label="ins-ici-{{$index}}" ng-checked="ing['selected'] == true" class="md-primary" style="margin:auto 0;"></md-checkbox>
+                        <strong flex>{{$ctrl.ingDescEnum[ing.IngredientId]}}</strong>
+                    </div>
+                </md-virtual-repeat-container>
+            </div>
+        </div>
+        <div layout="column" layout-align="start stretch" flex="50">
+            <div style="overflow:auto;" flex="grow" class="hitbo-virtual-repeat">
+                <md-virtual-repeat-container id="vertical-container">
+                    <div md-virtual-repeat="ing in $ctrl.toaddingrs | filterByRef:$ctrl.searchStringAssocsToAdd:'IngredientId':$ctrl.ingDescEnum : 'selected' : true | sortByRef :'IngredientId':$ctrl.ingDescEnum" class="repeated-item" flex="" ng-click="$ctrl.toggleInsSelection(ing)">
+                        <md-checkbox aria-label="ins-ici-{{$index}}" ng-checked="ing['selected'] == true" class="md-primary" style="margin:auto 0;"></md-checkbox>
+                        <strong flex>{{$ctrl.ingDescEnum[ing.IngredientId]}}</strong>
+                    </div>
+                </md-virtual-repeat-container>
+            </div>
+        </div>
+    </div>
+    <md-divider></md-divider>
+    <small style="margin:0.5% auto 0.5% 0;">Associated Category <strong>{{$ctrl.lookups.ProductCategories[$ctrl.dropselectionAssoc].Description || '--'}}</strong> has {{$ctrl.lookups.ingrsByCat[$ctrl.dropselectionAssoc].length || 'no'}} extras associated.</small>
+    <small>{{$ctrl.innerInfo}}</small>
+    <div layout="row" layout-align="start center">
+        <md-button class="md-raised" ng-click="$ctrl.manageingrs('display')" flex="25">Return</md-button>
+        <md-button class="md-raised md-warn" ng-click="$ctrl.clearSelected($ctrl.toaddingrs)" flex="25">Clear</md-button>
+        <md-button class="md-raised md-accent" ng-click="$ctrl.selectAll($ctrl.toaddingrs)" flex="25">Select all</md-button>
+        <md-button class="md-raised md-primary" ng-click="$ctrl.appendIngredients()" flex="25">Apply</md-button>
+    </div>
+</script>
+
+<!--Copy Extras from Selected Product-->
+<script id="byproduct-ingredients-choice-template" type="text/ng-template">
+    <md-toolbar class="md-primary md-whiteframe-4dp slim-material-toolbar" style="padding:0 10px;" layout="row" layout-align="start center">
+        <div>Select Ingredients to add as Extras</div>
+        <div flex></div>
+        <div flex="15" class="h-c-ext-list" ng-include src="'ingredient-extras-menu'"></div>
+    </md-toolbar>
+    <div layout="column" layout-align="start stretch" flex="grow">
+        <div layout="row" layout-align="start stretch" style="margin-top:20px;">
+            <div layout="row" layout-align="start center" flex="50" style="margin-top: 20px; padding-right: 15px;">
+                <md-input-container class="md-block" style="font-variant:small-caps; margin:0px;" flex>
+                    <label>{{$ctrl.innerHeader}}</label>
+                    <input ng-model="$ctrl.searchStringClone">
+                </md-input-container>
+                <md-icon md-svg-icon="navigation:close" ng-click="$ctrl.searchStringClone = ''"></md-icon>
+            </div>
+            <div layout="row" layout-align="start center" flex="50" style="margin-top: 20px; padding-right: 15px;">
+                <md-input-container class="md-block" style="font-variant:small-caps; margin:0px;" flex>
+                    <label>Selected to add</label>
+                    <input ng-model="$ctrl.searchStringCloneToAdd">
+                </md-input-container>
+                <md-icon md-svg-icon="navigation:close" ng-click="$ctrl.searchStringCloneToAdd = ''"></md-icon>
+            </div>
+        </div>
+        <div layout="row" layout-align="start stretch">
+            <product-search-autoc flex="50" item-change="$ctrl.manageIngsFromProductLoaded" selected-item="$ctrl.searchp"></product-search-autoc>
+            <div layout="column" layout-align="start stretch" flex="50"></div>
+        </div>
+        <div layout="row" layout-align="start stretch" flex>
+            <div layout="column" layout-align="start stretch" flex="50">
+                <div style="overflow:auto;" flex="grow" class="hitbo-virtual-repeat">
+                    <md-virtual-repeat-container id="vertical-container">
+                        <div md-virtual-repeat="ing in $ctrl.toaddingrs | filterDescCodeIngr : $ctrl.searchStringClone :'selected': false | orderBy : 'Description'" class="repeated-item" flex="" ng-click="$ctrl.toggleInsSelection(ing)">
+                            <md-checkbox aria-label="ins-ici-{{$index}}" ng-checked="ing['selected'] == true" class="md-primary" style="margin:auto 0;"></md-checkbox>
+                            <strong flex>{{ing.Description}}:{{ing.Code}}</strong>
+                        </div>
+                    </md-virtual-repeat-container>
+                </div>
+            </div>
+            <div layout="column" layout-align="start stretch" flex="50">
+                <div style="overflow:auto;" flex="grow" class="hitbo-virtual-repeat">
+                    <md-virtual-repeat-container id="vertical-container">
+                        <div md-virtual-repeat="ing in $ctrl.toaddingrs | filterDescCodeIngr : $ctrl.searchStringCloneToAdd :'selected': true | orderBy : 'Description'" class="repeated-item" flex="" ng-click="$ctrl.toggleInsSelection(ing)">
+                            <md-checkbox aria-label="ins-ici-{{$index}}" ng-checked="ing['selected'] == true" class="md-primary" style="margin:auto 0;"></md-checkbox>
+                            <strong flex>{{ing.Description}}:{{ing.Code}}</strong>
+                        </div>
+                    </md-virtual-repeat-container>
+                </div>
+            </div>
+        </div>
+        <md-divider></md-divider>
+        <small style="margin:0.5% auto 0.5% 0;">Product <strong>{{$ctrl.searchp['Description'] || '--'}}</strong> has {{$ctrl.toaddingrs.length || 'no'}} extras associated.</small>
+        <small>{{$ctrl.innerInfo}}</small>
+        <div layout="row" layout-align="start center">
+            <md-button class="md-raised" ng-click="$ctrl.manageingrs('display')" flex="25">Return<md-tooltip md-direction="top">Return to extras list</md-tooltip></md-button>
+            <md-button class="md-raised md-warn" ng-click="$ctrl.clearSelected($ctrl.toaddingrs)" flex="25">Clear</md-button>
+            <md-button class="md-raised md-accent" ng-click="$ctrl.selectAll($ctrl.toaddingrs)" flex="25">Select all</md-button>
+            <md-button class="md-raised md-primary" ng-click="$ctrl.appendIngredients()" flex="25">Apply</md-button>
+        </div>
+    </div>
+</script>
+
+<!--All Ingredients Drop Down-->
+<script id="insert-ingredients-direct-template" type="text/ng-template">
+    <md-toolbar class="md-primary md-whiteframe-4dp slim-material-toolbar" style="padding:0 10px;" layout="row" layout-align="start center">
+        <div>Select Ingredients to add as Extras</div>
+        <div flex></div>
+        <div flex="15" class="h-c-ext-list" ng-include src="'ingredient-extras-menu'"></div>
+    </md-toolbar>
+    <div layout="row" layout-align="start stretch" style="margin-top:20px;">
+        <div layout="row" layout-align="start center" flex="50" style="margin-top: 20px; padding-right: 15px;">
+            <md-input-container class="md-block" style="font-variant:small-caps; margin:0px;" flex>
+                <label>{{$ctrl.innerHeader}}</label>
+                <input ng-model="$ctrl.searchStringToSelectedDesc">
+            </md-input-container>
+            <md-icon md-svg-icon="navigation:close" ng-click="$ctrl.searchStringToSelectedDesc = ''"></md-icon>
+        </div>
+        <div layout="row" layout-align="start center" flex="50" style="margin-top: 20px; padding-right: 15px;">
+            <md-input-container class="md-block" style="font-variant:small-caps; margin:0px;" flex>
+                <label>Selected to add</label>
+                <input ng-model="$ctrl.searchStringSelectedDesc">
+            </md-input-container>
+            <md-icon md-svg-icon="navigation:close" ng-click="$ctrl.searchStringSelectedDesc = ''"></md-icon>
+        </div>
+    </div>
+    <div layout="row" layout-align="start stretch" flex>
+        <div layout="column" layout-align="start stretch" flex="50">
+            <div style="overflow:auto;" flex="grow" class="hitbo-virtual-repeat">
+                <md-virtual-repeat-container id="vertical-container">
+                    <div md-virtual-repeat="ing in  $ctrl.toaddingrs | filterDescCodeIngr : $ctrl.searchStringToSelectedDesc :'selected': false | orderBy : 'Description'" class="repeated-item" flex="" ng-click="$ctrl.toggleInsSelection(ing)">
+                        <md-checkbox aria-label="ins-ici-{{$index}}" ng-checked="ing['selected'] == true" class="md-primary" style="margin:auto 0;"></md-checkbox>
+                        <span>{{ing.Description}} : {{ing.Code}}</span>
+                    </div>
+                </md-virtual-repeat-container>
+            </div>
+        </div>
+        <div layout="column" layout-align="start stretch" flex="50">
+            <div style="overflow:auto;" flex="grow" class="hitbo-virtual-repeat">
+                <md-virtual-repeat-container id="vertical-container">
+                    <div md-virtual-repeat="ing in  $ctrl.toaddingrs | filterDescCodeIngr : $ctrl.searchStringToSelectedDesc :'selected': true | orderBy : 'Description'" class="repeated-item" flex="" ng-click="$ctrl.toggleInsSelection(ing)">
+                        <md-checkbox aria-label="ins-ici-{{$index}}" ng-checked="ing['selected'] == true" class="md-primary" style="margin:auto 0;"></md-checkbox>
+                        <span>{{ing.Description}} : {{ing.Code}}</span>
+                    </div>
+                </md-virtual-repeat-container>
+            </div>
+        </div>
+    </div>
+    <div ng-if="$ctrl.toaddingrs.length == 0" layout="row" layout-align="center center" flex>
+        <md-toolbar class="md-accent md-whiteframe-8dp md-margin" flex="80" layout="row" layout-align="start center"><md-icon class="md-margin" md-svg-icon="action:info"></md-icon>{{$ctrl.notLengthMSg}}</md-toolbar>
+    </div>
+    <md-divider></md-divider>
+    <small style="margin:0.5% auto 0.5% 0;">Ingredients Registered: {{$ctrl.lookups.Ingredients.length || '--'}}.</small>
+    <small>{{$ctrl.innerInfo}}</small>
+    <div layout="row" layout-align="space-between center">
+        <md-button class="md-raised" ng-click="$ctrl.manageingrs('display')" flex="25">Return<md-tooltip md-direction="top">Return to extras list</md-tooltip></md-button>
+        <md-button class="md-raised md-warn" ng-click="$ctrl.clearSelected($ctrl.toaddingrs)" flex="25">Clear</md-button>
+        <md-button class="md-raised md-accent" ng-click="$ctrl.selectAll($ctrl.toaddingrs)" flex="25">Select all</md-button>
+        <md-button class="md-raised md-primary" ng-click="$ctrl.appendIngredients()" flex="25">Apply</md-button>
+    </div>
+    <div layout="row" layout-align="start center">
+    </div>
+</script>
